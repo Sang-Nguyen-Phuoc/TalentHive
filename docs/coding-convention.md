@@ -4,7 +4,7 @@
 
 ### `components/`
 
-- **Description:** Contains reusable React components.
+- **Description:** Contains reusable React components
 
 ### `layouts/`
 
