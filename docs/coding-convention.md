@@ -1,4 +1,6 @@
-## Directory Details
+# Directory Details
+
+## Frontend
 
 ### `components/`
 
@@ -10,7 +12,7 @@
 
 ### `pages/`
 
-- **Description:** Contains the different pages of the application as per Next.js conventions.
+- **Description:** Contains the different pages of the application.
 
 ### `public/`
 
@@ -23,6 +25,8 @@
 ### `utils/`
 
 - **Description:** Contains utility functions that can be used across the application. These functions are written in pure JavaScript.
+
+## Backend (updating)
 
 ## Coding Conventions
 
