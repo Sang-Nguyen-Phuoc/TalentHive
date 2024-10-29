@@ -1,26 +1,34 @@
 import React from 'react'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { Routes, Route, useLocation } from 'react-router-dom'
 import routes from './pages'
-import LayoutHome from './layouts/Home'
+import AuthenticationLayout from './layouts/AuthenticationLayout'
+import DefaultLayout from './layouts/DefaultLayout'
+
 const App = () => {
+  const location = useLocation();
+
+  const getLayout = () => {
+    if (location.pathname === '/signin' || location.pathname === '/signup' || location.pathname === '/forgot-password') {
+      return AuthenticationLayout;
+    }
+    else {
+      return DefaultLayout
+    }
+  };
+  
+  const Layout = getLayout()
+
   return (
-    <BrowserRouter>
-      <div className='app'>
-        <Routes>
-          {
-          routes.map((route, index) => {
-            const Page = route.conponent
-            const Layout = route.layout || LayoutHome
-            return <Route key = {index} path = {route.path} element = {
-            <Layout>
-              <Page/>
-            </Layout>
-            }> </Route>
-          })
-          }
-        </Routes>
-      </div>
-    </BrowserRouter>
+    <Layout>
+      <Routes>
+        {
+        routes.map((route, index) => {
+          const Page = route.conponent
+          return <Route key = {index} path = {route.path} element = {<Page/>}> </Route>
+        })
+        }
+      </Routes>
+    </Layout>
   )
 }
 

@@ -1,0 +1,15 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+    --primay-color: #3493FF;
+    --border-color: #d9d9d9;
+    --box-shadow-color: 4px 4px 4px rgb(0 0 0 25%);
+    --background-gradient: linear-gradient(to right, #1A4A81, var(--primay-color));
+}
+
