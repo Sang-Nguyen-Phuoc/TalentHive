@@ -1,10 +1,13 @@
-import { Fragment } from "react";
+import Logo from "../../components/Logo";
+import styles from '../../styles/layouts/AuthenticationLayout.module.css'
+
 const AuthenticationLayout = ({children}) => {
     return (
-        <Fragment>
-            <header>Authentication Layout</header>
-            <div>{children}</div>
-        </Fragment>
+        <div className = {styles.wrapper}>
+            <Logo className = {styles.logo}/>
+            <div className = {styles.form}>{children}</div>
+        </div>
+        
     );
 }
  
