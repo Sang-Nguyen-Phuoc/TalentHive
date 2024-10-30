@@ -21,7 +21,7 @@
       `git checkout -b feature/<#issue-number>-<tag-name>`  
       and start coding.
    2. When committing changes, reference the corresponding issue:  
-      `git commit -m '#<issue-number>-<member-name>-<feature-name>'`
+      `git commit -m '#<issue-number>-<member-name>-<feature-name>'`  
       This ensures the commit is linked to the task in "Issues."
    3. Push the feature branch to the repository:  
       `git push --set-upstream origin feature/<#issue-number>-<tag-name>`
