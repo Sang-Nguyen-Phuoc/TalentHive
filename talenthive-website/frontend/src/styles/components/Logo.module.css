@@ -1,0 +1,24 @@
+.wrapper {
+    height: 100px;
+    display: flex;
+    align-items: center;
+}
+
+.img {
+    height: 100%;
+    border-radius: 20%;
+}
+
+.name {
+    margin-left: 8px;
+    font-size: 60px;
+    font-weight: 900;
+    background: linear-gradient(to right, var(--primary-color), #1A4A81);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.link {
+    text-decoration: none;
+    width: 450px;
+}
