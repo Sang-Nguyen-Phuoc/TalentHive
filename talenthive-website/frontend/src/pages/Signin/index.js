@@ -6,18 +6,18 @@ function Signin() {
         <div className={styles.wrapper}>
             <form className = {styles.form}>
                 <div className={styles.email}>
-                    <label htmlFor='emailInput' clas>
+                    <label htmlFor='emailInput'>
                         Email
                         <span>*</span>
                     </label>
-                    <input className={styles['email-input']} id='emailInput' placeholder='Email'/>
+                    <input className={styles['email-input']} id='emailInput' type='email' placeholder='Email' required/>
                 </div>
                 <div className={styles.password}>
-                    <label htmlFor='passwordInput' clas>
+                    <label htmlFor='passwordInput'>
                         Password
                         <span>*</span>
                     </label>
-                    <input className={styles['password-input']} id='passwordInput' type='password' placeholder='Password'/>
+                    <input className={styles['password-input']} id='passwordInput' type='password' placeholder='Password' required/>
                     <div>
                         <Link to='/forgot-password' className={styles.link}>Forgot Password?</Link>
                     </div>
@@ -28,10 +28,8 @@ function Signin() {
                     </button>
                 </div>
                 <div className={`${styles.container} ${styles.signup}`}>
-                    <p>
-                        Do you have any account yet?
-                        <Link to='/signup' className={`${styles.link} ${styles['signup-link']}`}>SIGN UP now</Link>
-                    </p>
+                    <p className={styles.question}>Do you have any account yet?</p>
+                    <Link to='/signup' className={`${styles.link} ${styles['signup-link']}`}>SIGN UP now</Link>
                 </div>
             </form>
         </div>
