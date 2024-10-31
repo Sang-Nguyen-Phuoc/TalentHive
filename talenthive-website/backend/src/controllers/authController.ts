@@ -1,23 +1,18 @@
 import { Request, Response } from 'express';
+import bcrypt from 'bcryptjs';
 import User from '../models/user';
 import validator from 'validator';
 
 const register = async (req: Request, res: Response) => {
     try {
-        const { email, password, confirm_password } = req.body;
+        const { email, password, role } = req.body;
 
         // Check if all required fields are filled
-        if (!email || !password || !confirm_password) {
+        if (!email || !password ) {
             res.status(400).send("Please fill all required fields");
             return;
         }
         
-        // Check if password and confirm_password match
-        if (password !== confirm_password) {
-            res.status(400).send("Passwords do not match");
-            return;
-        }
-
         // Check if user already exists
         if (await User.findOne({ email: email })) {
             res.status(400).send("User already exists");
@@ -30,8 +25,11 @@ const register = async (req: Request, res: Response) => {
             return;
         }
 
+        // Use bcrypt to hash password
+        const hashedPassword = await bcrypt.hash(password, 10);
+
         // Create new user
-        const newUser = new User({ email, password, confirm_password });
+        const newUser = new User({ email: email, password: hashedPassword, role: role });
         await newUser.save();
 
         res.status(201).json({
@@ -40,8 +38,10 @@ const register = async (req: Request, res: Response) => {
         });
 
     } catch (error) {
-        console.error(error);
-        res.status(500).send("Internal server error");
+        res.status(500).json({
+            status: 'error',
+            message: error
+        });
     }
 };
 
