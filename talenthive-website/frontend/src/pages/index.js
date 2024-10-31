@@ -27,25 +27,25 @@ import ManageWorkers from "./ManageWorkers";
 
 // Export for use
 const routes = [
-    { path: '/', conponent: Home },
-    { path: '/about-us', conponent: AboutUs },
-    { path: '/search', conponent: Search },
+    { path: '/', component: Home },
+    { path: '/about-us', component: AboutUs },
+    { path: '/search', component: Search },
 
-    { path: '/signin', conponent: Signin },
-    { path: '/signup', conponent: SignUp },
-    { path: '/forgot-password', conponent: ForgotPassword },
+    { path: '/signin', component: Signin },
+    { path: '/signup', component: SignUp },
+    { path: '/forgot-password', component: ForgotPassword },
 
-    { path: '/profile-account', conponent: ProfileAccount },
-    { path: '/profile-dashboard', conponent: ProfileDashboard },
-    { path: '/edit-profile', conponent: EditProfile },
-    { path: '/job-detail', conponent: JobDetail },
+    { path: '/profile-account', component: ProfileAccount },
+    { path: '/profile-dashboard', component: ProfileDashboard },
+    { path: '/edit-profile', component: EditProfile },
+    { path: '/job-detail', component: JobDetail },
 
-    { path: '/hire-talent', conponent: HireTalent },
+    { path: '/hire-talent', component: HireTalent },
 
-    { path: '/jobs-applied', conponent: JobsApplied },
+    { path: '/jobs-applied', component: JobsApplied },
 
-    { path: '/manage-workers', conponent: ManageWorkers },
-    { path: '/manage-employers', conponent: ManageEmployers },
+    { path: '/manage-workers', component: ManageWorkers },
+    { path: '/manage-employers', component: ManageEmployers },
 ]
 
 export default routes
