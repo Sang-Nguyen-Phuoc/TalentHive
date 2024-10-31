@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Roboto:wght@100;300;400;500;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Roboto:wght@100;300;400;500;700&display=swap");
 
 *,
 *::before,
@@ -9,29 +9,31 @@
 }
 
 :root {
-    --primary-color: #3493FF;
-    --text-color: #000;
-    --button-color: #fff;
-    --form-color: #fff;
-    --border-color: #d9d9d9;
-    --box-shadow-item: 4px 4px 4px rgb(0, 0, 0, 25%);
-    --box-shadow-button: 0 4px 4px rgb(0, 0, 0, 25%);
-    --background-gradient: linear-gradient(to right, #1A4A81, var(--primay-color));
-    --body-gradient: linear-gradient(to bottom, #F2FCFF, #FAF6FF);
+  --primary-color: #3493ff;
+  --text-color: #000;
+  --button-color: #fff;
+  --form-color: #fff;
+  --border-color: #d9d9d9;
+  --box-shadow-item: 4px 4px 4px rgb(0, 0, 0, 25%);
+  --box-shadow-button: 0 4px 4px rgb(0, 0, 0, 25%);
+  --background-gradient: linear-gradient(
+    to right,
+    #1a4a81,
+    var(--primay-color)
+  );
+  --body-gradient: linear-gradient(to bottom, #f2fcff, #faf6ff);
 
-
-    --margin-element-form: 20px;
-    --border-radius-inp: 4px;
-    --border-radius-btn: 8px;
-    --border-radius-form: 10px;
+  --margin-element-form: 20px;
+  --border-radius-inp: 4px;
+  --border-radius-btn: 8px;
+  --border-radius-form: 10px;
 }
 
 html {
-  
 }
 
 body {
-  font-family: 'Noto Sans', 'Roboto', sans-serif;
+  font-family: "Noto Sans", "Roboto", sans-serif;
   min-height: 1000px;
   background-image: var(--body-gradient);
   background-repeat: no-repeat;
@@ -54,6 +56,3 @@ button:disabled {
   background-color: var(--border-color);
   cursor: default;
 }
-
-
-

@@ -1,12 +1,15 @@
 import { Fragment } from "react";
+import Header from "../../components/Header";
+import Footer from "../../components/Footer";
 
-const DefaultLayout = ({children}) => {
+const DefaultLayout = ({ children }) => {
     return (
         <Fragment>
-            <header>Default Layout</header>
+            <Header />
             <div>{children}</div>
+            <Footer />
         </Fragment>
     );
 }
- 
+
 export default DefaultLayout;
