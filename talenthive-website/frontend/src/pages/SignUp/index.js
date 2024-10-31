@@ -1,8 +1,9 @@
 import { Link } from 'react-router-dom';
 import styles from '../../styles/pages/Authentication.module.css'
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 function SignUp() {
+    console.log('render');
     const rules = [
         'At least 10 characters',
         'At least 1 symbol(!, @, #, $,...)',
@@ -11,22 +12,24 @@ function SignUp() {
         'At least 1 lowercase letter'
     ]
 
-    let state = Array(rules.length).fill('none');
-    
-    const [type, setType]  = useState(state);
+    const [type, setType]  = useState(Array(rules.length).fill('none'));
     const [chkbox, setChkbox] = useState(false);
+    // const [username, setUsername] = useState('')
+    // const [email, setEmail] = useState('')
 
-    const HandlePasswordConvention = (password) => {
+    const usernameRef = useRef(null)
+    const emailRef = useRef(null)
+    const passwordRef = useRef(null)
+
+    const handleValidatePassword = (password) => {
         if (password === ''){
             setType(Array(rules.length).fill('none'))
         }
         else {
-            state = Array(rules.length).fill('invalid')
+            let state = Array(rules.length).fill('invalid')
 
             if (password.length >= 10)
                 state[0] = 'valid';
-
-            console.log(typeof(password))
             for (var i = 0; i < password.length; i++ ) {
                 const c = password[i]
                 
@@ -43,41 +46,61 @@ function SignUp() {
                     state[1] = 'valid';
                 }
             }
+            
             setType(state)
         }
     }
 
-    const HandleSignUp = () => {
+    const handleSignUp = (e) => {
+        e.preventDefault();
 
+        console.log(usernameRef.current.value)
+        console.log(emailRef.current.value)
+        console.log(passwordRef.current.value)
     }
 
     return (
         <div className={styles.wrapper}>
-            <form className = {styles.form}>
+            <form className = {styles.form} onSubmit={handleSignUp}>
                 <div className={styles.username}>
                     <label htmlFor='usernameInput'>
                         Company name / User name
                         <span>*</span>
                     </label>
-                    <input className={styles['username-input']} id='usernameInput' placeholder='Name' required/>
+                    <input ref={usernameRef} 
+                           className={styles['username-input']} 
+                           id='usernameInput' 
+                           placeholder='Name' 
+                           required
+                        //    value={username}
+                        //    onChange={e => setUsername(e.target.value)}
+                    />
                 </div>
                 <div className={styles.email}>
                     <label htmlFor='emailInput'>
                         Email
                         <span>*</span>
                     </label>
-                    <input className={styles['email-input']} id='emailInput' type='email' placeholder='Email' required/>
+                    <input ref={emailRef} 
+                           className={styles['email-input']} 
+                           id='emailInput' 
+                           type='email' 
+                           placeholder='Email' 
+                           required
+                        //    value={email}
+                        //    onChange={e => setEmail(e.target.value)}
+                    />
                 </div>
                 <div className={styles.password}>
                     <label htmlFor='passwordInput'>
                         Password
                         <span>*</span>
                     </label>
-                    <input className={styles['password-input']} 
+                    <input ref={passwordRef} className={styles['password-input']} 
                         id='passwordInput' 
                         type='password' 
                         placeholder='Password'
-                        onChange={ password => HandlePasswordConvention(password.target.value) }  
+                        onChange={ password => handleValidatePassword(password.target.value) }  
                         required/>
                     <ul className={styles.convention}>
                         {rules.map((rule, index) => {
@@ -86,7 +109,10 @@ function SignUp() {
                     </ul>
                 </div>
                 <div className={styles.container}>
-                    <input type="checkbox" className={styles['checkbox-input']} checked={chkbox} onChange={v => setChkbox(v.target.checked)}/>
+                    <input type="checkbox" 
+                           className={styles['checkbox-input']} 
+                           checked={chkbox} 
+                           onChange={v => setChkbox(v.target.checked)}/>
                     <p className={styles['policy-content']}>I have read and agree to TalentHive's  
                         <Link className={styles.link}> Terms & Conditions </Link>
                         and 
@@ -94,7 +120,9 @@ function SignUp() {
                     </p>
                 </div>
                 <div className={styles.container}>
-                    <button className={styles.btn} disabled = {!chkbox} onClick={HandleSignUp}>
+                    <button type='submit' 
+                            className={styles.btn} 
+                            disabled = {!chkbox || type.includes('none') || type.includes('invalid')}>
                         SIGN UP
                     </button>
                 </div>
