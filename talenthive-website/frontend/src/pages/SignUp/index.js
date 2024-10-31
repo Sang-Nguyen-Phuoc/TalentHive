@@ -3,7 +3,6 @@ import styles from '../../styles/pages/Authentication.module.css'
 import { useRef, useState } from 'react';
 
 function SignUp() {
-    console.log('render');
     const rules = [
         'At least 10 characters',
         'At least 1 symbol(!, @, #, $,...)',
@@ -14,12 +13,14 @@ function SignUp() {
 
     const [type, setType]  = useState(Array(rules.length).fill('none'));
     const [chkbox, setChkbox] = useState(false);
-    // const [username, setUsername] = useState('')
-    // const [email, setEmail] = useState('')
+    const [confirm, setConfirm] = useState(true);
+    const [role, setRole] = useState('default')
 
     const usernameRef = useRef(null)
     const emailRef = useRef(null)
     const passwordRef = useRef(null)
+    const repasswordRef = useRef(null)
+    const roleRef = useRef(null)
 
     const handleValidatePassword = (password) => {
         if (password === ''){
@@ -51,12 +52,26 @@ function SignUp() {
         }
     }
 
+    const handleConfirmPassword = (repassword) => {
+        if (repassword === passwordRef.current.value){
+            setConfirm(true)
+        }
+        else {
+            setConfirm(false)
+        }
+    }
+
     const handleSignUp = (e) => {
         e.preventDefault();
 
-        console.log(usernameRef.current.value)
-        console.log(emailRef.current.value)
-        console.log(passwordRef.current.value)
+        const signupData = {
+            'name':usernameRef.current.value,
+            'email' :emailRef.current.value,
+            'password':passwordRef.current.value,
+            'role':roleRef.current.value
+        }
+
+        console.log(signupData)
     }
 
     return (
@@ -64,16 +79,14 @@ function SignUp() {
             <form className = {styles.form} onSubmit={handleSignUp}>
                 <div className={styles.username}>
                     <label htmlFor='usernameInput'>
-                        Company name / User name
+                        Username
                         <span>*</span>
                     </label>
                     <input ref={usernameRef} 
                            className={styles['username-input']} 
                            id='usernameInput' 
-                           placeholder='Name' 
+                           placeholder='Fullname' 
                            required
-                        //    value={username}
-                        //    onChange={e => setUsername(e.target.value)}
                     />
                 </div>
                 <div className={styles.email}>
@@ -87,8 +100,6 @@ function SignUp() {
                            type='email' 
                            placeholder='Email' 
                            required
-                        //    value={email}
-                        //    onChange={e => setEmail(e.target.value)}
                     />
                 </div>
                 <div className={styles.password}>
@@ -96,17 +107,47 @@ function SignUp() {
                         Password
                         <span>*</span>
                     </label>
-                    <input ref={passwordRef} className={styles['password-input']} 
+                    <input ref={passwordRef} 
+                        className={styles['password-input']} 
                         id='passwordInput' 
                         type='password' 
                         placeholder='Password'
                         onChange={ password => handleValidatePassword(password.target.value) }  
                         required/>
-                    <ul className={styles.convention}>
+                    <ul>
                         {rules.map((rule, index) => {
-                            return <li key={index} className={styles[type[index]]}>{rule}</li>
+                            return <li key={index} className={`${styles[type[index]]} ${styles.convention}`}>{rule}</li>
                         })}
                     </ul>
+                </div>
+                <div className={styles.password}>
+                    <label htmlFor='repasswordInput'>
+                        Confirm password
+                        <span>*</span>
+                    </label>
+                    <input ref={repasswordRef} 
+                        className={styles['password-input']} 
+                        id='repasswordInput' 
+                        type='password' 
+                        placeholder='Confirm password'
+                        onChange={ password => handleConfirmPassword(password.target.value) }  
+                        required/>
+                    {confirm || <p className={`${styles.invalid} ${styles.convention} ${styles.inform}`}>Password does not match</p>}
+                </div>
+                <div className={styles.password}>
+                    <label htmlFor='roleInput'>
+                        Role
+                        <span>*</span>
+                    </label>
+                    <select ref={roleRef} 
+                            className={styles.dropdown} 
+                            id="roleInput" 
+                            defaultValue={'default'}
+                            onChange={e => setRole(e.target.value)}>
+                        <option value="Employer">Employer</option>
+                        <option value="Worker">Worker</option>
+                        <option value="default" disabled>--Choose role--</option>
+                    </select>
                 </div>
                 <div className={styles.container}>
                     <input type="checkbox" 
@@ -122,7 +163,12 @@ function SignUp() {
                 <div className={styles.container}>
                     <button type='submit' 
                             className={styles.btn} 
-                            disabled = {!chkbox || type.includes('none') || type.includes('invalid')}>
+                            disabled = {!chkbox 
+                                        || type.includes('none') 
+                                        || type.includes('invalid') 
+                                        || !confirm 
+                                        || repasswordRef.current.value===''
+                                        || role === 'default'}>
                         SIGN UP
                     </button>
                 </div>
