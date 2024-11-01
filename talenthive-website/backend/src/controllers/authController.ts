@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import User from '../models/user';
 import validator from 'validator';
+import { title } from 'process';
 
 const register = async (req: Request, res: Response) => {
     try {
@@ -9,19 +10,28 @@ const register = async (req: Request, res: Response) => {
 
         // Check if all required fields are filled
         if (!email || !password ) {
-            res.status(400).send("Please fill all required fields");
+            res.status(400).json({
+                status: 'fail',
+                message: 'Please provide email and password'
+            });
             return;
         }
         
         // Check if user already exists
         if (await User.findOne({ email: email })) {
-            res.status(400).send("User already exists");
+            res.status(400).json({
+                status: 'fail',
+                message: 'User already exists'
+            });
             return;
         }
 
         // Check email format
         if (!validator.isEmail(email)) {
-            res.status(400).send("Invalid email address");
+            res.status(400).send({
+                status: 'fail',
+                message: 'Email is not valid'
+            });
             return;
         }
 
@@ -34,7 +44,9 @@ const register = async (req: Request, res: Response) => {
 
         res.status(201).json({
             status: 'success',
-            data: newUser
+            data: {
+                user: newUser
+            }
         });
 
     } catch (error) {
