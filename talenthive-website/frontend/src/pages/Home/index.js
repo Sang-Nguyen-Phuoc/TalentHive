@@ -1,6 +1,14 @@
+import Banner from "../../components/Banner";
+import Jumbotron from "../../components/Jumpotron";
+
 function Home() {
     return (
-        <h2>Home Page</h2>
+        <>
+            <Banner />
+            <h2>Home Page</h2>
+            <Jumbotron />
+        </>
+
     );
 }
 
