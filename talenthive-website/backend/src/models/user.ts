@@ -6,7 +6,6 @@ interface IUser {
     _id: Types.ObjectId;
     email: string;
     password: string;
-    confirm_password?: string;
     role: string;
     active: boolean;
     password_reset_token?: string;
@@ -29,17 +28,6 @@ const UserSchema = new Schema<IUser>({
         type: String,
         required: [true, 'Please provide a password'],
         select: false
-    },
-    confirm_password: {
-        type: String,
-        required: [true, 'Please confirm your password'],
-        validate: {
-            // This only works on CREATE and SAVE!!!
-            validator: function (this: IUser) {
-                return this.password === this.confirm_password;
-            },
-            message: 'Passwords are not the same'
-        }
     },
     role: {
         type: String,
