@@ -3,8 +3,8 @@ import style from '../../styles/components/Search.module.css';
 
 const Search = () => {
     const [formData, setFormData] = useState({
-        location: 'Location',
-        sector: 'Sector',
+        location: '',
+        sector: '',
         keyword: '',
     });
 
@@ -21,8 +21,8 @@ const Search = () => {
         alert(`Keyword: ${formData.keyword}, Location: ${formData.location}, Sector: ${formData.sector}`);
         // reset form
         setFormData({
-            location: 'Location',
-            sector: 'Sector',
+            location: '',
+            sector: '',
             keyword: '',
         });
     };
@@ -39,9 +39,8 @@ const Search = () => {
                     placeholder="Enter keyword..."
                 />
 
-                <select name="location" id="location" value={formData.location} onChange={handleChange}
-                    defaultValue={"default"}>
-                    <option disabled value="default" >Location</option>
+                <select name="location" id="location" value={formData.location} onChange={handleChange}>
+                    <option disabled value="">Location</option>
                     <optgroup label="Europe">
                         <option value="sweden">Sweden</option>
                         <option value="germany">Germany</option>
@@ -54,8 +53,8 @@ const Search = () => {
                     </optgroup>
                 </select>
 
-                <select name="sector" id="sector" value={formData.sector} onChange={handleChange} defaultValue={"default"}>
-                    <option disabled value="default">Sector</option>
+                <select name="sector" id="sector" value={formData.sector} onChange={handleChange}>
+                    <option disabled value="">Sector</option>
                     <optgroup label="Technology">
                         <option value="software">Software</option>
                         <option value="hardware">Hardware</option>
