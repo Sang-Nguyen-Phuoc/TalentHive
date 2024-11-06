@@ -106,36 +106,28 @@ const login = catchAsync(async (req: Request, res: Response, next: NextFunction)
 });
 
 const logout = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
-    try {
-        // Get the token
-        const token = req.body.accessToken;
+    // Get the token
+    const token = req.body.accessToken;
 
-        if (!token) {
-            return next(new AppError("There is no token", 401));
-        }
-        else {
-            tokenGenerator.invalidateToken(token);
-        }
-
-        // Clear the refresh token cookie
-        res.clearCookie('refreshToken', {
-            httpOnly: true,
-            path: "/",
-            sameSite: "strict"
-        });
-
-        // Response if successful
-        res.status(200).json({
-            status: 'success',
-            message: 'Logged out successfully'
-        });
-
-    } catch(err) {
-        res.status(500).json({
-            status: 'error',
-            message: err
-        });
+    if (!token) {
+        return next(new AppError("There is no token", 401));
     }
+    else {
+        tokenGenerator.invalidateToken(token);
+    }
+
+    // Clear the refresh token cookie
+    res.clearCookie('refreshToken', {
+        httpOnly: true,
+        path: "/",
+        sameSite: "strict"
+    });
+
+    // Response if successful
+    res.status(200).json({
+        status: 'success',
+        message: 'Logged out successfully'
+    });
 });
 
 const forgotPassword = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
