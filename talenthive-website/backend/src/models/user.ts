@@ -1,6 +1,7 @@
 import mongoose, { Schema, Types } from "mongoose";
 import validator from "validator";
-
+import crypto from "crypto";
+import bcrypt from "bcryptjs";
 
 interface IUser {
     _id: Types.ObjectId;
@@ -13,6 +14,8 @@ interface IUser {
     password_changed_at?: Date;
     created_at: Date;
     updated_at: Date;
+    createPasswordResetToken: () => string;
+    isModified: (field: string) => boolean;
 }
 
 const UserSchema = new Schema<IUser>({
@@ -43,10 +46,30 @@ const UserSchema = new Schema<IUser>({
     },
     created_at: {
         type: Date,
-        default: Date.now()
+        default: Date.now(),
     },
     updated_at: Date
 })
+
+UserSchema.pre<IUser>('save', async function(next) {
+    if (!this.isModified('password')) return next();
+    
+    this.password = await bcrypt.hash(this.password, 12);
+
+    next();
+})
+
+UserSchema.methods.createPasswordResetToken = function() {
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    
+    this.password_reset_token = crypto.createHash('sha256').update(resetToken).digest('hex');
+
+    console.log({ resetToken }, this.password_reset_token);
+
+    this.password_reset_expires = new Date(Date.now() + 10 * 60 * 1000);
+
+    return resetToken;
+}
 
 const User = mongoose.model<IUser>('User', UserSchema);
 
