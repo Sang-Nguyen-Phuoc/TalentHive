@@ -19,5 +19,20 @@ const refreshToken = (user: InstanceType<typeof User>) => {
     });
 };
 
+const invalidateToken = (token: string) => {
+    if (!token) {
+        throw new Error('Token is not valid');
+    }
 
-export { accessToken, refreshToken };
+    if (!process.env.JWT_INVALIDATE_SECRET) {
+        throw new Error('JWT_INVALIDATE_SECRET not defined');
+    }
+
+    return {
+        token,
+        invalidatedAt: Date.now()
+    };
+};
+
+
+export { accessToken, refreshToken, invalidateToken };
