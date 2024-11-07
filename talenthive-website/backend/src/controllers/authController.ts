@@ -107,13 +107,14 @@ const login = catchAsync(async (req: Request, res: Response, next: NextFunction)
 
 const logout = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
     // Get the token
-    const token = req.body.accessToken;
+    const authHeader = req.headers.authorization;
+    const accessToken = authHeader && authHeader.split(' ')[1];
 
-    if (!token) {
+    if (!accessToken) {
         return next(new AppError("There is no token", 401));
     }
     else {
-        tokenGenerator.invalidateToken(token);
+        tokenGenerator.invalidateToken(accessToken);
     }
 
     // Clear the refresh token cookie
