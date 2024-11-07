@@ -1,4 +1,5 @@
 import User from "../models/user";
+import TokenBlacklist from "../models/tokenBlacklist";
 import jwt from "jsonwebtoken";
 
 const accessToken = (user: InstanceType<typeof User>) => {
@@ -19,14 +20,12 @@ const refreshToken = (user: InstanceType<typeof User>) => {
     });
 };
 
-const invalidateToken = (token: string) => {
+const invalidateToken = async(token: string) => {
     if (!token) {
         throw new Error('Token is not valid');
     }
 
-    if (!process.env.JWT_INVALIDATE_SECRET) {
-        throw new Error('JWT_INVALIDATE_SECRET not defined');
-    }
+    await TokenBlacklist.create({token});
 
     return {
         token,
@@ -34,5 +33,11 @@ const invalidateToken = (token: string) => {
     };
 };
 
+const verifyAccessToken = (token: string) => {
+    if (!process.env.JWT_ACCESS_SECRET) {
+        throw new Error('JWT_ACCESS_SECRET not defined');
+    }
+    return jwt.verify(token, process.env.JWT_ACCESS_SECRET) as { id: string, role: string };
+};
 
-export { accessToken, refreshToken, invalidateToken };
+export { accessToken, refreshToken, invalidateToken, verifyAccessToken };

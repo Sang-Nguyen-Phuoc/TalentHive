@@ -113,9 +113,8 @@ const logout = catchAsync(async(req: Request, res: Response, next: NextFunction)
     if (!accessToken) {
         return next(new AppError("There is no token", 401));
     }
-    else {
-        tokenGenerator.invalidateToken(accessToken);
-    }
+    
+    await tokenGenerator.invalidateToken(accessToken);
 
     // Clear the refresh token cookie
     res.clearCookie('refreshToken', {
