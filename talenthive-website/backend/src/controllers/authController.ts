@@ -131,17 +131,12 @@ const logout = catchAsync(async(req: Request, res: Response, next: NextFunction)
 });
 
 const changePassword = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const { data } = req.body;
-    
-    if (!data) {
-        return next(new AppError("Please provide user data", 400));
-    }
-
-    const { currentPassword, newPassword } = data;
+    const currentPassword = req.body.currentPassword;
+    const newPassword = req.body.newPassword;
 
     const authHeader = req.headers.authorization;
     const accessToken = authHeader && authHeader.split(' ')[1];
-    
+
     if (!accessToken) {
         return next(new AppError("Please provide access token", 400));
     }
@@ -155,7 +150,7 @@ const changePassword = catchAsync(async (req: Request, res: Response, next: Next
     }
 
     // Get user with password from token
-    const decodedToken = tokenGenerator.verifyAccessToken(accessToken);
+    const decodedToken = tokenGenerator.verifyAccessToken(accessToken as string);
     const currentUser = await User.findOne({ _id: decodedToken.id }).select('+password');
 
     if (!currentUser) {
