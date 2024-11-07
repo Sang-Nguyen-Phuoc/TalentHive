@@ -34,5 +34,11 @@ const invalidateToken = (token: string) => {
     };
 };
 
+const verifyAccessToken = (token: string) => {
+    if (!process.env.JWT_ACCESS_SECRET) {
+        throw new Error('JWT_ACCESS_SECRET not defined');
+    }
+    return jwt.verify(token, process.env.JWT_ACCESS_SECRET) as { id: string, role: string };
+};
 
-export { accessToken, refreshToken, invalidateToken };
+export { accessToken, refreshToken, invalidateToken, verifyAccessToken };

@@ -137,8 +137,11 @@ const changePassword = catchAsync(async (req: Request, res: Response, next: Next
         return next(new AppError("Please provide user data", 400));
     }
 
-    const { user, accessToken, currentPassword, newPassword } = data;
+    const { currentPassword, newPassword } = data;
 
+    const authHeader = req.headers.authorization;
+    const accessToken = authHeader && authHeader.split(' ')[1];
+    
     if (!accessToken) {
         return next(new AppError("Please provide access token", 400));
     }
@@ -151,8 +154,9 @@ const changePassword = catchAsync(async (req: Request, res: Response, next: Next
         return next(new AppError("Please provide new password", 400));
     }
 
-    // Get user with password
-    const currentUser = await User.findOne({ _id: user._id }).select('+password');
+    // Get user with password from token
+    const decodedToken = tokenGenerator.verifyAccessToken(accessToken);
+    const currentUser = await User.findOne({ _id: decodedToken.id }).select('+password');
 
     if (!currentUser) {
         return next(new AppError("User not found", 404));
@@ -160,7 +164,7 @@ const changePassword = catchAsync(async (req: Request, res: Response, next: Next
 
     // Check if current password is correct
     if (!(await bcrypt.compare(currentPassword, currentUser.password))) {
-        return next(new AppError("Current password is incorrect", 401));
+        return next(new AppError("Current password is incorrect", 403));
     }
 
     // Invalidate current token since password is changing
@@ -170,11 +174,6 @@ const changePassword = catchAsync(async (req: Request, res: Response, next: Next
     currentUser.password = newPassword;
     currentUser.password_changed_at = new Date();
     await currentUser.save();
-
-    res.status(200).json({
-        status: 'success',
-        message: 'Password changed successfully'
-    });
     
     // Generate new tokens and send response
     createSendToken(currentUser, 200, res);
