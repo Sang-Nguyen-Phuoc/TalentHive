@@ -52,7 +52,7 @@
     flex-direction: column;
 }
 
-li {
+.convention {
         
     font-size: .8rem;
     margin-left: 20px;
@@ -68,6 +68,17 @@ li {
     &.invalid {
         color: #f60d00;
     }
+}
+
+.inform {
+    margin-left: 5px;
+}
+
+.dropdown {
+    width: 120px;
+    height: 40px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-inp);
 }
 
 .policy-content {

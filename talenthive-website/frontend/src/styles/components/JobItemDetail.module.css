@@ -1,0 +1,113 @@
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    width: 650px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: var(--box-shadow-item);
+}
+
+.wrapper:hover {
+    background-color: #f3f5f7;
+    cursor: pointer;
+    border: 2px solid var(--primary-color);
+    border-left: 6px solid var(--primary-color);
+    transform: scale(1.04);
+    & .position {
+        color: var(--primary-color);
+    }
+}
+
+.header {
+    display: flex;
+
+    &~*{
+        margin-top: 15px;
+    }
+}
+
+.position {
+    flex: 1;
+    font-weight: 700;
+    font-size: 19px;
+
+    &+p {
+        width: 90px;;
+        font-weight: 600;
+        font-size: 14px;
+        text-align: end;
+    }
+}
+
+.Pending {
+    color: #0000ff;
+}
+
+.Accepted {
+    color: #00FF00;
+}
+
+.Rejected {
+    color: #FF0000;
+}
+
+.description, .salary, .location, .sector, .timeline {
+    display: flex;
+    align-items: center;
+}
+
+.description{
+    margin-right: 90px;
+    justify-content: space-between;
+    & p {
+        margin-left: 6px;
+    }
+}
+
+
+.icon {
+    opacity: 0.5;
+}
+
+.footer {
+    display: flex;
+}
+
+.candidate {
+    color: var(--primary-color);
+    font-weight: 500;
+    align-self: flex-end;
+    &:hover {
+        position: relative;
+        top: -2px;
+        text-decoration: underline;
+    }
+}
+
+.timeline {
+    flex-direction: column-reverse;
+    flex: 1;
+    align-items: end;
+    justify-content: end;
+    font-size: 12px;
+    color: #666;
+}
+
+.apply {
+    margin: 10px 50px 0px 50px;
+    padding: 7px;
+    color: var(--button-color);
+    font-weight: 700;
+    font-size: 18px;
+    background-color: var(--primary-color);
+    border: none;
+    border-radius: var(--border-radius-btn);
+    box-shadow: var(--box-shadow-button);
+
+    &:hover {
+        position: relative;
+        top: -2px;
+    }
+}
+

@@ -1,0 +1,21 @@
+.carousel-container {
+  overflow: hidden;
+  background-color: #fff;
+}
+
+.carousel-item {
+  height: 300px;
+  padding: 5%;
+  overflow: hidden;
+  transition: transform 0.5s;
+}
+
+.heading {
+  font-weight: bold;
+  color: #007bff;
+}
+
+.subtitle {
+  color: #333;
+  margin-top: 10px;
+}

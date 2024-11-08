@@ -1,9 +1,8 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Routes, Route, useLocation } from 'react-router-dom'
 import routes from './pages'
 import AuthenticationLayout from './layouts/AuthenticationLayout'
 import DefaultLayout from './layouts/DefaultLayout'
-
 const App = () => {
   const location = useLocation();
 
@@ -12,20 +11,20 @@ const App = () => {
       return AuthenticationLayout;
     }
     else {
-      return DefaultLayout
+      return DefaultLayout;
     }
   };
-  
-  const Layout = getLayout()
+
+  const Layout = getLayout();
 
   return (
     <Layout>
       <Routes>
         {
-        routes.map((route, index) => {
-          const Page = route.conponent
-          return <Route key = {index} path = {route.path} element = {<Page/>}> </Route>
-        })
+          routes.map((route, index) => {
+            const Page = route.component;
+            return <Route key={index} path={route.path} element={<Page />} />;
+          })
         }
       </Routes>
     </Layout>
