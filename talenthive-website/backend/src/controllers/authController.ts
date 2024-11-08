@@ -130,6 +130,50 @@ const logout = catchAsync(async(req: Request, res: Response, next: NextFunction)
     });
 });
 
+const changePassword = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const currentPassword = req.body.currentPassword;
+    const newPassword = req.body.newPassword;
+
+    const authHeader = req.headers.authorization;
+    const accessToken = authHeader && authHeader.split(' ')[1];
+
+    if (!accessToken) {
+        return next(new AppError("Please provide access token", 400));
+    }
+
+    if (!currentPassword) {
+        return next(new AppError("Please provide current password", 400));
+    }
+
+    if (!newPassword) {
+        return next(new AppError("Please provide new password", 400));
+    }
+
+    // Get user with password from token
+    const decodedToken = tokenGenerator.verifyAccessToken(accessToken as string);
+    const currentUser = await User.findOne({ _id: decodedToken.id }).select('+password');
+
+    if (!currentUser) {
+        return next(new AppError("User not found", 404));
+    }
+
+    // Check if current password is correct
+    if (!(await bcrypt.compare(currentPassword, currentUser.password))) {
+        return next(new AppError("Current password is incorrect", 403));
+    }
+
+    // Invalidate current token since password is changing
+    tokenGenerator.invalidateToken(accessToken);
+
+    // Update password and timestamp
+    currentUser.password = newPassword;
+    currentUser.password_changed_at = new Date();
+    await currentUser.save();
+    
+    // Generate new tokens and send response
+    createSendToken(currentUser, 200, res);
+});
+
 const forgotPassword = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     // 1) Get user based on POSTed email
     const user = await User.findOne({ email: req.body.email });
@@ -194,4 +238,4 @@ const resetPassword = catchAsync(async (req: Request, res: Response, next: NextF
     createSendToken(user, 200, res);
 });
 
-export { register, login, logout, forgotPassword, resetPassword };
+export { register, login, logout, changePassword, forgotPassword, resetPassword };
