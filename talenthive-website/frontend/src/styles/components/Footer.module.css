@@ -12,11 +12,11 @@ footer {
   color: #fff;
 }
 
-ul {
+.flex {
   margin-bottom: 30px;
 }
 
-ul li {
+.flex li {
   margin-right: 30px;
   font-size: 16px;
 }
