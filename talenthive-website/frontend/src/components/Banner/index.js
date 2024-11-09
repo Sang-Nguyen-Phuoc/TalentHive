@@ -1,12 +1,11 @@
 import Carousel from 'react-bootstrap/Carousel';
 import styles from '../../styles/components/Banner.module.css';
-import 'bootstrap/dist/css/bootstrap.min.css';
 
 const Banner = () => {
     return (
         <div className={styles['carousel-container']}>
             <Carousel controls={false} >
-                <Carousel.Item interval={3000} className={styles['carousel-item']}>
+                <Carousel.Item interval={2000} className={styles['carousel-item']}>
                     <div className={styles['text-container']}>
                         <h1 className={styles.heading}>
                             DISCOVER ENDLESS OPPORTUNITIES
@@ -18,7 +17,7 @@ const Banner = () => {
                         </p>
                     </div>
                 </Carousel.Item>
-                <Carousel.Item interval={3000} className={styles['carousel-item']}>
+                <Carousel.Item interval={2000} className={styles['carousel-item']}>
                     <div className={styles['text-container']}>
                         <h1 className={styles.heading}>
                             YOUR SUCCESS JOURNEY BEGINS HERE
@@ -34,3 +33,5 @@ const Banner = () => {
 };
 
 export default Banner;
+
+
