@@ -2,12 +2,12 @@ import express, { NextFunction, Request, Response } from "express";
 import cors from "cors";
 import userRouter from "./routes/userRoutes";
 import authRouter from "./routes/authRoutes";
+import jobRouter from "./routes/jobRoutes";
+import testRouter from "./routes/testRoutes";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import globalErrorHandler from "./controllers/errorController";
 import AppError from "./utils/appError";
-import jobRouter from "./routes/jobRoutes";
-import testRouter from "./routes/testRoutes";
 
 const app = express();
 
