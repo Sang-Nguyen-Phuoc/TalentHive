@@ -42,7 +42,7 @@ const UserSchema = new Schema<IUser>({
     active: {
         type: Boolean,
         default: true,
-        select: false
+        select: true
     },
     created_at: {
         type: Date,
