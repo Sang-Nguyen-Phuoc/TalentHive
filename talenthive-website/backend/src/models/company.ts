@@ -1,7 +1,7 @@
 import { model, Schema, Types } from "mongoose";
 import validator from "validator";
 
-interface ICompany {
+export interface ICompany {
     _id: Types.ObjectId;
     name: string;
     avatar: object;

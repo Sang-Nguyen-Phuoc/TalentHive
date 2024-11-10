@@ -1,7 +1,7 @@
 import mongoose, { Schema, Types } from "mongoose";
 import validator from "validator";
 
-interface IWorkerProfile {
+export interface IWorkerProfile {
     user_id: Types.ObjectId;
     full_name: string;
     date_of_birth: Date;

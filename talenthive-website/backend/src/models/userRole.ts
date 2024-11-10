@@ -1,6 +1,6 @@
 import { Schema, Types, model } from 'mongoose';
 
-interface IUserRole {
+export interface IUserRole {
     _id: Types.ObjectId;
     user_id: Types.ObjectId;
     role_id: Types.ObjectId;

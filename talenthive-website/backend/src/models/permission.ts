@@ -1,6 +1,6 @@
 import { Schema, Types, model } from "mongoose";
 
-interface IPermission {
+export interface IPermission {
     _id: Types.ObjectId;
     name: string;
     description: string;

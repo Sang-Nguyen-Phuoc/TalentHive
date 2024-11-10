@@ -3,7 +3,7 @@ import validator from "validator";
 import crypto from "crypto";
 import bcrypt from "bcryptjs";
 
-interface IUser {
+export interface IUser {
     _id: Types.ObjectId;
     email: string;
     password: string;
