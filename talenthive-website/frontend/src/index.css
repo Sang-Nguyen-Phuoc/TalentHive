@@ -26,10 +26,9 @@
 }
 
 body {
-  font-family: "Noto Sans", "Roboto", sans-serif;
+  font-family: "Noto Sans", "Roboto", sans-serif !important;
   min-height: 1000px;
-  background-image: var(--body-gradient);
-  background-repeat: no-repeat;
+  background-image: var(--body-gradient) !important;
 }
 
 button:not(:disabled) {

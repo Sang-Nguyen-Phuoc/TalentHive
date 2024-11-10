@@ -3,6 +3,7 @@ import { Routes, Route, useLocation } from 'react-router-dom'
 import routes from './pages'
 import AuthenticationLayout from './layouts/AuthenticationLayout'
 import DefaultLayout from './layouts/DefaultLayout'
+
 const App = () => {
   const location = useLocation();
 

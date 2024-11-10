@@ -1,5 +1,4 @@
 import { useNavigate } from 'react-router';
-import defaultCSS from '../../styles/pages/FixBoostrap.module.css'
 import styles from '../../styles/pages/ProfileDashboard.module.css'
 import JobItem from '../../components/JobItem'
 import { useState } from 'react';
