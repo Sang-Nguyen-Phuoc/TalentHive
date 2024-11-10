@@ -3,6 +3,8 @@ import { Routes, Route, useLocation } from 'react-router-dom'
 import routes from './pages'
 import AuthenticationLayout from './layouts/AuthenticationLayout'
 import DefaultLayout from './layouts/DefaultLayout'
+import defaultCSS from './styles/pages/FixBoostrap.module.css'
+
 const App = () => {
   const location = useLocation();
 

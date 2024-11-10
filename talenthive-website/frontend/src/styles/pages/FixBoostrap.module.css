@@ -1,15 +1,15 @@
 body {
-  font-family: "Noto Sans", "Roboto", sans-serif;
-  min-height: 1000px;
-  background-image: var(--body-gradient);
-  background-repeat: no-repeat;
+  font-family: "Noto Sans", "Roboto", sans-serif  !important;
+  min-height: 1000px  !important;
+  background-image: var(--body-gradient)  !important;
+  background-repeat: no-repeat  !important;
 }
 
 p {
-    margin-bottom: 0px;
+    margin-bottom: 0px  !important;
 }
 
 ol, ul {
-    padding-left: 0;
-    margin-bottom: 0;
+    padding-left: 0  !important;
+    margin-bottom: 0  !important;
 }
