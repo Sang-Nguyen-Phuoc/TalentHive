@@ -8,6 +8,10 @@
     border: 1px solid var(--border-color);
     border-radius: 8px;
     box-shadow: var(--box-shadow-item);
+    
+    & p {
+        margin-bottom: 0;
+    }
 }
 
 .wrapper:hover {
