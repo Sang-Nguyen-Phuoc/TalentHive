@@ -1,6 +1,6 @@
 import { model, Schema, Types } from "mongoose";
 
-interface IJobCategory {
+export interface IJobCategory {
     _id: Types.ObjectId;
     name: string;
     description: string;

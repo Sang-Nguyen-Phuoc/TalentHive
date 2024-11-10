@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
-import * as tokenGenerator from '../utils/tokenGenerator';
+
 import TokenBlacklist from '../models/tokenBlacklist';
 import AppError from '../utils/appError';
-import User from '../models/user';
+
 
 export const protect = async (req: Request, res: Response, next: NextFunction) => {
     // 1. Get token from Authorization header
