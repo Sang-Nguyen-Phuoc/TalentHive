@@ -79,13 +79,13 @@ const JobItem = {
     },
 
     ////// HIRE TALENT PAGE //////
-    Detail: ({props, state, isEmployer}) => {
+    Detail: ({props, isEmployer}) => {
         const navigate = useNavigate()
         return ( 
             <div className={styleDetail.wrapper} onClick={() => navigate('/job-detail')}>
                 <div className={styleDetail.header}>
                     <p className={styleDetail.position}>{props.position}</p>
-                    {isEmployer && <p className={styleDetail[state]}>{state}</p>}
+                    {isEmployer && <p className={styleDetail[props.state]}>{props.state}</p>}
                 </div>
                 
                 <div className={styleDetail.description}>
@@ -102,13 +102,12 @@ const JobItem = {
                         <p>{props.sector}</p>
                     </div>
                 </div>
-                
+                <div className={styleDetail.timeline}>
+                    <p className={styleDetail.createAt}>Post {props.createAt} hours ago</p>
+                    <p>{props.endAt} days left</p>
+                </div>
                 <div className={styleDetail.footer}>
-                    {isEmployer && state==='Accepted' && <p className={styleDetail.candidate}>{`Candidate list (${props.candidate})`}</p>}
-                    <div className={styleDetail.timeline}>
-                        <p className={styleDetail.createAt}>Post {props.createAt} hours ago</p>
-                        <p>{props.endAt} days left</p>
-                    </div>
+                    {isEmployer && props.state==='Accepted' && <p className={styleDetail.candidate}>{`Candidate list (${props.candidate})`}</p>}
                 </div>
                 {isEmployer || <button className={styleDetail.apply}>Apply now</button>}
             </div>

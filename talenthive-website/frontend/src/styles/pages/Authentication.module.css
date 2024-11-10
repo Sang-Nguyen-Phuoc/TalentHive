@@ -97,6 +97,16 @@
     box-shadow: var(--box-shadow-button);
 }
 
+.fp {
+    width: 100%;
+}
+
+.normal {
+        background-color: var(--button-color);
+        color: var(--primary-color);
+        border: 1px solid var(--primary-color);
+    }
+
 .question {
     margin-right: 5px;
 }
