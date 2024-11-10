@@ -9,9 +9,10 @@ import Email from "../utils/email";
 import crypto from "crypto";
 
 const createSendToken = (user: any, statusCode: number, res: Response) => {
-    const token = tokenGenerator.accessToken(user);
+    const refreshToken = tokenGenerator.refreshToken(user); 
+    const accessToken = tokenGenerator.accessToken(user);
 
-    res.cookie("jwt", token, {
+    res.cookie("refreshToken", refreshToken, {
         expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
         httpOnly: true,
     });
@@ -20,9 +21,9 @@ const createSendToken = (user: any, statusCode: number, res: Response) => {
 
     res.status(statusCode).json({
         status: "success",
-        token,
         data: {
             user,
+            accessToken,
         },
     });
 };
@@ -178,7 +179,7 @@ const forgotPassword = catchAsync(async (req: Request, res: Response, next: Next
     // 1) Get user based on POSTed email
     const user = await User.findOne({ email: req.body.email });
     if (!user) {
-        next(new AppError(`There is no user with email address ${req.body.email}`, 404));
+        return next(new AppError(`There is no user with email address ${req.body.email}`, 404));
     }
 
     // 2) Generate the random reset token
