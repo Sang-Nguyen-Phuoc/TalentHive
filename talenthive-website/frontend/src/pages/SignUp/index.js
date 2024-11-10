@@ -174,7 +174,7 @@ function SignUp() {
                 </div>
                 <div className={`${styles.container} ${styles.signin}`}>
                     <p className={styles.question}>Already have an account?</p>
-                    <Link to='/signin' className={`${styles.link} ${styles['signup-link']}`}>SIGN IN now</Link>
+                    <Link to='/signin' className={`${styles.link} ${styles['signup-link']}`}>Sign in now</Link>
                 </div>
             </form>
         </div>
