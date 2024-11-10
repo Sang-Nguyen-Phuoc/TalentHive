@@ -31,15 +31,19 @@ const getAllJobs = catchAsync(async (req: Request, res: Response, next: NextFunc
     const skip = (page - 1) * limit; 
 
     // if page and limit are not provided, return all jobs
-    const jobs = await Job.find().skip(skip).limit(limit);
+    const jobs = await Job.find().skip(skip).limit(limit)
+                                            .populate("company_id")
+                                            .populate("employer_id")
+                                            .populate("job_type")
+                                            .populate("job_category");
 
    
     res.status(200).json({
         status: "success",
-        total_jobs: totalJobs,
-        max_page: maxPage,
         data: {
-            jobs,
+            "total_jobs": totalJobs,
+            "max_page": maxPage,
+            "jobs": jobs,
         },
     });
 });

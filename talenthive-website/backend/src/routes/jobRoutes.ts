@@ -5,5 +5,4 @@ const router = Router();
 
 router.get("/", jobController.getAllJobs);
 
-
 export default router;
