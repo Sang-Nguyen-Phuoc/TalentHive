@@ -1,0 +1,105 @@
+.Intro {
+  display: flex;
+  height: 70vh;
+  margin-top: 6rem;
+  justify-content: space-between;
+  padding: 0 3rem 0 3rem;
+}
+
+.Intro.even {
+  flex-direction: row;
+}
+
+.Intro.odd {
+  flex-direction: row-reverse;
+  margin-left: -8rem;
+  padding-left: 0;
+}
+
+/* left side styling */
+.i-left {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding-left: 2rem;
+  max-width: 40%;
+  align-items: flex-start;
+}
+.i-name {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.i-name > :nth-child(1) {
+  color: var(--primary-color);
+  font-weight: bold;
+  font-size: 3rem;
+}
+.i-name > :nth-child(2) {
+  color: var(--text-color);
+  font-size: 1.5rem;
+  font-style: italic;
+  font-weight: 400;
+}
+.i-name > :nth-child(3) {
+  font-size: 14px;
+  color: var(--text-color);
+  margin-top: 10px;
+  text-align: justify;
+  line-height: 1.5;
+}
+
+.i-icons {
+  display: flex;
+  gap: 2rem;
+}
+.i-icon {
+  color: var(--primary-color);
+  font-size: 2.5rem;
+  transition: color 0.3s, transform 0.3s;
+}
+.i-icon:hover {
+  color: var(--secondary-color);
+  transform: scale(1.1);
+}
+
+/* right side styling */
+.i-right {
+  display: flex;
+  justify-content: end;
+  position: relative;
+  flex: 1;
+}
+.i-right img {
+  position: absolute;
+  max-width: 60%;
+}
+
+.i-img {
+  max-height: 450px;
+}
+
+.i-right > :nth-child(1) {
+  top: -10%;
+  left: 30%;
+  width: 80%;
+}
+.i-right > :nth-child(2) {
+  top: 15%;
+  left: 20%;
+  width: 60%;
+}
+.i-right > :nth-child(3) {
+  width: 80%;
+  box-sizing: border-box;
+}
+
+.img-container img {
+  width: 100%;
+  border-radius: 8px;
+  box-shadow: var(--box-shadow-item);
+}
+
+.floating-div {
+  position: absolute;
+}
