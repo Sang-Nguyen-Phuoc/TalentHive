@@ -8,9 +8,6 @@ import JobType from "../models/jobType";
 import JobCategory from "../models/jobCategory";
 import mongoose from "mongoose";
 
-
-
-
 export const createJob = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const {
         title,
@@ -160,7 +157,26 @@ const getAllJobs = catchAsync(async (req: Request, res: Response, next: NextFunc
     });
 });
 
+const deleteJob = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const jobId = req.params.jobId;
+
+    if (!mongoose.Types.ObjectId.isValid(jobId)) {
+        return next(new AppError("Invalid job ID", 400));
+    }
+
+    const job = await Job.findOneAndDelete({ _id: jobId });
+
+    if (!job) {
+        return next(new AppError("No job found with that ID", 404));
+    }
+
+    res.status(200).json({
+        status: "success",
+        message: "Job deleted successfully"
+    });
+});
 
 export {
     getAllJobs,
+    deleteJob
 };  
