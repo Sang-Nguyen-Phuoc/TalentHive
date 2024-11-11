@@ -92,7 +92,7 @@ const WorkerProfileSchema = new Schema<IWorkerProfile>({
     active: {
         type: Boolean,
         default: true,
-        select: true
+        select: false
     },
 })
 
