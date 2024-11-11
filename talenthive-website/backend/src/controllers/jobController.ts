@@ -160,28 +160,30 @@ const getAllJobs = catchAsync(async (req: Request, res: Response, next: NextFunc
     });
 });
 
-const deleteJob = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+const getAJob = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const jobId = req.params.jobId;
     if (!mongoose.Types.ObjectId.isValid(jobId)) {
         return next(new AppError("Invalid job ID", 400));
     }
+    
+    const job = await Job.findOne({ _id: jobId }).populate("company_id")
+                                                .populate("employer_id")
+                                                .populate("job_type")
+                                                .populate("job_category");
 
-    const job = await Job.findOne({ _id: jobId });
     if (!job) {
         return next(new AppError("Job ID not found", 404));
     }
 
-    await Job.deleteOne({ _id: jobId });
-
-    res.status(204).json({
+    res.status(200).json({
         status: "success",
         data: {
-            job: null
+            "job": job
         }
     });
 });
 
 export {
     getAllJobs,
-    deleteJob
+    getAJob
 };  
