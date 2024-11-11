@@ -11,6 +11,8 @@ router.post("/changePassword", authController.changePassword);
 router.post("/forgotPassword", authController.forgotPassword);
 router.patch("/resetPassword/:token", authController.resetPassword);
 
+router.delete("/me", authController.deleteMe);
+
 router.use(protect);
 
 export default router;
