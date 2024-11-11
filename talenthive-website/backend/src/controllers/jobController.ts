@@ -173,7 +173,7 @@ const deleteJob = catchAsync(async (req: Request, res: Response, next: NextFunct
 
     await Job.deleteOne({ _id: jobId });
 
-    res.status(204).json({
+    res.status(200).json({
         status: "success",
         data: {
             job: null
