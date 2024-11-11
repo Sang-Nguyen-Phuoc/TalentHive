@@ -7,6 +7,8 @@ import catchAsync from "../utils/catchAsync";
 import AppError from "../utils/appError";
 import Email from "../utils/email";
 import crypto from "crypto";
+import WorkerProfile from "../models/workerProfile";
+import EmployerProfile from "../models/employerProfile";
 
 const createSendToken = (user: any, statusCode: number, res: Response) => {
     const refreshToken = tokenGenerator.refreshToken(user); 
@@ -239,4 +241,30 @@ const resetPassword = catchAsync(async (req: Request, res: Response, next: NextF
     createSendToken(user, 200, res);
 });
 
-export { register, login, logout, changePassword, forgotPassword, resetPassword };
+const deleteMe = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const userId = req.body.userId;
+
+        if (!(await User.findOne({ _id: userId }))) {
+            return next(new AppError("User not found", 404));
+        }
+
+        await User.updateOne({ _id: userId }, { $set: { active: false } });
+
+        await WorkerProfile.updateOne({ user_id: userId }, { $set: { active: false } });
+       
+        await EmployerProfile.updateOne({ user_id: userId }, { $set: { active: false } });
+
+        res.status(200).json({
+            status: "success",
+            data: null,
+        });
+    } catch (error) {
+        return next(new AppError("Database error", 500));
+    }
+});
+
+
+export { register, login, logout, changePassword, forgotPassword, resetPassword
+    , deleteMe
+ };
