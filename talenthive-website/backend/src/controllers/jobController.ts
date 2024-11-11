@@ -160,7 +160,28 @@ const getAllJobs = catchAsync(async (req: Request, res: Response, next: NextFunc
     });
 });
 
+const deleteJob = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const jobId = req.params.jobId;
+    if (!mongoose.Types.ObjectId.isValid(jobId)) {
+        return next(new AppError("Invalid job ID", 400));
+    }
+
+    const job = await Job.findOne({ _id: jobId });
+    if (!job) {
+        return next(new AppError("Job ID not found", 404));
+    }
+
+    await Job.deleteOne({ _id: jobId });
+
+    res.status(204).json({
+        status: "success",
+        data: {
+            job: null
+        }
+    });
+});
 
 export {
     getAllJobs,
+    deleteJob
 };  
