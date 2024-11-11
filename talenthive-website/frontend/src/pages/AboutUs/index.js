@@ -10,15 +10,15 @@ import Experience from "../../components/Experience";
 
 function AboutUs() {
     const data = [
-        // {
-        //     index: 0,
-        //     name: "Nguyen Phuoc Sang",
-        //     mainRole: "Project Manager",
-        //     description: "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Excepturi repellendus, error quasi animi adipisci labore asperiores, recusandae architecto quae dolorum eius repudiandae. Ex quam ea soluta labore! Aspernatur, in praesentium!",
-        //     img: "../../images/An.png",
-        //    fb: "https://www.facebook.com/sang.nguuyen.56",
-        //   github: "https://github.com/Sang-Nguyen-Phuoc"
-        // },
+        {
+            index: 0,
+            name: "Nguyen Phuoc Sang",
+            mainRole: "Project Manager",
+            description: "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Excepturi repellendus, error quasi animi adipisci labore asperiores, recusandae architecto quae dolorum eius repudiandae. Ex quam ea soluta labore! Aspernatur, in praesentium!",
+            img: "../../images/An.png",
+            fb: "https://www.facebook.com/sang.nguuyen.56",
+            github: "https://github.com/Sang-Nguyen-Phuoc"
+        },
         {
             index: 1,
             name: "Nguyen Ba An",
@@ -31,7 +31,7 @@ function AboutUs() {
         {
             index: 2,
             name: "Nguyen Xuan Thanh",
-            mainRole: "Project Manager",
+            mainRole: "Frontend Leader",
             description: "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Excepturi repellendus, error quasi animi adipisci labore asperiores, recusandae architecto quae dolorum eius repudiandae. Ex quam ea soluta labore! Aspernatur, in praesentium!",
             img: Thanh,
             fb: "https://www.facebook.com/profile.php?id=100038233366978",
@@ -41,7 +41,7 @@ function AboutUs() {
         {
             index: 3,
             name: "Nguyen Phuc Loi",
-            mainRole: "Project Manager",
+            mainRole: "Business Analyst - Backend Developer",
             description: "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Excepturi repellendus, error quasi animi adipisci labore asperiores, recusandae architecto quae dolorum eius repudiandae. Ex quam ea soluta labore! Aspernatur, in praesentium!",
             img: Loi,
             fb: "https://www.facebook.com/profile.php?id=100040830702269",
@@ -50,7 +50,7 @@ function AboutUs() {
         {
             index: 4,
             name: "Truong Nguyen Hien Luong",
-            mainRole: "Project Manager",
+            mainRole: "Tester - UI/UX Designer",
             description: "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Excepturi repellendus, error quasi animi adipisci labore asperiores, recusandae architecto quae dolorum eius repudiandae. Ex quam ea soluta labore! Aspernatur, in praesentium!",
             img: "../../images/Luong.png",
             fb: "https://www.facebook.com/hienluong.truongnguyen.38",
