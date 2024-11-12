@@ -264,7 +264,40 @@ const deleteMe = catchAsync(async (req: Request, res: Response, next: NextFuncti
     }
 });
 
+const getCurrentUserProfile = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const authHeader = req.headers.authorization;
+    const accessToken = authHeader && authHeader.split(' ')[1];
+
+    if (!accessToken) {
+        return next(new AppError("Please provide access token", 400));
+    }
+
+    const decodedToken = tokenGenerator.verifyAccessToken(accessToken as string);
+    const currentUser = await User.findOne({ _id: decodedToken.id });
+
+    if (!currentUser) {
+        return next(new AppError("User not found", 404));
+    }
+
+    let profile;
+    if (currentUser.role === "worker") {
+        profile = await WorkerProfile.findOne({user_id: currentUser._id});
+    } else if (currentUser.role === "employer") {
+        profile = await EmployerProfile.findOne({user_id: currentUser._id});
+    }
+
+    if (!profile) {
+        return next(new AppError("Profile not found", 404));
+    }
+
+    res.status(200).json({
+        status: "success",
+        data: {
+            "profile": profile
+        }
+    });
+});
 
 export { register, login, logout, changePassword, forgotPassword, resetPassword
-    , deleteMe
+    , deleteMe, getCurrentUserProfile
  };
