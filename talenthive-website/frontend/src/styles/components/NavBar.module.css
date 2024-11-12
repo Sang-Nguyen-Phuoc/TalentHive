@@ -1,3 +1,10 @@
+.navbar-container {
+  display: flex;
+  width: 95%;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .logo-container {
   padding: 12px 16px;
   display: flex;
@@ -17,13 +24,6 @@
   width: auto;
 }
 
-.navbar-container {
-  display: flex;
-  width: 95%;
-  justify-content: space-between;
-  align-items: center;
-}
-
 .navbar-cta {
   display: flex;
   padding: 12px 16px;
@@ -34,13 +34,63 @@
   color: #fff;
   font-weight: bold;
   cursor: pointer;
+  display: flex;
+  align-items: center;
 }
 
-.text p {
+.text span {
   transition: all 0.3s;
+  display: inline-block;
+  font-size: 16px;
 }
 
-.text p:hover {
+.text span:hover {
   color: #3493ff;
   transform: scale(1.1);
+}
+
+/* Profile logo and dropdown */
+.profile-logo-container,
+.manage-option {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  cursor: pointer;
+  position: relative;
+}
+
+.profile-logo {
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+}
+
+/* Dropdown menu */
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  min-width: 150px;
+  box-shadow: var(--box-shadow);
+  z-index: 1;
+}
+
+.profile-logo-container:hover .dropdown-menu,
+.manage-option:hover .dropdown-menu {
+  display: block;
+}
+
+.dropdown-menu div {
+  padding: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.dropdown-menu div:hover {
+  background-color: #f0f0f0;
 }
