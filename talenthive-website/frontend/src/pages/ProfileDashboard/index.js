@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
 import styles from '../../styles/pages/ProfileDashboard.module.css'
 import JobItem from '../../components/JobItem'
 import { useState } from 'react';
@@ -7,6 +7,9 @@ function ProfileDashboard() {
     const role = 'Employer';
     const Job = JobItem.Detail;
     const navigate = useNavigate();
+    const location = useLocation();
+
+    const props = location.state;
 
     const [statePost, setStatePost] = useState('')
     if (role === 'Worker')
@@ -123,8 +126,8 @@ function ProfileDashboard() {
             <div className={styles.wrapper}>
                 <div className={styles['cover-page']}>
                     <div className={styles['avatar-container']}>
-                        <img src="" alt="Avatar" className={styles.avatar}/>
-                        <h1 className={styles.name}>Company Name</h1>
+                        <img src={props.image} alt="Avatar" className={styles.avatar}/>
+                        <h1 className={styles.name}>{props.company}</h1>
                     </div>
                     <button className={styles.edit} onClick={() => navigate('/profile-dashboard/edit')}>Edit profile</button>
                 </div>
