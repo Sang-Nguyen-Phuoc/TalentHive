@@ -42,7 +42,10 @@ export const protect = async (req: Request, res: Response, next: NextFunction) =
 };
 
 export const attachUserId = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const { accessToken } = req.body;
+    const accessToken = req.headers.authorization?.startsWith("Bearer ")
+        ? req.headers.authorization?.split(" ")[1]
+        : null;
+
     if (!accessToken) {
         return next(new AppError("accessToken must be sent into body", 400));
     }
