@@ -76,7 +76,7 @@
 }
 
 .i-img {
-  max-height: 450px;
+  min-height: 400px;
 }
 
 .i-right > :nth-child(1) {

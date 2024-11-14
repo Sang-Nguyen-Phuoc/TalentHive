@@ -4,7 +4,7 @@ import styles from '../../styles/components/NavBar.module.css';
 import Logo from '../../images/account-logo.png';
 
 const NavBar = () => {
-    const [role, setRole] = useState('worker'); // Set this to 'worker', 'employer', or 'admin' as needed
+    const [role, setRole] = useState('admin'); // Set this to 'worker', 'employer', or 'admin' as needed
     const navigate = useNavigate();
 
     const handleNavigate = (path) => {
@@ -44,7 +44,7 @@ const NavBar = () => {
                 {/* Employer */}
                 {role === 'employer' && (
                     <>
-                        <div className={styles['text']} onClick={() => handleNavigate('/hire-talent')}><p>Hire Talent</p></div>
+                        <div className={styles['text']} onClick={() => handleNavigate('/hire-talent')}><span>Hire Talent</span></div>
                         <div className={styles['profile-logo-container']}>
                             <img src={Logo} alt="Profile" className={styles["profile-logo"]} />
                             <div className={styles['dropdown-menu']}>
@@ -61,7 +61,7 @@ const NavBar = () => {
                     <>
                         <div className={styles['manage-option']}>
                             <div className={styles['text']}>
-                                <p>Manage</p>
+                                <span>Manage</span>
                             </div>
                             <div className={styles['dropdown-menu']}>
                                 <div onClick={() => handleNavigate('/recruitment')}>Recruitment</div>
@@ -72,7 +72,7 @@ const NavBar = () => {
 
                         {/* Log out option */}
                         <div className={styles['text']} onClick={handleLogout}>
-                            <p>Log out</p>
+                            <span>Log out</span>
                         </div>
                     </>
                 )}

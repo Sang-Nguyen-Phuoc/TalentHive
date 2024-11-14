@@ -7,7 +7,7 @@ import ThumbUp from "../../images/thumbup.png";
 import FloatingDiv from "../FloatingDiv";
 import { motion } from "framer-motion";
 
-const Intro = ({ name, mainRole, description, img, ig, fb, github, index }) => {
+const Intro = ({ name, mainRole, description, img, ig, fb, github, index, text1, text2 }) => {
     const transition = { duration: 2, type: "spring" };
     const isEven = index % 2 === 0;
 
@@ -39,7 +39,7 @@ const Intro = ({ name, mainRole, description, img, ig, fb, github, index }) => {
                     transition={transition}
                     className={styles["floating-div"]}
                 >
-                    <FloatingDiv img={Crown} text1="Backend" text2="Leader" />
+                    <FloatingDiv img={Crown} text1={text1} />
                 </motion.div>
                 <motion.div
                     initial={{ left: "4rem", top: "23rem" }}
@@ -47,7 +47,7 @@ const Intro = ({ name, mainRole, description, img, ig, fb, github, index }) => {
                     transition={transition}
                     className={styles["floating-div"]}
                 >
-                    <FloatingDiv img={ThumbUp} text1="Best Design" text2="Award" />
+                    <FloatingDiv img={ThumbUp} text1={text2} />
                 </motion.div>
             </div>
         </div>
