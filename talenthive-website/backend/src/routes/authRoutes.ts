@@ -1,6 +1,6 @@
 import { Router } from "express";
 import * as authController from "../controllers/authController";
-import { protect } from "../middlewares/authMiddleware";
+import { attachUserId, protect } from "../middlewares/authMiddleware";
 
 const router = Router();
 
@@ -10,10 +10,10 @@ router.post("/logout",  authController.logout);
 router.post("/forgotPassword", authController.forgotPassword);
 router.patch("/resetPassword/:token", authController.resetPassword);
 
-router.delete("/me", authController.deleteMe);
+router.use(attachUserId);
 
-router.use(protect);
 router.post("/changePassword", authController.changePassword);
+router.delete("/me", authController.deleteMe);
 router.get("/me", authController.getCurrentUserProfile);
 
 export default router;

@@ -74,7 +74,7 @@
     & img {
         width: 150px;
         height: 150px;
-        background-color: var(--border-color);
+        object-fit: contain;
     }
 
     & p{
@@ -117,5 +117,13 @@
 @media screen and (max-width:800px){
     .wrapper {
         margin: 30px 2% 0 2%;
+    }
+}
+
+.is-search {
+    grid-template-columns: 1fr;
+    margin: 0;
+    & .general-description {
+        display: none;
     }
 }
