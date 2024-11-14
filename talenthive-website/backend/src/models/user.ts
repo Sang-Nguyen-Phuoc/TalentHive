@@ -6,8 +6,8 @@ import bcrypt from "bcryptjs";
 export interface IUser {
     _id: Types.ObjectId;
     email: string;
-    password: string;
     role: string;
+    password?: string;
     active: boolean;
     password_reset_token?: string;
     password_reset_expires?: Date;
@@ -34,7 +34,8 @@ const UserSchema = new Schema<IUser>({
     },
     role: {
         type: String,
-        enum: ['worker', 'employer', 'admin'],
+        required: true,
+        enum: ['candidate', 'employer', 'admin'],
     },
     password_changed_at: Date,
     password_reset_token: String,
@@ -54,7 +55,9 @@ const UserSchema = new Schema<IUser>({
 UserSchema.pre<IUser>('save', async function(next) {
     if (!this.isModified('password')) return next();
     
-    this.password = await bcrypt.hash(this.password, 12);
+    if (this.password) {
+        this.password = await bcrypt.hash(this.password, 12);
+    }
 
     next();
 })
