@@ -10,7 +10,7 @@ const JobItem = {
     HomePage: ({props, state}) => {
         const navigate = useNavigate()
         return ( 
-            <div className={state ? `${styleHome.wrapper} ${styleHome['jobs-applied']}` : styleHome.wrapper} onClick={() => navigate('/job-detail')}>
+            <div className={state ? `${styleHome.wrapper} ${styleHome['jobs-applied']}` : styleHome.wrapper} onClick={() => navigate('/job-detail', {state:props})}>
                 <div className={styleHome.header}>
                     <div className={styleHome['left-header']}>
                         <img src={props.image} alt='logo'></img>
