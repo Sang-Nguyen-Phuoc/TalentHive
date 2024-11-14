@@ -9,7 +9,7 @@ function ProfileDashboard() {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const props = location.state;
+    var props = location.state;
 
     const [statePost, setStatePost] = useState('')
     if (role === 'Worker')
@@ -122,6 +122,8 @@ function ProfileDashboard() {
             },
         ]
 
+        if (props === null)
+            props = items[0];
         return (
             <div className={styles.wrapper}>
                 <div className={styles['cover-page']}>
