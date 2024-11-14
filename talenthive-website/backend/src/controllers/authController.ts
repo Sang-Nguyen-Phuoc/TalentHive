@@ -233,3 +233,29 @@ export const deleteMe = catchAsync(async (req: Request, res: Response, next: Nex
         return next(new AppError("Database error", 500));
     }
 });
+
+export const getCurrentUserProfile = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+
+    const currentUser = req.body.user;
+    if (!currentUser) {
+        return next(new AppError("attachUser middleware not working", 500));
+    }
+
+    let profile;
+    if (currentUser.role === "worker") {
+        profile = await WorkerProfile.findOne({ user_id: currentUser._id });
+    } else if (currentUser.role === "employer") {
+        profile = await EmployerProfile.findOne({ user_id: currentUser._id });
+    }
+
+    if (!profile) {
+        return next(new AppError("Profile not found", 404));
+    }
+
+    res.status(200).json({
+        status: "success",
+        data: {
+            profile: profile
+        }
+    });
+});

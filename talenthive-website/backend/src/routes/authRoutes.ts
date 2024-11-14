@@ -14,6 +14,6 @@ router.use(attachUserId);
 
 router.post("/changePassword", authController.changePassword);
 router.delete("/me", authController.deleteMe);
-
+router.get("/me", authController.getCurrentUserProfile);
 
 export default router;
