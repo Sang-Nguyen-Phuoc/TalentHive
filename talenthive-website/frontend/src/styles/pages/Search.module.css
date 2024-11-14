@@ -1,0 +1,45 @@
+.wrapper {
+    margin: 20px 5% 0;
+    display: flex;
+}
+
+.list-column {
+    display: inline-block;
+    width: 40%;
+    padding: 2% 2% 3% 2%;
+    height: 1000px;
+    overflow-y: scroll;
+
+}
+
+.jobs-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.current-post {
+    
+}
+
+.detail-column {
+    display: inline-block;
+    padding: 2%;
+    width: 60%;
+}
+
+
+.sticky {
+    position: sticky;
+    top: 3%;
+}
+
+@media screen and (max-width:1200px) {
+    .list-column {
+        width: 100%;
+    }
+    .detail-column {
+        display: none;
+    }
+}
+
