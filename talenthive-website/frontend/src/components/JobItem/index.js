@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router';
+import { useNavigate, useNavigation } from 'react-router';
 import styleSearch from '../../styles/components/JobItemSearch.module.css'
 import styleHome from '../../styles/components/JobItemHome.module.css'
 import styleDetail from '../../styles/components/JobItemDetail.module.css'
@@ -10,7 +10,7 @@ const JobItem = {
     HomePage: ({props, state}) => {
         const navigate = useNavigate()
         return ( 
-            <div className={state ? `${styleHome.wrapper} ${styleHome['jobs-applied']}` : styleHome.wrapper} onClick={() => navigate('/job-detail')}>
+            <div className={state ? `${styleHome.wrapper} ${styleHome['jobs-applied']}` : styleHome.wrapper} onClick={() => navigate('/job-detail', {state:props})}>
                 <div className={styleHome.header}>
                     <div className={styleHome['left-header']}>
                         <img src={props.image} alt='logo'></img>
@@ -44,10 +44,9 @@ const JobItem = {
     },
 
     ////// SEARCH PAGE //////
-    SearchPage: ({props, state}) => {
-        const navigate = useNavigate()
+    SearchPage: ({props, state, selected}) => {
         return ( 
-            <div className={styleSearch.wrapper} onClick={() => navigate('/job-detail')}>
+            <div className={`${styleSearch.wrapper} ${selected===true && styleSearch.selected}`}>
                 <div className={styleSearch.header}>
                     <p className={styleSearch.position}>{props.position}</p>
                     {state && <p className={styleSearch[state]}>{state}</p>}
@@ -79,15 +78,20 @@ const JobItem = {
     },
 
     ////// HIRE TALENT PAGE //////
-    Detail: ({props, state, isEmployer}) => {
-        const navigate = useNavigate()
+    Detail: ({props, isEmployer}) => {
+        const navigate = useNavigate();
+
+        const handleNavigate = () => {
+            navigate('/job-detail', {state: props});
+        }
+
         return ( 
-            <div className={styleDetail.wrapper} onClick={() => navigate('/job-detail')}>
+            <div className={styleDetail.wrapper} onClick={handleNavigate}>
                 <div className={styleDetail.header}>
                     <p className={styleDetail.position}>{props.position}</p>
-                    {isEmployer && <p className={styleDetail[state]}>{state}</p>}
+                    {isEmployer && <p className={styleDetail[props.state]}>{props.state}</p>}
                 </div>
-                
+            
                 <div className={styleDetail.description}>
                     <div className={styleDetail.salary}>
                         <FontAwesomeIcon icon={faCircleDollarToSlot} className={styleDetail.icon}/>
@@ -102,13 +106,12 @@ const JobItem = {
                         <p>{props.sector}</p>
                     </div>
                 </div>
-                
+                <div className={styleDetail.timeline}>
+                    <p className={styleDetail.createAt}>Post {props.createAt} hours ago</p>
+                    <p>{props.endAt} days left</p>
+                </div>
                 <div className={styleDetail.footer}>
-                    {isEmployer && state==='Accepted' && <p className={styleDetail.candidate}>{`Candidate list (${props.candidate})`}</p>}
-                    <div className={styleDetail.timeline}>
-                        <p className={styleDetail.createAt}>Post {props.createAt} hours ago</p>
-                        <p>{props.endAt} days left</p>
-                    </div>
+                    {isEmployer && props.state==='Accepted' && <p className={styleDetail.candidate}>{`Candidate list (${props.candidate})`}</p>}
                 </div>
                 {isEmployer || <button className={styleDetail.apply}>Apply now</button>}
             </div>

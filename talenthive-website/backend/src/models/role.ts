@@ -1,6 +1,6 @@
 import { model, Schema, Types } from "mongoose";
 
-interface IRole {
+export interface IRole {
     _id: Types.ObjectId;
     name: string;
     description: string;

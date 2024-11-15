@@ -1,11 +1,11 @@
 import { model, Schema, Types } from "mongoose";
 
-interface IJob {
+export interface IJob {
     _id: Types.ObjectId;
     title: string;
     company_id: Types.ObjectId;
     employer_id: Types.ObjectId;
-    salary_range: string,
+    salary_range: {min: number, max: number},
     location: string;
     description: string;
     skills: [string];
@@ -19,12 +19,13 @@ interface IJob {
     applications_count: number;
     job_type: Types.ObjectId;
     job_category: Types.ObjectId;
+    is_public: boolean;
 }
 
 const JobSchema = new Schema<IJob>({
     title: {
         type: String,
-        required: true,
+        required: [true, "title is required"],
         trim: true
     },
     company_id: {
@@ -38,68 +39,67 @@ const JobSchema = new Schema<IJob>({
         required: true
     },
     salary_range: {
-        type: String,
-        required: true
+        type: {
+            min: {
+                type: Number,
+                
+            },
+            max: {
+                type: Number,
+                
+            }
+        },
     },
     location: {
         type: String,
-        required: true
     },
     description: {
         type: String,
-        required: true,
         trim: true
     },
     skills: {
         type: [String],
-        required: true
     },
     requirements: {
         type: [String],
-        required: true
     },
     benefits: {
         type: [String],
-        required: true
     },
     posted_at: {
         type: Date,
-        required: true,
         default: Date.now()
     },
     expires_at: {
         type: Date,
-        required: true
     },
     views: {
         type: Number,
-        required: true,
         default: 0
     },
     created_at: {
         type: Date,
-        required: true,
         default: Date.now()
     },
     updated_at: {
         type: Date,
-        required: true,
         default: Date.now()
     },
     applications_count: {
         type: Number,
-        required: true,
         default: 0
     },
     job_type: {
         type: Schema.Types.ObjectId,
-        required: true,
         ref: 'JobType'
     },
     job_category: {
         type: Schema.Types.ObjectId,
-        required: true,
         ref: 'JobCategory'
+    },
+    is_public: {
+        type: Schema.Types.Boolean,
+        default: true
     }
 });
 

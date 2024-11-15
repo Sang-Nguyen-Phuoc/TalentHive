@@ -1,7 +1,7 @@
 import mongoose, { Schema, Types } from "mongoose";
 import validator from "validator";
 
-interface IWorkerProfile {
+export interface IWorkerProfile {
     user_id: Types.ObjectId;
     full_name: string;
     date_of_birth: Date;
@@ -19,6 +19,7 @@ interface IWorkerProfile {
     created_at: Date;
     updated_at: Date;
     visibility: boolean;
+    active: boolean;
 }
 
 const WorkerProfileSchema = new Schema<IWorkerProfile>({
@@ -87,7 +88,12 @@ const WorkerProfileSchema = new Schema<IWorkerProfile>({
     visibility: {
         type: Boolean,
         default: true
-    }
+    },
+    active: {
+        type: Boolean,
+        default: true,
+        select: false
+    },
 })
 
 const WorkerProfile = mongoose.model<IWorkerProfile>('WorkerProfile', WorkerProfileSchema);

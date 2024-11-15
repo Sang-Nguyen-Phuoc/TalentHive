@@ -1,0 +1,129 @@
+.wrapper {
+    margin: 30px 10% 0 10%;
+    min-width: 600px;
+    display: grid;
+    grid-template-columns: 6fr 4fr;
+    gap: 20px;
+    & p {
+        margin-bottom: 0;
+    }
+
+    & >*{
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+
+        & >* {
+            width: 100%;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: var(--box-shadow-item);
+            padding: 5px;
+        }
+    }
+}
+
+.detail {
+    
+}
+
+.title {
+    font-size: 22px;
+    font-weight: 800;
+    margin-bottom: 20px !important;
+}
+
+.sub-title {
+    font-weight: bold;
+    height: 100px;
+}
+
+.btn-container {
+    display: flex;
+    margin: 0 30px 20px 30px;
+    justify-content: space-between;
+    gap: 10%;
+    & button {
+        width: 100%;
+        background-color: var(--primary-color);
+        border: none;
+        border-radius: var(--border-radius-btn);
+        color: var(--button-color);
+        font-size: 18px;
+        font-weight: 600;
+        padding: 7px;
+        box-shadow: var(--box-shadow-button);
+    }
+    & .remove-btn {
+        background-color: red;
+    }
+
+    & button:hover {
+        position: relative;
+        top: -2px;
+    }
+}
+
+.company {
+    display: flex;
+    flex-direction: column;
+}
+
+.avatar {
+    display: flex;
+    & img {
+        width: 150px;
+        height: 150px;
+        object-fit: contain;
+    }
+
+    & p{
+        flex: 1;
+        margin-left: 8px;
+        font-weight: 800;
+        font-size: 24px;
+    }
+}
+
+.information {
+    height: 150px;
+}
+
+.link {
+    display: flex;
+    justify-content: center;
+    & span {
+        display: flex;
+        gap: 5px;
+        align-items: center;
+        font-weight: 500;
+        color: var(--primary-color);
+    }
+
+    & span:hover {
+        text-decoration: underline;
+        cursor: pointer;
+        position: relative;
+        top: -2px;
+    }
+}
+
+@media screen and (max-width:1120px) {
+    .wrapper {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media screen and (max-width:800px){
+    .wrapper {
+        margin: 30px 2% 0 2%;
+    }
+}
+
+.is-search {
+    grid-template-columns: 1fr;
+    margin: 0;
+    & .general-description {
+        display: none;
+    }
+}

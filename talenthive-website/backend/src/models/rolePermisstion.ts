@@ -1,7 +1,7 @@
 import { Schema, Types, model } from "mongoose";
 
 
-interface IRolePermisstion {
+export interface IRolePermisstion {
     _id: Types.ObjectId;
     role_id: Types.ObjectId;
     permission_id: Types.ObjectId;

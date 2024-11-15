@@ -2,36 +2,24 @@ import { NextFunction, Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import User from "../models/user";
 import validator from "validator";
-import * as tokenGenerator from "../utils/tokenGenerator";
+import * as tokenServices from "../utils/tokenServices";
 import catchAsync from "../utils/catchAsync";
 import AppError from "../utils/appError";
 import Email from "../utils/email";
 import crypto from "crypto";
+import WorkerProfile from "../models/workerProfile";
+import EmployerProfile from "../models/employerProfile";
+import { createSendToken } from "../utils/tokenServices";
 
-const createSendToken = (user: any, statusCode: number, res: Response) => {
-    const token = tokenGenerator.accessToken(user);
-
-    res.cookie("jwt", token, {
-        expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-        httpOnly: true,
-    });
-
-    user.password = undefined;
-
-    res.status(statusCode).json({
-        status: "success",
-        token,
-        data: {
-            user,
-        },
-    });
-};
-
-const register = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+export const register = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const { email, password, role } = req.body;
     // Check if all required fields are filled
-    if (!email || !password) {
-        return next(new AppError("Please provide email and password", 400));
+    if (!email || !password || !role) {
+        return next(new AppError("Please provide email, password and role", 400));
+    }
+
+    if (role !== "candidate" && role !== "employer") {
+        return next(new AppError("Role must be candidate or employer", 400));
     }
 
     // Check if user already exists
@@ -60,12 +48,10 @@ const register = catchAsync(async (req: Request, res: Response, next: NextFuncti
     });
 });
 
-const login = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const email = req.body.email;
-    const userPassword = req.body.password;
+export const login = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const { email, password } = req.body;
 
-    // Check if all required fields are filled
-    if (!email || !userPassword) {
+    if (!email || !password) {
         return next(new AppError("Please provide email and password", 400));
     }
 
@@ -76,141 +62,122 @@ const login = catchAsync(async (req: Request, res: Response, next: NextFunction)
     }
 
     // Check if password is correct
-    if (!(await bcrypt.compare(userPassword, user.password))) {
+    if (!user.password || !(await bcrypt.compare(password, user.password))) {
         return next(new AppError("Wrong password", 401));
     }
 
-    // Create access token
-    const accessToken = tokenGenerator.accessToken(user);
+    createSendToken(user, 200, res);
+});
 
-    // Create refresh token
-    const refreshToken = tokenGenerator.refreshToken(user);
+export const logout = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    // Get the token
+    const authHeader = req.headers.authorization;
+    const accessToken = authHeader && authHeader.split(" ")[1];
 
-    // Store refresh token in http-only cookie
-    res.cookie("refreshToken", refreshToken, {
+    if (!accessToken) {
+        return next(new AppError("There is no token", 401));
+    }
+
+    await tokenServices.invalidateToken(accessToken);
+
+    // Clear the refresh token cookie
+    res.clearCookie("refreshToken", {
         httpOnly: true,
         path: "/",
         sameSite: "strict",
     });
 
-    // Remove password from user object
-    const { password, ...userWithoutPassword } = user.toObject();
-
-    res.status(200).json({
-        status: "success",
-        data: {
-            user: userWithoutPassword,
-            accessToken: accessToken,
-        },
-    });
-});
-
-const logout = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
-    // Get the token
-    const authHeader = req.headers.authorization;
-    const accessToken = authHeader && authHeader.split(' ')[1];
-
-    if (!accessToken) {
-        return next(new AppError("There is no token", 401));
-    }
-    
-    await tokenGenerator.invalidateToken(accessToken);
-
-    // Clear the refresh token cookie
-    res.clearCookie('refreshToken', {
-        httpOnly: true,
-        path: "/",
-        sameSite: "strict"
-    });
-
     // Response if successful
     res.status(200).json({
-        status: 'success',
-        message: 'Logged out successfully'
+        status: "success",
+        message: "Logged out successfully",
     });
 });
 
-const changePassword = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const currentPassword = req.body.currentPassword;
-    const newPassword = req.body.newPassword;
+export const changePassword = catchAsync(
+    async (req: Request, res: Response, next: NextFunction) => {
+        const { currentPassword, newPassword } = req.body;
 
-    const authHeader = req.headers.authorization;
-    const accessToken = authHeader && authHeader.split(' ')[1];
+        // Get userId from attachUserId middleware
+        const userId = req.body.userId;
+        if (!userId) {
+            return next(new AppError("attachUserId middleware not working", 500));
+        }
+        const currentUser = await User.findOne({ _id: userId }).select("+password");
 
-    if (!accessToken) {
-        return next(new AppError("Please provide access token", 400));
+        // Get access token from attachUserId middleware
+        const accessToken = req.body.accessToken;
+
+        if (!currentPassword) {
+            return next(new AppError("currentPassword is required", 400));
+        }
+
+        if (!newPassword) {
+            return next(new AppError("newPassword is required", 400));
+        }
+
+        // Check if current password is correct
+        if (
+            !currentUser?.password ||
+            !(await bcrypt.compare(currentPassword, currentUser?.password))
+        ) {
+            return next(new AppError("Current password is incorrect", 403));
+        }
+
+        // Invalidate current token since password is changing
+        tokenServices.invalidateToken(accessToken);
+
+        // Update password and timestamp
+        currentUser.password = newPassword;
+        currentUser.password_changed_at = new Date();
+        await currentUser.save();
+
+        // Generate new tokens and send response
+        createSendToken(currentUser, 200, res);
     }
+);
 
-    if (!currentPassword) {
-        return next(new AppError("Please provide current password", 400));
-    }
-
-    if (!newPassword) {
-        return next(new AppError("Please provide new password", 400));
-    }
-
-    // Get user with password from token
-    const decodedToken = tokenGenerator.verifyAccessToken(accessToken as string);
-    const currentUser = await User.findOne({ _id: decodedToken.id }).select('+password');
-
-    if (!currentUser) {
-        return next(new AppError("User not found", 404));
-    }
-
-    // Check if current password is correct
-    if (!(await bcrypt.compare(currentPassword, currentUser.password))) {
-        return next(new AppError("Current password is incorrect", 403));
-    }
-
-    // Invalidate current token since password is changing
-    tokenGenerator.invalidateToken(accessToken);
-
-    // Update password and timestamp
-    currentUser.password = newPassword;
-    currentUser.password_changed_at = new Date();
-    await currentUser.save();
-    
-    // Generate new tokens and send response
-    createSendToken(currentUser, 200, res);
-});
-
-const forgotPassword = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    // 1) Get user based on POSTed email
-    const user = await User.findOne({ email: req.body.email });
-    if (!user) {
-        next(new AppError(`There is no user with email address ${req.body.email}`, 404));
-    }
-
-    // 2) Generate the random reset token
-    const resetToken = user?.createPasswordResetToken();
-    await user?.save({ validateBeforeSave: false });
-
-    // 3) Send it to user's email
-    try {
-        const resetURL = `${req.protocol}://${req.get(
-            "host"
-        )}/api/v1/auth/resetPassword/${resetToken}`;
-        await new Email(user, resetURL).sendPasswordReset();
-
-        res.status(200).json({
-            status: "success",
-            message: "Token was sent to email!",
-        });
-    } catch (err) {
+export const forgotPassword = catchAsync(
+    async (req: Request, res: Response, next: NextFunction) => {
+        // 1) Get user based on POSTed email
+        const user = await User.findOne({ email: req.body.email });
         if (!user) {
+            return next(new AppError(`There is no user with email address ${req.body.email}`, 404));
+        }
+
+        // 2) Generate the random reset token
+        const resetToken = user?.createPasswordResetToken();
+        await user?.save({ validateBeforeSave: false });
+
+        // 3) Send it to user's email
+        try {
+            const resetURL = `${req.protocol}://${req.get(
+                "host"
+            )}/api/v1/auth/resetPassword/${resetToken}`;
+            await new Email(user, resetURL).sendPasswordReset();
+
+            res.status(200).json({
+                status: "success",
+                message: "Token was sent to email!",
+            });
+        } catch (err) {
+            if (!user) {
+                return next(
+                    new AppError("There was an error sending the email. Try again later!", 500)
+                );
+            }
+            user.password_reset_token = undefined;
+            user.password_reset_expires = undefined;
+            await user?.save({ validateBeforeSave: false });
+
             return next(
                 new AppError("There was an error sending the email. Try again later!", 500)
             );
         }
-        user.password_reset_token = undefined;
-        user.password_reset_expires = undefined;
-        await user?.save({ validateBeforeSave: false });
-
-        return next(new AppError("There was an error sending the email. Try again later!", 500));
     }
-});
+);
 
-const resetPassword = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+export const resetPassword = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     // 1) Get user based on the token
     const hashedToken = crypto.createHash("sha256").update(req.params.token).digest("hex");
 
@@ -238,4 +205,57 @@ const resetPassword = catchAsync(async (req: Request, res: Response, next: NextF
     createSendToken(user, 200, res);
 });
 
-export { register, login, logout, changePassword, forgotPassword, resetPassword };
+export const deleteMe = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const userId = req.body.userId;
+
+        if (!userId) {
+            return next(new AppError("attachUserId middleware not working", 500));
+        }
+
+        if (!(await User.findOne({ _id: userId }))) {
+            return next(new AppError("User not found", 404));
+        }
+
+        await User.updateOne({ _id: userId }, { $set: { active: false } });
+
+        await WorkerProfile.updateOne({ user_id: userId }, { $set: { active: false } });
+
+        await EmployerProfile.updateOne({ user_id: userId }, { $set: { active: false } });
+
+        res.status(200).json({
+            status: "success",
+            data: {
+                user: null,
+            },
+        });
+    } catch (error) {
+        return next(new AppError("Database error", 500));
+    }
+});
+
+export const getCurrentUserProfile = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+
+    const currentUser = req.body.user;
+    if (!currentUser) {
+        return next(new AppError("attachUser middleware not working", 500));
+    }
+
+    let profile;
+    if (currentUser.role === "worker") {
+        profile = await WorkerProfile.findOne({ user_id: currentUser._id });
+    } else if (currentUser.role === "employer") {
+        profile = await EmployerProfile.findOne({ user_id: currentUser._id });
+    }
+
+    if (!profile) {
+        return next(new AppError("Profile not found", 404));
+    }
+
+    res.status(200).json({
+        status: "success",
+        data: {
+            profile: profile
+        }
+    });
+});

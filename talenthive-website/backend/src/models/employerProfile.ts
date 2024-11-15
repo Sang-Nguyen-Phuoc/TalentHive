@@ -1,7 +1,7 @@
 import { model, Schema, Types } from "mongoose";
 import validator from "validator";
 
-interface IEmployerProfile {
+export interface IEmployerProfile {
     _id: Types.ObjectId;
     user_id: Types.ObjectId;
     full_name: string;
@@ -11,6 +11,7 @@ interface IEmployerProfile {
     email: string;
     phone: string;
     sector: string;
+    active: boolean;
     created_at: Date;
     updated_at: Date;
 }
@@ -28,16 +29,13 @@ const EmployerProfileSchema = new Schema<IEmployerProfile>({
     },
     avatar: {
         type: Object,
-        required: true
     },
     introduction: {
         type: String,
-        required: true,
         trim: true
     },
     address: {
         type: String,
-        required: true,
         trim: true
     },
     email: {
@@ -47,22 +45,25 @@ const EmployerProfileSchema = new Schema<IEmployerProfile>({
     },
     phone: {
         type: String,
-        required: true,
         validate: [validator.isMobilePhone, 'Invalid phone number']
     },
     sector: {
         type: String,
-        required: true,
         trim: true
+    },
+    active: {
+        type: Boolean,
+        default: true,
+        select: false
     },
     created_at: {
         type: Date,
-        required: true,
+        required: false,
         default: Date.now()
     },
     updated_at: {
         type: Date,
-        required: true,
+        required: false,
         default: Date.now()
     }
 })

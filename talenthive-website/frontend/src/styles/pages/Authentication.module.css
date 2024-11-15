@@ -1,5 +1,14 @@
 .wrapper {
     display: flex;
+
+    & p {
+        margin-bottom: 0;
+    }
+
+    & ul,ol {
+        margin-bottom: 0;
+        padding-left: 0;
+    }
 }
 
 .form {
@@ -96,6 +105,16 @@
     border-radius: var(--border-radius-btn);
     box-shadow: var(--box-shadow-button);
 }
+
+.fp {
+    width: 100%;
+}
+
+.normal {
+        background-color: var(--button-color);
+        color: var(--primary-color);
+        border: 1px solid var(--primary-color);
+    }
 
 .question {
     margin-right: 5px;
