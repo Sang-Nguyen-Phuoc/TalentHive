@@ -1,10 +1,11 @@
 import { useLocation, useNavigate } from 'react-router';
 import JobItem from '../../components/JobItem'
 import styles from '../../styles/pages/JobDetail.module.css'
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSquareArrowUpRight } from '@fortawesome/free-solid-svg-icons';
+import ApplicationForm from '../../components/Form/ApplicationForn';
 
-function JobDetail({props, isSearch}) {
+function JobDetail({ props, isSearch }) {
     // const items = [
     //     {
     //         state : 'Pending',
@@ -100,7 +101,7 @@ function JobDetail({props, isSearch}) {
     const Job = JobItem.Detail;
 
     const navigate = useNavigate();
-    
+
     const role = 'Worker';
 
     const handleUpdate = (e) => {
@@ -118,13 +119,13 @@ function JobDetail({props, isSearch}) {
     return (
         <div className={`${styles.wrapper} ${isSearch && styles['is-search']}`}>
             <div className={styles['job-description']}>
-                <Job props={props} isEmployer={role==='Employer'}></Job>
+                <Job props={props} isEmployer={role === 'Employer'} ApplicationForm={ApplicationForm}></Job>
                 <div className={styles.detail}>
                     <p className={styles.title}>Recruitment Detail</p>
                     <div className={styles['sub-title']}>Job Descriptions</div>
                     <div className={styles['sub-title']}>Skills and Experience</div>
                     <div className={styles['sub-title']}>Benefit</div>
-                    {role==='Employer' && <div className={styles['btn-container']}>
+                    {role === 'Employer' && <div className={styles['btn-container']}>
                         <button onClick={handleUpdate}>Update</button>
                         <button onClick={handleRemove} className={styles['remove-btn']}>Remove</button>
                     </div>}
@@ -138,9 +139,9 @@ function JobDetail({props, isSearch}) {
                     </div>
                     <div className={styles.information}>
                         Introduction....
-                        
+
                     </div>
-                    <div className={styles.link} onClick={() => navigate('/profile-dashboard', {state:props})}>
+                    <div className={styles.link} onClick={() => navigate('/profile-dashboard', { state: props })}>
                         <span>
                             View company
                             <FontAwesomeIcon icon={faSquareArrowUpRight} />
