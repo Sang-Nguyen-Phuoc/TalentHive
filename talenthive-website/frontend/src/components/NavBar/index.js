@@ -65,8 +65,8 @@ const NavBar = () => {
                             </div>
                             <div className={styles['dropdown-menu']}>
                                 <div onClick={() => handleNavigate('/recruitment')}>Recruitment</div>
-                                <div onClick={() => handleNavigate('/worker')}>Worker</div>
-                                <div onClick={() => handleNavigate('/employer')}>Employer</div>
+                                <div onClick={() => handleNavigate('/manage-workers')}>Worker</div>
+                                <div onClick={() => handleNavigate('/manage-employers')}>Employer</div>
                             </div>
                         </div>
 

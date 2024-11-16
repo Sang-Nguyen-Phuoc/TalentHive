@@ -8,7 +8,8 @@ export const items = [
         candidate: 40,
         location: 'Đà Nẵng',
         createAt: '10',
-        endAt: '19'
+        endAt: '19',
+        state: 'active',
     },
     {
         position: 'Middle Frontend Engineer (ReactJS/ Typescript)',
@@ -19,7 +20,8 @@ export const items = [
         candidate: 19,
         location: 'Hồ Chí Minh',
         createAt: '9',
-        endAt: '21'
+        endAt: '21',
+        state: 'locked',
     },
     {
         position: 'Frontend Engineer (ReactJS) - NAVER FINANCIAL',
@@ -30,7 +32,8 @@ export const items = [
         candidate: 38,
         location: 'Hà Nội',
         createAt: '5',
-        endAt: '15'
+        endAt: '15',
+        state: 'active',
     },
     {
         position: 'ReactJS Developer (All level)',
@@ -41,7 +44,8 @@ export const items = [
         candidate: 30,
         location: 'Đà Nẵng',
         createAt: '10',
-        endAt: '19'
+        endAt: '19',
+        state: 'active',
     },
     {
         position: 'Middle Frontend Engineer (ReactJS/ Typescript)',
@@ -52,7 +56,8 @@ export const items = [
         candidate: 25,
         location: 'Hồ Chí Minh',
         createAt: '9',
-        endAt: '21'
+        endAt: '21',
+        state: 'active',
     },
     {
         position: 'Frontend Engineer (ReactJS) - NAVER FINANCIAL',
@@ -63,7 +68,8 @@ export const items = [
         candidate: 19,
         location: 'Hà Nội',
         createAt: '5',
-        endAt: '15'
+        endAt: '15',
+        state: 'active',
     },
     {
         position: 'ReactJS Developer (All level)',
@@ -74,7 +80,8 @@ export const items = [
         candidate: 40,
         location: 'Đà Nẵng',
         createAt: '10',
-        endAt: '19'
+        endAt: '19',
+        state: 'active',
     },
     {
         position: 'Middle Frontend Engineer (ReactJS/ Typescript)',
@@ -85,7 +92,8 @@ export const items = [
         candidate: 40,
         location: 'Hồ Chí Minh',
         createAt: '9',
-        endAt: '21'
+        endAt: '21',
+        state: 'active',
     },
     {
         position: 'Frontend Engineer (ReactJS) - NAVER FINANCIAL',
@@ -96,7 +104,8 @@ export const items = [
         candidate: 40,
         location: 'Hà Nội',
         createAt: '5',
-        endAt: '15'
+        endAt: '15',
+        state: 'locked',
     },
     {
         position: 'ReactJS Developer (All level)',
@@ -107,7 +116,8 @@ export const items = [
         candidate: 40,
         location: 'Đà Nẵng',
         createAt: '10',
-        endAt: '19'
+        endAt: '19',
+        state: 'locked',
     },
     {
         position: 'Middle Frontend Engineer (ReactJS/ Typescript)',
@@ -118,7 +128,8 @@ export const items = [
         candidate: 19,
         location: 'Hồ Chí Minh',
         createAt: '9',
-        endAt: '21'
+        endAt: '21',
+        state: 'active',
     },
     {
         position: 'Frontend Engineer (ReactJS) - NAVER FINANCIAL',
@@ -129,7 +140,8 @@ export const items = [
         candidate: 38,
         location: 'Hà Nội',
         createAt: '5',
-        endAt: '15'
+        endAt: '15',
+        state: 'locked',
     },
     {
         position: 'ReactJS Developer (All level)',
@@ -140,7 +152,8 @@ export const items = [
         candidate: 30,
         location: 'Đà Nẵng',
         createAt: '10',
-        endAt: '19'
+        endAt: '19',
+        state: 'active',
     },
     {
         position: 'Middle Frontend Engineer (ReactJS/ Typescript)',
@@ -151,7 +164,8 @@ export const items = [
         candidate: 25,
         location: 'Hồ Chí Minh',
         createAt: '9',
-        endAt: '21'
+        endAt: '21',
+        state: 'active',
     },
     {
         position: 'Frontend Engineer (ReactJS) - NAVER FINANCIAL',
@@ -162,7 +176,8 @@ export const items = [
         candidate: 19,
         location: 'Hà Nội',
         createAt: '5',
-        endAt: '15'
+        endAt: '15',
+        state: 'active',
     },
     {
         position: 'ReactJS Developer (All level)',
@@ -173,7 +188,8 @@ export const items = [
         candidate: 40,
         location: 'Đà Nẵng',
         createAt: '10',
-        endAt: '19'
+        endAt: '19',
+        state: 'active',
     },
     {
         position: 'Middle Frontend Engineer (ReactJS/ Typescript)',
@@ -184,7 +200,8 @@ export const items = [
         candidate: 40,
         location: 'Hồ Chí Minh',
         createAt: '9',
-        endAt: '21'
+        endAt: '21',
+        state: 'active',
     },
     {
         position: 'Frontend Engineer (ReactJS) - NAVER FINANCIAL',
@@ -195,7 +212,8 @@ export const items = [
         candidate: 40,
         location: 'Hà Nội',
         createAt: '5',
-        endAt: '15'
+        endAt: '15',
+        state: 'locked',
     },
     {
         position: 'ReactJS Developer (All level)',
@@ -206,7 +224,8 @@ export const items = [
         candidate: 40,
         location: 'Đà Nẵng',
         createAt: '10',
-        endAt: '19'
+        endAt: '19',
+        state: 'active',
     },
     {
         position: 'Middle Frontend Engineer (ReactJS/ Typescript)',
@@ -217,7 +236,8 @@ export const items = [
         candidate: 19,
         location: 'Hồ Chí Minh',
         createAt: '9',
-        endAt: '21'
+        endAt: '21',
+        state: 'active',
     },
     {
         position: 'Frontend Engineer (ReactJS) - NAVER FINANCIAL',
@@ -228,7 +248,8 @@ export const items = [
         candidate: 38,
         location: 'Hà Nội',
         createAt: '5',
-        endAt: '15'
+        endAt: '15',
+        state: 'locked',
     },
     {
         position: 'ReactJS Developer (All level)',
@@ -239,7 +260,8 @@ export const items = [
         candidate: 30,
         location: 'Đà Nẵng',
         createAt: '10',
-        endAt: '19'
+        endAt: '19',
+        state: 'active',
     },
     {
         position: 'Middle Frontend Engineer (ReactJS/ Typescript)',
@@ -250,7 +272,8 @@ export const items = [
         candidate: 25,
         location: 'Hồ Chí Minh',
         createAt: '9',
-        endAt: '21'
+        endAt: '21',
+        state: 'locked',
     },
     {
         position: 'Frontend Engineer (ReactJS) - NAVER FINANCIAL',
@@ -261,7 +284,8 @@ export const items = [
         candidate: 19,
         location: 'Hà Nội',
         createAt: '5',
-        endAt: '15'
+        endAt: '15',
+        state: 'active',
     },
     {
         position: 'ReactJS Developer (All level)',
@@ -272,7 +296,8 @@ export const items = [
         candidate: 40,
         location: 'Đà Nẵng',
         createAt: '10',
-        endAt: '19'
+        endAt: '19',
+        state: 'active',
     },
     {
         position: 'Middle Frontend Engineer (ReactJS/ Typescript)',
@@ -283,7 +308,8 @@ export const items = [
         candidate: 40,
         location: 'Hồ Chí Minh',
         createAt: '9',
-        endAt: '21'
+        endAt: '21',
+        state: 'active',
     },
     {
         position: 'Frontend Engineer (ReactJS) - NAVER FINANCIAL',
@@ -294,7 +320,8 @@ export const items = [
         candidate: 40,
         location: 'Hà Nội',
         createAt: '5',
-        endAt: '15'
+        endAt: '15',
+        state: 'active',
     },
     {
         position: 'ReactJS Developer (All level)',
@@ -305,7 +332,8 @@ export const items = [
         candidate: 40,
         location: 'Đà Nẵng',
         createAt: '10',
-        endAt: '19'
+        endAt: '19',
+        state: 'active',
     },
     {
         position: 'Middle Frontend Engineer (ReactJS/ Typescript)',
@@ -316,7 +344,8 @@ export const items = [
         candidate: 19,
         location: 'Hồ Chí Minh',
         createAt: '9',
-        endAt: '21'
+        endAt: '21',
+        state: 'active',
     },
     {
         position: 'Frontend Engineer (ReactJS) - NAVER FINANCIAL',
@@ -327,7 +356,8 @@ export const items = [
         candidate: 38,
         location: 'Hà Nội',
         createAt: '5',
-        endAt: '15'
+        endAt: '15',
+        state: 'active',
     },
     {
         position: 'ReactJS Developer (All level)',
@@ -338,7 +368,8 @@ export const items = [
         candidate: 30,
         location: 'Đà Nẵng',
         createAt: '10',
-        endAt: '19'
+        endAt: '19',
+        state: 'locked',
     },
     {
         position: 'Middle Frontend Engineer (ReactJS/ Typescript)',
@@ -349,7 +380,8 @@ export const items = [
         candidate: 25,
         location: 'Hồ Chí Minh',
         createAt: '9',
-        endAt: '21'
+        endAt: '21',
+        state: 'active',
     },
     {
         position: 'Frontend Engineer (ReactJS) - NAVER FINANCIAL',
@@ -360,7 +392,8 @@ export const items = [
         candidate: 19,
         location: 'Hà Nội',
         createAt: '5',
-        endAt: '15'
+        endAt: '15',
+        state: 'active',
     },
     {
         position: 'ReactJS Developer (All level)',
@@ -371,7 +404,8 @@ export const items = [
         candidate: 40,
         location: 'Đà Nẵng',
         createAt: '10',
-        endAt: '19'
+        endAt: '19',
+        state: 'locked',
     },
     {
         position: 'Middle Frontend Engineer (ReactJS/ Typescript)',
@@ -382,7 +416,8 @@ export const items = [
         candidate: 40,
         location: 'Hồ Chí Minh',
         createAt: '9',
-        endAt: '21'
+        endAt: '21',
+        state: 'active',
     },
     {
         position: 'Frontend Engineer (ReactJS) - NAVER FINANCIAL',
@@ -393,7 +428,8 @@ export const items = [
         candidate: 40,
         location: 'Hà Nội',
         createAt: '5',
-        endAt: '15'
+        endAt: '15',
+        state: 'locked',
     },
     {
         position: 'ReactJS Developer (All level)',
@@ -404,7 +440,8 @@ export const items = [
         candidate: 40,
         location: 'Đà Nẵng',
         createAt: '10',
-        endAt: '19'
+        endAt: '19',
+        state: 'active',
     },
     {
         position: 'Middle Frontend Engineer (ReactJS/ Typescript)',
@@ -415,7 +452,8 @@ export const items = [
         candidate: 19,
         location: 'Hồ Chí Minh',
         createAt: '9',
-        endAt: '21'
+        endAt: '21',
+        state: 'active',
     },
     {
         position: 'Frontend Engineer (ReactJS) - NAVER FINANCIAL',
@@ -426,7 +464,8 @@ export const items = [
         candidate: 38,
         location: 'Hà Nội',
         createAt: '5',
-        endAt: '15'
+        endAt: '15',
+        state: 'locked',
     },
     {
         position: 'ReactJS Developer (All level)',
@@ -437,7 +476,8 @@ export const items = [
         candidate: 30,
         location: 'Đà Nẵng',
         createAt: '10',
-        endAt: '19'
+        endAt: '19',
+        state: 'active',
     },
     {
         position: 'Middle Frontend Engineer (ReactJS/ Typescript)',
@@ -448,7 +488,8 @@ export const items = [
         candidate: 25,
         location: 'Hồ Chí Minh',
         createAt: '9',
-        endAt: '21'
+        endAt: '21',
+        state: 'active',
     },
     {
         position: 'Frontend Engineer (ReactJS) - NAVER FINANCIAL',
@@ -459,7 +500,8 @@ export const items = [
         candidate: 19,
         location: 'Hà Nội',
         createAt: '5',
-        endAt: '15'
+        endAt: '15',
+        state: 'active',
     },
     {
         position: 'ReactJS Developer (All level)',
@@ -470,7 +512,8 @@ export const items = [
         candidate: 40,
         location: 'Đà Nẵng',
         createAt: '10',
-        endAt: '19'
+        endAt: '19',
+        state: 'active',
     },
     {
         position: 'Middle Frontend Engineer (ReactJS/ Typescript)',
@@ -481,7 +524,8 @@ export const items = [
         candidate: 40,
         location: 'Hồ Chí Minh',
         createAt: '9',
-        endAt: '21'
+        endAt: '21',
+        state: 'active',
     },
     {
         position: 'Frontend Engineer (ReactJS) - NAVER FINANCIAL',
@@ -492,7 +536,8 @@ export const items = [
         candidate: 40,
         location: 'Hà Nội',
         createAt: '5',
-        endAt: '15'
+        endAt: '15',
+        state: 'active',
     },
     {
         position: 'ReactJS Developer (All level)',
@@ -503,7 +548,8 @@ export const items = [
         candidate: 40,
         location: 'Đà Nẵng',
         createAt: '10',
-        endAt: '19'
+        endAt: '19',
+        state: 'locked',
     },
     {
         position: 'Middle Frontend Engineer (ReactJS/ Typescript)',
@@ -514,7 +560,8 @@ export const items = [
         candidate: 19,
         location: 'Hồ Chí Minh',
         createAt: '9',
-        endAt: '21'
+        endAt: '21',
+        state: 'active',
     },
     {
         position: 'Frontend Engineer (ReactJS) - NAVER FINANCIAL',
@@ -525,7 +572,8 @@ export const items = [
         candidate: 38,
         location: 'Hà Nội',
         createAt: '5',
-        endAt: '15'
+        endAt: '15',
+        state: 'active',
     },
     {
         position: 'ReactJS Developer (All level)',
@@ -536,7 +584,8 @@ export const items = [
         candidate: 30,
         location: 'Đà Nẵng',
         createAt: '10',
-        endAt: '19'
+        endAt: '19',
+        state: 'active',
     },
     {
         position: 'Middle Frontend Engineer (ReactJS/ Typescript)',
@@ -547,7 +596,8 @@ export const items = [
         candidate: 25,
         location: 'Hồ Chí Minh',
         createAt: '9',
-        endAt: '21'
+        endAt: '21',
+        state: 'active',
     },
     {
         position: 'Frontend Engineer (ReactJS) - NAVER FINANCIAL',
@@ -558,7 +608,8 @@ export const items = [
         candidate: 19,
         location: 'Hà Nội',
         createAt: '5',
-        endAt: '15'
+        endAt: '15',
+        state: 'active',
     },
     {
         position: 'ReactJS Developer (All level)',
@@ -569,7 +620,8 @@ export const items = [
         candidate: 40,
         location: 'Đà Nẵng',
         createAt: '10',
-        endAt: '19'
+        endAt: '19',
+        state: 'active',
     },
     {
         position: 'Middle Frontend Engineer (ReactJS/ Typescript)',
@@ -580,7 +632,8 @@ export const items = [
         candidate: 40,
         location: 'Hồ Chí Minh',
         createAt: '9',
-        endAt: '21'
+        endAt: '21',
+        state: 'locked',
     },
     {
         position: 'Frontend Engineer (ReactJS) - NAVER FINANCIAL',
@@ -591,7 +644,8 @@ export const items = [
         candidate: 40,
         location: 'Hà Nội',
         createAt: '5',
-        endAt: '15'
+        endAt: '15',
+        state: 'locked',
     },
     {
         position: 'ReactJS Developer (All level)',
@@ -602,7 +656,8 @@ export const items = [
         candidate: 40,
         location: 'Đà Nẵng',
         createAt: '10',
-        endAt: '19'
+        endAt: '19',
+        state: 'active',
     },
     {
         position: 'Middle Frontend Engineer (ReactJS/ Typescript)',
@@ -613,7 +668,8 @@ export const items = [
         candidate: 19,
         location: 'Hồ Chí Minh',
         createAt: '9',
-        endAt: '21'
+        endAt: '21',
+        state: 'active',
     },
     {
         position: 'Frontend Engineer (ReactJS) - NAVER FINANCIAL',
@@ -624,7 +680,8 @@ export const items = [
         candidate: 38,
         location: 'Hà Nội',
         createAt: '5',
-        endAt: '15'
+        endAt: '15',
+        state: 'active',
     },
     {
         position: 'ReactJS Developer (All level)',
@@ -635,7 +692,8 @@ export const items = [
         candidate: 30,
         location: 'Đà Nẵng',
         createAt: '10',
-        endAt: '19'
+        endAt: '19',
+        state: 'active',
     },
     {
         position: 'Middle Frontend Engineer (ReactJS/ Typescript)',
@@ -646,7 +704,8 @@ export const items = [
         candidate: 25,
         location: 'Hồ Chí Minh',
         createAt: '9',
-        endAt: '21'
+        endAt: '21',
+        state: 'active',
     },
     {
         position: 'Frontend Engineer (ReactJS) - NAVER FINANCIAL',
@@ -657,7 +716,8 @@ export const items = [
         candidate: 19,
         location: 'Hà Nội',
         createAt: '5',
-        endAt: '15'
+        endAt: '15',
+        state: 'active',
     },
     {
         position: 'ReactJS Developer (All level)',
@@ -668,7 +728,8 @@ export const items = [
         candidate: 40,
         location: 'Đà Nẵng',
         createAt: '10',
-        endAt: '19'
+        endAt: '19',
+        state: 'active',
     },
     {
         position: 'Middle Frontend Engineer (ReactJS/ Typescript)',
@@ -679,7 +740,8 @@ export const items = [
         candidate: 40,
         location: 'Hồ Chí Minh',
         createAt: '9',
-        endAt: '21'
+        endAt: '21',
+        state: 'locked',
     },
     {
         position: 'Frontend Engineer (ReactJS) - NAVER FINANCIAL',
@@ -690,6 +752,7 @@ export const items = [
         candidate: 40,
         location: 'Hà Nội',
         createAt: '5',
-        endAt: '15'
+        endAt: '15',
+        state: 'active',
     },
 ]
