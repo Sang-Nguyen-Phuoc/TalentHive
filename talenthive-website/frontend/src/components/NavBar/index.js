@@ -4,7 +4,7 @@ import styles from '../../styles/components/NavBar.module.css';
 import Logo from '../../images/account-logo.png';
 
 const NavBar = () => {
-    const [role, setRole] = useState('admin'); // Set this to 'worker', 'employer', or 'admin' as needed
+    const [role, setRole] = useState('employer'); // Set this to 'worker', 'employer', or 'admin' as needed
     const navigate = useNavigate();
 
     const handleNavigate = (path) => {
