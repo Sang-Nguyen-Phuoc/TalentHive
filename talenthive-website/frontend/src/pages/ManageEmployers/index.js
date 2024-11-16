@@ -63,7 +63,7 @@ function ManageEmployers() {
                 </div>
                 <div className={styles['employer-detail']}>
                     <div>
-                        <ProfileDashboard props={items_filter[state][selected]} isReused={true}/>
+                        <ProfileDashboard props={items_filter[state][selected]} isReused={true} role={'Employer'}/>
                     </div>
                 </div>
 

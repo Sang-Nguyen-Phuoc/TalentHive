@@ -2,27 +2,27 @@ import { useLocation, useNavigate } from 'react-router';
 import styles from '../../styles/pages/ProfileDashboard.module.css'
 import JobItem from '../../components/JobItem'
 import { useState } from 'react';
-import {items} from '../Home/items'
 
-function ProfileDashboard({props, isReused}) {
-    const role = 'Employer';
+function ProfileDashboard({props, isReused, role}) {
     const Job = JobItem.Detail;
     const navigate = useNavigate();
     const location = useLocation();
 
     if (props === undefined || props === null)
         props = location.state;
-
+    if (role === undefined || role === null)
+        role = 'Employer';
     const [statePost, setStatePost] = useState('')
+
     if (role === 'Worker')
         return (
             <div className={`${styles.wrapper} ${isReused===true && styles.reused}`}>
                 <div className={styles['cover-page']}>
                     <div className={styles['avatar-container']}>
-                        <img src="" alt="Avatar" className={styles.avatar}/>
-                        <h1 className={styles.name}>Worker Name</h1>
+                        <img src={props.image} alt="Avatar" className={styles.avatar}/>
+                        <h1 className={styles.name}>{props.company}</h1>
                     </div>
-                    <button className={styles.edit} onClick={() => navigate('/profile-dashboard/edit')}>Edit profile</button>
+                    {!isReused && <button className={styles.edit} onClick={() => navigate('/profile-dashboard/edit')}>Edit profile</button>}
                 </div>
                 <div className={styles.profile}>
                     <div className={styles.column}>
