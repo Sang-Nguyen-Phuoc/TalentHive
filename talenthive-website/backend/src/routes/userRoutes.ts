@@ -10,7 +10,8 @@ const userRouter = Router();
 
 userRouter.route("/")
     .get(userController.getAllUsers)
-    .post(userController.createUser);
+    .post(userController.createUser)
+    .delete(userController.deleteUser);
 
 userRouter.route("/:id")
     .get(userController.getUserById)
