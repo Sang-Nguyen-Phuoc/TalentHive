@@ -3,24 +3,26 @@ import styles from '../../styles/pages/ProfileDashboard.module.css'
 import JobItem from '../../components/JobItem'
 import { useState } from 'react';
 
-function ProfileDashboard() {
-    const role = 'Employer';
+function ProfileDashboard({props, isReused, role}) {
     const Job = JobItem.Detail;
     const navigate = useNavigate();
     const location = useLocation();
 
-    var props = location.state;
-
+    if (props === undefined || props === null)
+        props = location.state;
+    if (role === undefined || role === null)
+        role = 'Employer';
     const [statePost, setStatePost] = useState('')
+
     if (role === 'Worker')
         return (
-            <div className={styles.wrapper}>
+            <div className={`${styles.wrapper} ${isReused===true && styles.reused}`}>
                 <div className={styles['cover-page']}>
                     <div className={styles['avatar-container']}>
-                        <img src="" alt="Avatar" className={styles.avatar}/>
-                        <h1 className={styles.name}>Worker Name</h1>
+                        <img src={props.image} alt="Avatar" className={styles.avatar}/>
+                        <h1 className={styles.name}>{props.company}</h1>
                     </div>
-                    <button className={styles.edit} onClick={() => navigate('/profile-dashboard/edit')}>Edit profile</button>
+                    {!isReused && <button className={styles.edit} onClick={() => navigate('/profile-dashboard/edit')}>Edit profile</button>}
                 </div>
                 <div className={styles.profile}>
                     <div className={styles.column}>
@@ -125,13 +127,13 @@ function ProfileDashboard() {
         if (props === null)
             props = items[0];
         return (
-            <div className={styles.wrapper}>
+            <div className={`${styles.wrapper} ${isReused===true && styles.reused}`}>
                 <div className={styles['cover-page']}>
                     <div className={styles['avatar-container']}>
                         <img src={props.image} alt="Avatar" className={styles.avatar}/>
                         <h1 className={styles.name}>{props.company}</h1>
                     </div>
-                    <button className={styles.edit} onClick={() => navigate('/profile-dashboard/edit')}>Edit profile</button>
+                    {!isReused && <button className={styles.edit} onClick={() => navigate('/profile-dashboard/edit')}>Edit profile</button>}
                 </div>
                 <div className={styles.profile}>
                     <div className={styles.column}>
@@ -146,7 +148,7 @@ function ProfileDashboard() {
                     </div>
                     <div className={styles.column}>
                         <div className={`${styles.frame} ${styles.recruitment}`}>
-                            <div className={styles.content}>Recruitment {`(${statePost === '' ? items.length : items.filter(i => i.state === statePost).length} jobs)`}</div>
+                            <div className={styles.content}>Recruitment {`(${statePost === '' ? items.filter(i => i.company === props.company).length : items.filter(i => i.company === props.company).filter(i => i.state === statePost).length} jobs)`}</div>
                             <div className={styles['filter-container']}>
                                 <select value={statePost}
                                         onChange={(e) => setStatePost(e.target.value)}
@@ -159,10 +161,12 @@ function ProfileDashboard() {
                             </div>
                             <div className={styles['jobs-list']}>
                                 {items.map((item, index) => {
-                                    if (statePost === '')
-                                        return <Job key={index} props={item} isEmployer></Job>
-                                    else 
-                                        return (statePost === item.state) && <Job key={index} props={item} isEmployer></Job>
+                                    if (item.company === props.company) {
+                                        if (statePost === '')
+                                            return <Job key={index} props={item} isEmployer></Job>
+                                        else 
+                                            return (statePost === item.state) && <Job key={index} props={item} isEmployer></Job>
+                                    }
                                 })}
                             </div>
                         </div>

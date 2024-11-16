@@ -11,6 +11,10 @@
     min-width: 600px;
 }
 
+.reused {
+    margin: 0;
+}
+
 .cover-page {
     width: 100%;
     height: var(--height-cover-page);
