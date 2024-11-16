@@ -27,7 +27,10 @@ function ManageEmployers() {
         if (window.innerWidth >= 1420) {
             setSelected(parseInt(index));
         } else {
-            navigate('/profile-dashboard', {state:items_filter[state][index]})
+            navigate('/profile-dashboard', {state: {
+                item: items_filter[state][index],
+                role: 'Employer'
+            }})
         }
 
     }
