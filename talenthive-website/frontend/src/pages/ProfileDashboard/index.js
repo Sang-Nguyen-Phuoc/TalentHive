@@ -5,14 +5,17 @@ import { useState } from 'react';
 
 function ProfileDashboard({props, isReused, role}) {
     const Job = JobItem.Detail;
-    const navigate = useNavigate();
-    const location = useLocation();
-
-    if (props === undefined || props === null)
-        props = location.state;
-    if (role === undefined || role === null)
-        role = 'Employer';
     const [statePost, setStatePost] = useState('')
+    const navigate = useNavigate();
+    const {state} = useLocation();
+
+    if (!props)
+        props = state.item;
+    if (!role)
+        if (state.role)
+            role = state.role
+        else
+            role = 'Employer';
 
     if (role === 'Worker')
         return (
