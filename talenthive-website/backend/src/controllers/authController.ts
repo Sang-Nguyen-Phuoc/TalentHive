@@ -32,13 +32,19 @@ export const register = catchAsync(async (req: Request, res: Response, next: Nex
         return next(new AppError("Email is not valid", 400));
     }
 
-    // Use bcrypt to hash password
-    // const hashedPassword = await bcrypt.hash(password, 10);
-    // no need to hash password here, it is done in the User model
-
     // Create new user
     const newUser = new User({ email, password, role });
     await newUser.save();
+
+
+    // Create user profile
+    if (role === "candidate") {
+        const newWorkerProfile = new WorkerProfile({ user_id: newUser._id, email: email });
+        await newWorkerProfile.save();
+    } else if (role === "employer") {
+        const newEmployerProfile = new EmployerProfile({ user_id: newUser._id, email: email });
+        await newEmployerProfile.save();
+    }
 
     res.status(201).json({
         status: "success",
