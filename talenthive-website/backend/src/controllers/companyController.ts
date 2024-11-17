@@ -76,8 +76,8 @@ export const createCompany = catchAsync(async (req: Request, res: Response, next
                 new AppError("Only jpg, jpeg and png files are allowed", StatusCodes.BAD_REQUEST)
             );
         }
-        if (avatar.size > 5 * 1024 * 1024) {
-            return next(new AppError("File size must not exceed 5MB", StatusCodes.BAD_REQUEST));
+        if (avatar.size > 1024 * 1024) {
+            return next(new AppError("File size must not exceed 1MB", StatusCodes.BAD_REQUEST));
         }
 
         const image = await Image.create({
@@ -113,3 +113,28 @@ export const createCompany = catchAsync(async (req: Request, res: Response, next
         },
     });
 });
+
+export const deleteCompany = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return next(new AppError("Invalid ID", StatusCodes.BAD_REQUEST));
+    }
+
+    const company = await Company.findById(id);
+    if (!company) {
+        return next(new AppError(`Company with id: ${id} not found`, StatusCodes.NOT_FOUND));
+    }
+
+    if (company.avatar) {
+        await Image.findByIdAndDelete(company.avatar);
+    }
+
+    await company.deleteOne();
+
+    res.status(StatusCodes.OK).json({
+        status: "success",
+        data: {
+            company: null,
+        }
+    });
+})
