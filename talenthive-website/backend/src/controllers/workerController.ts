@@ -4,20 +4,12 @@ import Worker from "../models/workerProfile";
 import AppError from "../utils/appError";
 
 
-const getAllWorkers = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const workers = await Worker.find().populate("user_id");
-        res.status(200).json({
-            status: "success",
-            data: {
-                workers,
-            },
-        });
-    } catch(err) {
-        return next(new AppError("Database error", 400));        
-    }
+export const getAllWorkers = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const workers = await Worker.find().populate("user_id");
+    res.status(200).json({
+        status: "success",
+        data: {
+            workers,
+        },
+    });
 });
-
-export { 
-    getAllWorkers
-};
