@@ -5,12 +5,12 @@ import Image from "./image";
 export interface ICompany {
     _id: Types.ObjectId;
     name: string;
-    avatar: Types.ObjectId;
-    locations: [string];
+    avatar?: Types.ObjectId | undefined;
+    locations: string[];
     industry: string;
     address: string;
-    website: string;
-    employers: [Types.ObjectId];
+    website?: string;
+    employers?: [Types.ObjectId];
     admin_approved: boolean;
     created_at: Date;
     updated_at: Date;
