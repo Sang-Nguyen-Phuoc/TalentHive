@@ -1,10 +1,11 @@
 import { model, Schema, Types } from "mongoose";
 import validator from "validator";
+import Image from "./image";
 
 export interface ICompany {
     _id: Types.ObjectId;
     name: string;
-    avatar: object;
+    avatar: Types.ObjectId;
     locations: [string];
     industry: string;
     address: string;
@@ -12,6 +13,7 @@ export interface ICompany {
     employers: [Types.ObjectId];
     admin_approved: boolean;
     created_at: Date;
+    updated_at: Date;
     company_manager: Types.ObjectId;
 }
 
@@ -22,8 +24,8 @@ const CompanySchema = new Schema<ICompany>({
         trim: true
     },
     avatar: {
-        type: Object,
-        required: true,
+        type: Schema.Types.ObjectId,
+        ref: 'Image'
     },
     locations: {
         type: [String],
@@ -39,21 +41,21 @@ const CompanySchema = new Schema<ICompany>({
     },
     website: {
         type: String,
-        required: true,
         validate: [validator.isURL, 'Invalid URL' ]
     },
     employers: {
-        type: [Schema.Types.ObjectId],
-        required: true
+        type: [Schema.Types.ObjectId]
     },
     admin_approved: {
         type: Boolean,
-        required: true,
         default: false
     },
     created_at: {
         type: Date,
-        required: true,
+        default: Date.now()
+    },
+    updated_at: {
+        type: Date,
         default: Date.now()
     },
     company_manager: {
