@@ -4,6 +4,7 @@ import userRouter from "./routes/userRoutes";
 import authRouter from "./routes/authRoutes";
 import jobRouter from "./routes/jobRoutes";
 import testRouter from "./routes/testRoutes";
+import companyRouter from "./routes/companyRoutes";
 import workerRouter from "./routes/workerRoutes";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
@@ -28,6 +29,7 @@ app.get("/", (req, res) => {
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/jobs", jobRouter);
+app.use("/api/v1/companies", companyRouter);
 app.use("/api/v1/workers", workerRouter);
 
 app.use('/api/v1/test', testRouter);
