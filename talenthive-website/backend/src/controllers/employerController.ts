@@ -3,6 +3,20 @@ import { Request, Response, NextFunction } from "express";
 import catchAsync from "../utils/catchAsync";
 import AppError from "../utils/appError";
 import validator from "validator";
+import { StatusCodes } from "http-status-codes";
+import Employer from "../models/employerProfile";
+
+export const getAllEmployers = catchAsync(
+    async (req: Request, res: Response, next: NextFunction) => {
+        const employers = await Employer.find().populate("user_id");
+        res.status(StatusCodes.OK).json({
+            status: "success",
+            data: {
+                employers,
+            },
+        });
+    }
+);
 
 export const updateEmployer = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const {
