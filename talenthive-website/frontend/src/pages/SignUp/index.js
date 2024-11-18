@@ -12,7 +12,7 @@ const reqAPI = {
     headers: {
       'Content-Type': 'application/json'
     },
-    body: {},
+    body: null,
 };
 
 function SignUp() {
@@ -67,8 +67,8 @@ function SignUp() {
         emailRef.current.value = '';
         passwordRef.current.value = '';
         repasswordRef.current.value = '';
+        roleRef.current.value = 'default';
         setType(Array(rules.length).fill('none'));
-        setRole('default');
         emailRef.current.focus();
         reqAPI.body = JSON.stringify(newDataSignUp);
     }
@@ -190,11 +190,10 @@ function SignUp() {
                         className={styles.dropdown}
                         id="roleInput"
                         defaultValue={'default'}
-                        value={role}
                         onChange={e => setRole(e.target.value)}>
                         <option value="employer">Employer</option>
                         <option value="candidate">Candidate</option>
-                        <option value="default" disabled selected>--Choose role--</option>
+                        <option value="default" disabled>--Choose role--</option>
                     </select>
                 </div>
                 <div className={styles.container}>
