@@ -86,13 +86,14 @@ export const attachUserId = catchAsync(async (req: Request, res: Response, next:
     next();
 });
 
+type Role = "admin" | "employer" | "candidate";
 
-export const authorizeRole = (role: string[]) => {
+export const authorizeRole = (roles: Role[]) => {
     return (req: Request, res: Response, next: NextFunction) => {
         if (!req.body.user) {
-            return next(new AppError("You are not logged in! Please log in to get access.", 401));
+            return next(new AppError("attachUserId middleware must be called before authorizeRole middleware", 500));
         }
-        if (!role.includes(req.body.user.role)) {
+        if (!roles.includes(req.body.user.role)) {
             return next(new AppError("You do not have permission to perform this action", 403));
         }
         next();
