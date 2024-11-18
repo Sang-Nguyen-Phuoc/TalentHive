@@ -70,6 +70,7 @@ function SignUp() {
         roleRef.current.value = 'default';
         setType(Array(rules.length).fill('none'));
         emailRef.current.focus();
+        setRole('default');
         reqAPI.body = JSON.stringify(newDataSignUp);
     }
 
@@ -101,7 +102,7 @@ function SignUp() {
     useEffect(() => {
         if (status === 'success'){
             toast.success('Register successfully!');
-            const navi = setTimeout(() => navigate('/signin'), 3000);
+            const navi = setTimeout(() => navigate('/signin'), 2000);
         }
         else if (status !== 'fail') {
             toast.error(status);
