@@ -1,127 +1,298 @@
 import Modal from 'react-bootstrap/Modal';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import styles from '../../../styles/components/Application.module.css';
 
 const ApplicationForm = ({ show, setShow }) => {
     const [formData, setFormData] = useState({
-        fileName: '',
-        name: '',
-        email: '',
-        phone: '',
-        message: '',
+        position: '',
+        location: '',
+        deadline: '',
+        workingType: '',
+        sector: [],
+        salary: '',
+        quantity: '',
+        description: '',
     });
 
-    const handleFileChange = (event) => {
-        const file = event.target.files[0];
-        if (file) {
-            setFormData((prev) => ({ ...prev, fileName: file.name }));
-        }
-    };
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [isSalaryDropdownOpen, setIsSalaryDropdownOpen] = useState(false);
+    const [positionWarning, setPositionWarning] = useState('');
+    const sectorDropdownRef = useRef(null);
+    const salaryDropdownRef = useRef(null);
+
 
     const handleInputChange = (event) => {
         const { id, value } = event.target;
+        if (id === 'position' && value.length > 20) {
+            setPositionWarning('Position must be less than 20 characters.');
+        } else {
+            setPositionWarning('');
+        }
         setFormData((prev) => ({ ...prev, [id]: value }));
     };
 
+    const handleSectorChange = (event) => {
+        const { value, checked } = event.target;
+        setFormData((prev) => {
+            if (checked) {
+                return { ...prev, sector: [...prev.sector, value] };
+            } else {
+                return { ...prev, sector: prev.sector.filter((sector) => sector !== value) };
+            }
+        });
+    };
+
+    const toggleDropdown = () => {
+        setIsDropdownOpen((prev) => !prev);
+    };
+
+    const toggleSalaryDropdown = () => {
+        setIsSalaryDropdownOpen((prev) => !prev);
+    };
+
+    const maxSelectionsReached = formData.sector.length >= 3;
+
+    // Close dropdown when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (
+                sectorDropdownRef.current &&
+                !sectorDropdownRef.current.contains(event.target)
+            ) {
+                setIsDropdownOpen(false);
+            }
+            if (
+                salaryDropdownRef.current &&
+                !salaryDropdownRef.current.contains(event.target)
+            ) {
+                setIsSalaryDropdownOpen(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
+
     const handleSubmit = (event) => {
         event.preventDefault();
+
+        // Perform additional validation before submission
+        if (!formData.position || positionWarning) {
+            alert('Please fix the Position field before submitting.');
+            return;
+        }
+
         console.log('Form Data:', formData);
-        // Optionally, you can also close the modal after submission
         setShow(false);
     };
 
     return (
-        <>
-            <Modal
-                size="lg"
-                show={show}
-                onHide={() => setShow(false)}
-                aria-labelledby="example-modal-sizes-title-lg"
-            >
-                <Modal.Header closeButton>
-                    <Modal.Title id="example-modal-sizes-title-lg">
-                        Application Form
-                    </Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <form
-                        className={styles.applicationForm}
-                        onSubmit={handleSubmit} // Attach the submit handler
-                    >
-                        <div className={styles.formGroup}>
-                            <label htmlFor="resume">Resume</label>
-                            <div className={styles.fileInputWrapper}>
-                                <input
-                                    type="file"
-                                    id="resume"
-                                    className={styles.hiddenFileInput}
-                                    onChange={handleFileChange}
-                                />
-                                <label htmlFor="resume" className={styles.fileInputLabel}>
-                                    <span className={styles.fileName}>
-                                        {formData.fileName || 'No file selected'}
-                                    </span>
-                                </label>
-                                <br />
-                            </div>
-                            <small>
-                                <strong>Maximum upload file:</strong> 30MB
-                            </small>
-                        </div>
-                        <div className={styles.formGroup}>
-                            <label htmlFor="name">Full Name</label>
+        <Modal
+            size="lg"
+            show={show}
+            onHide={() => setShow(false)}
+            aria-labelledby="example-modal-sizes-title-lg"
+        >
+            <Modal.Header closeButton>
+                <Modal.Title id="example-modal-sizes-title-lg">
+                    Create Post Form
+                </Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <form
+                    className={styles.applicationForm}
+                    onSubmit={handleSubmit}
+                >
+                    {/* Position Field */}
+                    <div className={`${styles.formGroup} ${styles.position}`}>
+                        <label htmlFor="position">Position</label>
+                        <div className={`${styles.position}`}>
                             <input
                                 type="text"
                                 className="form-control"
-                                id="name"
-                                placeholder="Enter your full name"
-                                value={formData.name}
+                                id="position"
+                                value={formData.position}
                                 onChange={handleInputChange}
                             />
+                            {positionWarning && (
+                                <small className={styles.warningText}>{positionWarning}</small>
+                            )}
                         </div>
-                        <div className={styles['phoneNum-email']}>
-                            <div className={styles.formGroup}>
-                                <label htmlFor="email">Email address</label>
-                                <input
-                                    type="email"
-                                    className="form-control"
-                                    id="email"
-                                    placeholder="Enter email"
-                                    value={formData.email}
-                                    onChange={handleInputChange}
-                                />
-                            </div>
-                            <div className={styles.formGroup}>
-                                <label htmlFor="phone">Phone Number</label>
-                                <input
-                                    type="tel"
-                                    className="form-control"
-                                    id="phone"
-                                    placeholder="Enter phone number"
-                                    value={formData.phone}
-                                    onChange={handleInputChange}
-                                />
-                            </div>
+                    </div>
+
+                    {/* Location and Deadline */}
+                    <div className={styles['field-pair']}>
+                        <div className={styles.formGroup}>
+                            <label htmlFor="location">Location</label>
+                            <select
+                                id="location"
+                                className="form-control"
+                                value={formData.location}
+                                onChange={handleInputChange}
+                            >
+                                <option value="" disabled>Select Location</option>
+                                <optgroup label="Asia">
+                                    <option value="Vietnam">Vietnam</option>
+                                    <option value="Japan">Japan</option>
+                                    <option value="India">India</option>
+                                </optgroup>
+                                <optgroup label="Europe">
+                                    <option value="Germany">Germany</option>
+                                    <option value="France">France</option>
+                                    <option value="UK">United Kingdom</option>
+                                </optgroup>
+                                <optgroup label="America">
+                                    <option value="USA">USA</option>
+                                    <option value="Canada">Canada</option>
+                                    <option value="Brazil">Brazil</option>
+                                </optgroup>
+                            </select>
                         </div>
 
                         <div className={styles.formGroup}>
-                            <label htmlFor="message">Cover Letter</label>
-                            <textarea
+                            <label htmlFor="deadline">Deadline</label>
+                            <input
+                                type="date"
                                 className="form-control"
-                                id="message"
-                                rows="5"
-                                placeholder="Enter your cover letter"
-                                value={formData.message}
+                                id="deadline"
+                                value={formData.deadline}
                                 onChange={handleInputChange}
-                            ></textarea>
+                            />
                         </div>
-                        <button type="submit" className={styles.submitButton}>
-                            Submit
-                        </button>
-                    </form>
-                </Modal.Body>
-            </Modal>
-        </>
+                    </div>
+
+                    {/* Working Type and Quantity */}
+                    <div className={styles['field-pair']}>
+                        <div className={styles.formGroup}>
+                            <label htmlFor="workingType">Working Type</label>
+                            <select
+                                id="workingType"
+                                className="form-control"
+                                value={formData.workingType}
+                                onChange={handleInputChange}
+                            >
+                                <option value="" disabled>Select Working Type</option>
+                                <option value="Fulltime">Fulltime</option>
+                                <option value="Part-time">Part-time</option>
+                                <option value="Remote">Remote</option>
+                                <option value="Freelancer">Freelancer</option>
+                            </select>
+                        </div>
+
+                        <div className={styles.formGroup}>
+                            <label htmlFor="quantity">Quantity</label>
+                            <input
+                                type="number"
+                                className="form-control"
+                                id="quantity"
+                                min="1"
+                                value={formData.quantity}
+                                onChange={handleInputChange}
+                            />
+                        </div>
+                    </div>
+
+                    {/* Salary and Sector */}
+                    <div className={styles['field-pair']}>
+
+                        {/* Salary Dropdown */}
+                        <div className={styles.formGroup}>
+                            <label htmlFor="salary">Salary</label>
+                            <div
+                                className={`${styles.dropdown} ${isSalaryDropdownOpen ? styles.open : ''}`}
+                                ref={salaryDropdownRef}
+                            >
+                                <button
+                                    type="button"
+                                    className={styles['dropdown-button']}
+                                    onClick={toggleSalaryDropdown}
+                                >
+                                    {formData.salary || 'Select Salary'}
+                                    <span className={styles['arrow-icon']}>▼</span>
+                                </button>
+                                {isSalaryDropdownOpen && (
+                                    <div className={styles['dropdown-content']}>
+                                        {['Negotiation', 'Up to $1000', 'Up to $1500', 'Up to $2000', 'More than $2500'].map((option) => (
+                                            <div
+                                                key={option}
+                                                onClick={() => {
+                                                    setFormData((prev) => ({ ...prev, salary: option }));
+                                                    setIsSalaryDropdownOpen(false);
+                                                }}
+                                                className={styles['dropdown-item']}
+                                            >
+                                                {option}
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Sector Dropdown */}
+                        <div className={styles.formGroup}>
+                            <label htmlFor="sector">Sector</label>
+                            <div
+                                ref={sectorDropdownRef}
+                                className={`${styles.dropdown} ${isDropdownOpen ? styles.open : ''}`}
+                            >
+                                <button
+                                    type="button"
+                                    className={styles['dropdown-button']}
+                                    onClick={toggleDropdown}
+                                >
+                                    {formData.sector.length > 0
+                                        ? formData.sector.join(', ')
+                                        : 'Select Sectors'}
+                                    <span
+                                        className={`${styles['arrow-icon']} ${isDropdownOpen ? styles['rotate'] : ''}`}
+                                    >
+                                        ▼
+                                    </span>
+                                </button>
+                                {isDropdownOpen && (
+                                    <div className={styles['dropdown-content']}>
+                                        {['Banking', 'Fintech', 'React', 'Vue', 'Angular'].map((sector) => (
+                                            <label key={sector}>
+                                                <input
+                                                    type="checkbox"
+                                                    value={sector}
+                                                    checked={formData.sector.includes(sector)}
+                                                    onChange={handleSectorChange}
+                                                    disabled={
+                                                        maxSelectionsReached &&
+                                                        !formData.sector.includes(sector)
+                                                    }
+                                                />
+                                                {sector}
+                                            </label>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Description */}
+                    <div className={styles.formGroup}>
+                        <label htmlFor="description">Description</label>
+                        <textarea
+                            className="form-control"
+                            id="description"
+                            rows="4"
+                            value={formData.description}
+                            onChange={handleInputChange}
+                        ></textarea>
+                    </div>
+
+                    <button type="submit" className={styles.submitButton}>
+                        Post
+                    </button>
+                </form>
+            </Modal.Body>
+        </Modal>
     );
 };
 
