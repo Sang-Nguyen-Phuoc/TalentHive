@@ -14,5 +14,6 @@ companyRouter.get("/", companyController.getAllCompanies);
 companyRouter.post("/", authorizeRole(["employer"]), upload.any(), companyController.createCompany);
 companyRouter.delete("/:id", authorizeRole(["employer", "admin"]), companyController.deleteCompany);
 companyRouter.put("/:id", authorizeRole(["employer"]), upload.any(), companyController.updateCompany);
+companyRouter.get("/:companyId", companyController.getACompany);
 
 export default companyRouter;
