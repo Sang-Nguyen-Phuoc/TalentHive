@@ -10,7 +10,6 @@ import IconChevronRight from "../../components/icons/IconChevronRight";
 
 function Home() {
     const [numJob, setnumJob] = useState(+12);
-    console.log(numJob)
     const [activeIndex, setActiveIndex] = useState(0);
     const Job = JobItem.HomePage;
     const numPage = Math.ceil(items.length/numJob); 
