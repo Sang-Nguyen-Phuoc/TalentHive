@@ -1,18 +1,20 @@
 import { useNavigate } from "react-router-dom";
-import { useState } from 'react';
+import { useContext } from 'react';
+import { CurrentUserContext } from "../../context/CurrentUserContext";
 import styles from '../../styles/components/NavBar.module.css';
 import Logo from '../../images/account-logo.png';
 
 const NavBar = () => {
-    const [role, setRole] = useState('employer'); // Set this to 'worker', 'employer', or 'admin' as needed
     const navigate = useNavigate();
+    const {initUser, currentUser, setCurrentUser} = useContext(CurrentUserContext);
+    const role = currentUser.user.role;
 
     const handleNavigate = (path) => {
         navigate(path);
     };
 
     const handleLogout = () => {
-        navigate('/signin');
+        setCurrentUser(initUser);
     }
 
 
@@ -25,7 +27,7 @@ const NavBar = () => {
             <div className={styles['navbar-cta']}>
                 <div className={styles['text']} onClick={() => handleNavigate('/about-us')}><span>About Us</span></div>
 
-                {role === 'worker' && (
+                {role === 'candidate' && (
                     <>
                         <div className={styles['text']} onClick={() => handleNavigate('/jobs-applied')}><span>Jobs Applied</span></div>
 
@@ -35,7 +37,7 @@ const NavBar = () => {
                             <div className={styles['dropdown-menu']}>
                                 <div onClick={() => handleNavigate('/profile-dashboard')}>Dashboard</div>
                                 <div onClick={() => handleNavigate('/profile-account')}>Account</div>
-                                <div onClick={() => handleNavigate('/logout')}>Log out</div>
+                                <div onClick={() => handleLogout()}>Log out</div>
                             </div>
                         </div>
                     </>
@@ -50,7 +52,7 @@ const NavBar = () => {
                             <div className={styles['dropdown-menu']}>
                                 <div onClick={() => handleNavigate('/profile-dashboard')}>Dashboard</div>
                                 <div onClick={() => handleNavigate('/profile-account')}>Account</div>
-                                <div onClick={() => handleNavigate('/logout')}>Log out</div>
+                                <div onClick={() => handleLogout()}>Log out</div>
                             </div>
                         </div>
                     </>
@@ -77,9 +79,9 @@ const NavBar = () => {
                     </>
                 )}
 
-                {role === '' && (
+                {role === 'guest' && (
                     <>
-                        <div className={styles['text']} onClick={() => handleNavigate('/signin')}><p>Sign In</p></div>
+                        <div className={styles['text']} onClick={() => handleNavigate('/signin')}><span>Sign In</span></div>
                     </>
                 )}
             </div>

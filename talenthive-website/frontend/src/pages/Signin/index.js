@@ -1,7 +1,8 @@
 import { Link, useNavigate } from 'react-router-dom';
 import styles from '../../styles/pages/Authentication.module.css';
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, useContext } from 'react';
 import useFetch from '../../hooks/useFetch';
+import {CurrentUserContext} from '../../context/CurrentUserContext'
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import { faEye, faEyeSlash } from '@fortawesome/free-regular-svg-icons';
 import toast, { Toaster } from 'react-hot-toast';
@@ -38,13 +39,16 @@ function Signin() {
     const [show, setShow] = useState(false);
     const [fetch, setFetch] = useState(0);
     const navigate = useNavigate();
-    
+    const {setCurrentUser} = useContext(CurrentUserContext);
+
+
     // Call API
     const {payload, status} = useFetch(`${REACT_APP_BASEURL}/api/v1/auth/login`, reqAPI);
 
     useEffect(() => {
         if (status === 'success'){
             toast.success('Sign in successfully!');
+            setCurrentUser(payload);
             setTimeout(() => navigate('/'), 2000);
         }
         else if (status !== 'fail') {
