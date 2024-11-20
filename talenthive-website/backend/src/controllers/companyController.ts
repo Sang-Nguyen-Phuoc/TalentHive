@@ -246,3 +246,25 @@ export const updateCompany = catchAsync(async (req: Request, res: Response, next
         },
     });
 });
+
+export const getACompany = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const companyId = req.params.companyId;
+    if (!mongoose.Types.ObjectId.isValid(companyId)) {
+        return next(new AppError("Invalid company ID", StatusCodes.BAD_REQUEST));
+    }
+    
+    const company = await Company.findOne({ _id: companyId }).populate("avatar")
+                                                            .populate("employers")
+                                                            .populate("company_manager");
+
+    if (!company) {
+        return next(new AppError("Company ID not found", StatusCodes.NOT_FOUND));
+    }
+
+    res.status(StatusCodes.OK).json({
+        status: "success",
+        data: {
+            "company": company
+        }
+    });
+});
