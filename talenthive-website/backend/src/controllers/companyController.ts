@@ -253,7 +253,9 @@ export const getACompany = catchAsync(async (req: Request, res: Response, next: 
         return next(new AppError("Invalid company ID", StatusCodes.BAD_REQUEST));
     }
     
-    const company = await Company.findOne({ _id: companyId }).populate("company_manager");
+    const company = await Company.findOne({ _id: companyId }).populate("avatar")
+                                                            .populate("employers")
+                                                            .populate("company_manager");
 
     if (!company) {
         return next(new AppError("Company ID not found", StatusCodes.NOT_FOUND));
