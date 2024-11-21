@@ -8,5 +8,6 @@ const employerRouter = Router();
 employerRouter.use(attachUserId);
 employerRouter.get("/", employerController.getAllEmployers);
 employerRouter.put("/" , authorizeRole(['employer']) ,employerController.updateEmployer);
+employerRouter.delete("/:employerId", employerController.deleteEmployerById);
 
 export default employerRouter;

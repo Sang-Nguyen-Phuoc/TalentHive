@@ -4,11 +4,12 @@ import catchAsync from "../utils/catchAsync";
 import AppError from "../utils/appError";
 import validator from "validator";
 import { StatusCodes } from "http-status-codes";
-import Employer from "../models/employerProfile";
+import mongoose from "mongoose";
+import User from "../models/user";
 
 export const getAllEmployers = catchAsync(
     async (req: Request, res: Response, next: NextFunction) => {
-        const employers = await Employer.find().populate("user_id");
+        const employers = await EmployerProfile.find().populate("user_id");
         res.status(StatusCodes.OK).json({
             status: "success",
             data: {
@@ -105,3 +106,27 @@ export const updateEmployer = catchAsync(async (req: Request, res: Response, nex
     });
 });
 
+export const deleteEmployerById = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const {employerId} = req.params;
+    if (!mongoose.Types.ObjectId.isValid(employerId)) {
+        return next(new AppError("Invalid ID", StatusCodes.BAD_REQUEST));
+    }
+
+    const employerProfile = await EmployerProfile.findOne({ _id: employerId });
+    if (!employerProfile)
+        return next(new AppError(`Employer profile with id: ${employerId} not found`, StatusCodes.NOT_FOUND));
+
+    const user = await User.findOne({ _id: employerProfile.user_id });
+    if (!user)
+        return next(new AppError(`User with id: ${employerProfile.user_id} not found`, StatusCodes.NOT_FOUND));
+
+    await employerProfile.updateOne({ active: false });
+    await user.updateOne({ active: false });
+
+    res.status(StatusCodes.OK).json({
+        status: "success",
+        data: {
+            user: null
+        }
+    })
+})
