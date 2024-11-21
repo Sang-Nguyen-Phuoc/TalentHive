@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import statusCodes from "http-status-codes";
 import { NextFunction, Request, Response } from "express";
+import validator from "validator";
 
 import User from "../models/user";
 import catchAsync from "../utils/catchAsync";
@@ -40,3 +41,111 @@ export const deleteUserByCandidateId = catchAsync(
         });
     }
 );
+
+export const updateCandidateInfo = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const {
+        full_name,
+        email,
+        date_of_birth,
+        gender,
+        phone_number,
+        address,
+        city,
+        education,
+        skills,
+        certifications,
+        experience,
+        work_experience,
+        resume,
+        avatar
+    } = req.body;
+
+    let candidate: any;
+    try {
+        candidate = await WorkerProfile.findOne({user_id: req.body.userId});
+    } catch (err) {
+        return next(new AppError("Database error occurred. Please try again", statusCodes.INTERNAL_SERVER_ERROR));
+    }
+    if (!candidate) {
+        return next(new AppError("Candidate not found", statusCodes.NOT_FOUND));
+    }
+
+    if (!full_name && !email && !date_of_birth && !gender && !phone_number && !address && !city && !education && !skills && !certifications && !experience && !work_experience && !resume && !avatar) {
+        return next(new AppError("At least one field is required", statusCodes.BAD_REQUEST));
+    }
+    
+    if (full_name) {
+        if (typeof full_name !== "string") {
+            return next(new AppError("Full name must be a string", statusCodes.BAD_REQUEST));
+        }
+       
+        // if full_name contains non-alphabetic characters
+        if (!/^[a-zA-Z ]+$/.test(full_name)) {
+            return next(new AppError("Full name must contain only alphabetic characters", statusCodes.BAD_REQUEST));
+        }
+    }
+    if (email && !validator.isEmail(email)) {
+        return next(new AppError("Invalid email address", statusCodes.BAD_REQUEST));
+    }
+    if (date_of_birth && !validator.isDate(date_of_birth)) {
+        return next(new AppError("Invalid date of birth", statusCodes.BAD_REQUEST));
+    }
+    if (phone_number && !validator.isMobilePhone(phone_number)) {
+        return next(new AppError("Invalid phone number", statusCodes.BAD_REQUEST));
+    }
+    if (address && typeof address !== "string") {
+        return next(new AppError("Address must be a string", statusCodes.BAD_REQUEST));
+    }
+    if (city && typeof city !== "string") {
+        return next(new AppError("City must be a string", statusCodes.BAD_REQUEST));
+    }
+    if (education && typeof education !== "string") {
+        return next(new AppError("Education must be a string", statusCodes.BAD_REQUEST));
+    }
+    if (skills && !Array.isArray(skills)) {
+        return next(new AppError("Skills must be an array of string", statusCodes.BAD_REQUEST));
+    }
+    if (certifications && !Array.isArray(certifications)) {
+        return next(new AppError("Certifications must be an array of string", statusCodes.BAD_REQUEST));
+    }
+    if (experience && typeof experience !== "string") {
+        return next(new AppError("Experience must be a string", statusCodes.BAD_REQUEST));
+    }
+    if (work_experience && typeof work_experience !== "string") {
+        return next(new AppError("Work experience must be a string", statusCodes.BAD_REQUEST));
+    }
+    if (resume && typeof resume !== "object") {
+        return next(new AppError("Resume must be an object", statusCodes.BAD_REQUEST));
+    }    
+    if (avatar && typeof avatar !== "object") {
+        return next(new AppError("Avatar must be an object", statusCodes.BAD_REQUEST));
+    }
+
+    const updateCandidateInfo = await WorkerProfile.findOneAndUpdate(
+        { user_id: req.body.userId },
+        {
+            full_name,
+            email,
+            date_of_birth,
+            gender,
+            phone_number,
+            address,
+            city,
+            education,
+            skills,
+            certifications,
+            experience,
+            work_experience,
+            resume,
+            avatar
+        },
+        { new: true }
+    );
+
+    res.status(statusCodes.OK).json({
+        status: "success",
+        data: {
+            candidate: updateCandidateInfo
+        }
+    })
+})
