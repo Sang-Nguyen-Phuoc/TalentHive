@@ -9,16 +9,6 @@ const userRouter = Router();
 // userRouter.put("/:id", userController.updateUser);
 
 userRouter.route("/")
-    .get(userController.getAllUsers)
-    .post(userController.createUser);
-
-userRouter.route("/:id")
-    .get(userController.getUserById)
-    .put(userController.updateUser)
-    .delete(userController.deleteUser);
-
-
-
-
+        .delete(userController.deleteUser);
 
 export default userRouter;

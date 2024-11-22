@@ -20,11 +20,9 @@ const EmployerProfileSchema = new Schema<IEmployerProfile>({
     user_id: {
         type: Schema.Types.ObjectId,
         ref: 'User',
-        required: true
     },
     full_name: {
         type: String,
-        required: true,
         trim: true
     },
     avatar: {
@@ -40,7 +38,6 @@ const EmployerProfileSchema = new Schema<IEmployerProfile>({
     },
     email: {
         type: String,
-        required: true,
         validate: [validator.isEmail, 'Invalid email address']
     },
     phone: {
@@ -58,12 +55,10 @@ const EmployerProfileSchema = new Schema<IEmployerProfile>({
     },
     created_at: {
         type: Date,
-        required: false,
         default: Date.now()
     },
     updated_at: {
         type: Date,
-        required: false,
         default: Date.now()
     }
 })
