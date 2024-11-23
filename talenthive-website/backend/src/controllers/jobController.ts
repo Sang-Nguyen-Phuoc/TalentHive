@@ -400,3 +400,66 @@ export const applyForJob = catchAsync(async (req: Request, res: Response, next: 
     });
 
 });
+
+
+export const updateApplication = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const jobId = req.params.jobId;
+    const applicationId = req.params.applicationId;
+
+    if (!mongoose.Types.ObjectId.isValid(jobId)) {
+        return next(new AppError("Invalid job ID", 400));
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(applicationId)) {
+        return next(new AppError("Invalid application ID", 400));
+    }
+
+    const job = await Job.findOne({ _id: jobId });
+    if (!job) {
+        return next(new AppError("Job ID not found", 404));
+    }
+
+    const application = await Application.findOne({ _id: applicationId });
+    if (!application) {
+        return next(new AppError("Application ID not found", 404));
+    }
+
+    const {
+        full_name,
+        resume,
+        email,
+        cover_letter,
+        phone,
+    } = req.body;
+
+    if (!full_name && !resume && !email && !cover_letter && !phone) {
+        return next(new AppError("At least one field is required", 400));
+    }
+
+    if (email && !validator.isEmail(email)) {
+        return next(new AppError("Invalid email address", 400));
+    }
+
+    if (phone && !validator.isMobilePhone(phone)) {
+        return next(new AppError("Invalid phone number", 400));
+    }
+
+    const updatedApplication = await Application.findOneAndUpdate(
+        { _id: applicationId },
+        {
+            full_name: full_name || application.full_name,
+            resume: resume || application.resume,
+            email: email || application.email,
+            cover_letter: cover_letter || application.cover_letter,
+            phone: phone || application.phone,
+        },
+        { new: true }
+    );
+
+    res.status(200).json({
+        status: "success",
+        data: {
+            application: updatedApplication,
+        },
+    });
+});

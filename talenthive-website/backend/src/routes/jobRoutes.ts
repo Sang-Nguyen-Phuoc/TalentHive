@@ -14,5 +14,6 @@ router.get("/", authorizeRole(["candidate", "employer", "admin"]), jobController
 router.get("/:jobId", authorizeRole(["candidate", "employer", "admin"]), jobController.getAJob);
 
 router.post("/:jobId/apply", authorizeRole(["candidate"]), jobController.applyForJob);
+router.put("/:jobId/application/:applicationId", authorizeRole(["candidate"]), jobController.updateApplication);
 
 export default router;
