@@ -13,4 +13,6 @@ router.delete("/:jobId", authorizeRole(["employer", "admin"]), jobController.del
 router.get("/", authorizeRole(["candidate", "employer", "admin"]), jobController.getAllJobs);
 router.get("/:jobId", authorizeRole(["candidate", "employer", "admin"]), jobController.getAJob);
 
+router.post("/:jobId/apply", authorizeRole(["candidate"]), jobController.applyForJob);
+
 export default router;
