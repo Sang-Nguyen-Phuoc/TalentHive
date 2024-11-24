@@ -281,7 +281,7 @@ const ApplicationForm = ({ show, setShow }) => {
                         <textarea
                             className="form-control"
                             id="description"
-                            rows="4"
+                            rows="5"
                             value={formData.description}
                             onChange={handleInputChange}
                         ></textarea>
