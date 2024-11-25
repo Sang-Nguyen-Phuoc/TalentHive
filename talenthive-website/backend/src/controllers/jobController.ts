@@ -7,9 +7,9 @@ import EmployerProfile from "../models/employerProfile";
 import JobType from "../models/jobType";
 import JobCategory from "../models/jobCategory";
 import mongoose from "mongoose";
-
-
-
+import WorkerProfile from "../models/workerProfile";
+import Application from "../models/application";
+import validator from "validator";
 
 export const createJob = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const {
@@ -115,7 +115,7 @@ export const createJob = catchAsync(async (req: Request, res: Response, next: Ne
     });
 });
 
-const getAllJobs = catchAsync(async (req: Request, res: Response, next: NextFunction) => { 
+export const getAllJobs = catchAsync(async (req: Request, res: Response, next: NextFunction) => { 
 
     const page = (req.query.page ? parseInt(req.query.page as string, 10) : 1);
     const limit = (req.query.limit ? parseInt(req.query.limit as string, 10) : 0);
@@ -160,7 +160,7 @@ const getAllJobs = catchAsync(async (req: Request, res: Response, next: NextFunc
     });
 });
 
-const deleteJob = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+export const deleteJob = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const jobId = req.params.jobId;
     if (!mongoose.Types.ObjectId.isValid(jobId)) {
         return next(new AppError("Invalid job ID", 400));
@@ -181,7 +181,7 @@ const deleteJob = catchAsync(async (req: Request, res: Response, next: NextFunct
     });
 });
 
-const getAJob = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+export const getAJob = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const jobId = req.params.jobId;
     if (!mongoose.Types.ObjectId.isValid(jobId)) {
         return next(new AppError("Invalid job ID", 400));
@@ -204,7 +204,7 @@ const getAJob = catchAsync(async (req: Request, res: Response, next: NextFunctio
     });
 });
 
-const updateJob = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+export const updateJob = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     
     const jobId = req.params.jobId;
    
@@ -309,9 +309,94 @@ const updateJob = catchAsync(async (req: Request, res: Response, next: NextFunct
     });
 });
 
-export {
-    getAllJobs,
-    deleteJob,
-    getAJob,
-    updateJob
-};  
+
+export const applyForJob = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const jobId = req.params.jobId;
+    const candidateId = req.body.userId;
+
+    if (!mongoose.Types.ObjectId.isValid(jobId)) {
+        return next(new AppError("Invalid job ID", 400));
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(candidateId)) {
+        return next(new AppError("Invalid candidate ID", 400));
+    }
+
+
+    const job = await Job.findOne({ _id: jobId });
+    if (!job) {
+        return next(new AppError("Job ID not found", 404));
+    }
+
+    const candidate = await WorkerProfile.findOne({ user_id: candidateId });
+    if (!candidate) {
+        return next(new AppError("Candidate ID not found", 404));
+    }
+
+    const applicationExists = await Application.findOne({
+        job_id: jobId,
+        worker_id: candidateId,
+    });
+
+    if (applicationExists) {
+        return next(new AppError("You have already applied for the job.", 400));
+    }
+
+    const {
+        full_name,
+        resume,
+        email,
+        cover_letter,
+        phone,
+    } = req.body;
+
+    if (!full_name) {
+        return next(new AppError("full_name is required", 400));
+    }
+
+    if (!resume) {
+        return next(new AppError("resume is required", 400));
+    }
+
+    if (!email) {
+        return next(new AppError("email is required", 400));
+    }
+
+    if (!cover_letter) {
+        return next(new AppError("cover_letter is required", 400));
+    }
+
+    if (!phone) {
+        return next(new AppError("phone is required", 400));
+    }
+
+    if (!validator.isEmail(email)) {
+        return next(new AppError("Invalid email address", 400));
+    }
+
+    if (!validator.isMobilePhone(phone)) {
+        return next(new AppError("Invalid phone number", 400));
+    }
+
+    const application = await Application.create({
+        job_id: jobId,
+        worker_id: candidateId,
+        full_name: full_name,
+        resume: resume,
+        email: email,
+        cover_letter: cover_letter,
+        phone: phone,
+        status: "pending",
+        applied_at: new Date()
+    });
+
+    await application.save();
+
+    res.status(201).json({
+        status: "success",
+        data: {
+            application: application,
+        },
+    });
+
+});
