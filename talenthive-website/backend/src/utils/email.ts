@@ -1,4 +1,4 @@
-import nodemailer from 'nodemailer';
+import nodemailer from "nodemailer";
 
 class Email {
     declare user: any;
@@ -6,9 +6,10 @@ class Email {
     declare to: string;
     declare name: string;
     declare from: string;
+    
     constructor(user: any, url: string) {
         this.to = user.email;
-        this.name = user.email.split('@')[0];
+        this.name = user.email.split("@")[0];
         this.url = url;
         this.from = `TalentHive`;
     }
@@ -18,9 +19,9 @@ class Email {
             service: process.env.EMAIL_SERVICE,
             auth: {
                 user: process.env.EMAIL_USERNAME,
-                pass: process.env.EMAIL_PASSWORD
-            }
-        })
+                pass: process.env.EMAIL_PASSWORD,
+            },
+        });
     }
 
     async send(subject: string, message: string) {
@@ -28,17 +29,23 @@ class Email {
             from: this.from,
             to: this.to,
             subject,
-            text: message
-        }
+            text: message,
+        };
 
         await this.newTransport().sendMail(mailOptions);
     }
 
     async sendWelcome() {
-        await this.send('Welcome to TalentHive!', `Welcome to the TalentHive platform, ${this.name}!`);
+        await this.send(
+            "Welcome to TalentHive!",
+            `Welcome to the TalentHive platform, ${this.name}!`
+        );
     }
     async sendPasswordReset() {
-        await this.send('Password Reset', `Forgot your password? Submit a PATCH request with your new password and passwordConfirm to: ${this.url}`);
+        await this.send(
+            "Password Reset",
+            `Forgot your password? Submit a PATCH request with your new password and passwordConfirm to: ${this.url}`
+        );
     }
 }
 
