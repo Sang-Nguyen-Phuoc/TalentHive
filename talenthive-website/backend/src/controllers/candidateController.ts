@@ -1,12 +1,22 @@
 import mongoose from "mongoose";
-import statusCodes from "http-status-codes";
+import statusCodes, { StatusCodes } from "http-status-codes";
 import { NextFunction, Request, Response } from "express";
 import validator from "validator";
 
 import User from "../models/user";
 import catchAsync from "../utils/catchAsync";
 import AppError from "../utils/appError";
-import WorkerProfile from "../models/workerProfile";
+import CandidateProfile from "../models/candidateProfile";
+
+export const getAllCandidates = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const candidates = await CandidateProfile.find().populate("user_id");
+    res.status(StatusCodes.OK).json({
+        status: "success",
+        data: {
+            candidates,
+        },
+    });
+});
 
 export const deleteUserByCandidateId = catchAsync(
     async (req: Request, res: Response, next: NextFunction) => {
@@ -14,7 +24,7 @@ export const deleteUserByCandidateId = catchAsync(
         if (!mongoose.Types.ObjectId.isValid(id)) {
             return next(new AppError("Invalid ID", statusCodes.BAD_REQUEST));
         }
-        const candidateProfile = await WorkerProfile.findById(id);
+        const candidateProfile = await CandidateProfile.findById(id);
         if (!candidateProfile) {
             return next(
                 new AppError(`candidateProfile with id: ${id} not found`, statusCodes.NOT_FOUND)
@@ -62,7 +72,7 @@ export const updateCandidateInfo = catchAsync(async (req: Request, res: Response
 
     let candidate: any;
     try {
-        candidate = await WorkerProfile.findOne({user_id: req.body.userId});
+        candidate = await CandidateProfile.findOne({user_id: req.body.userId});
     } catch (err) {
         return next(new AppError("Database error occurred. Please try again", statusCodes.INTERNAL_SERVER_ERROR));
     }
@@ -121,7 +131,7 @@ export const updateCandidateInfo = catchAsync(async (req: Request, res: Response
         return next(new AppError("Avatar must be an object", statusCodes.BAD_REQUEST));
     }
 
-    const updateCandidateInfo = await WorkerProfile.findOneAndUpdate(
+    const updateCandidateInfo = await CandidateProfile.findOneAndUpdate(
         { user_id: req.body.userId },
         {
             full_name,

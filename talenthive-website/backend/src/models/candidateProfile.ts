@@ -1,7 +1,7 @@
 import mongoose, { Schema, Types } from "mongoose";
 import validator from "validator";
 
-export interface IWorkerProfile {
+export interface ICandidateProfile {
     user_id: Types.ObjectId;
     full_name: string;
     email: string;
@@ -23,7 +23,7 @@ export interface IWorkerProfile {
     active: boolean;
 }
 
-const WorkerProfileSchema = new Schema<IWorkerProfile>({
+const CandidateProfileSchema = new Schema<ICandidateProfile>({
     user_id: {
         type: Schema.Types.ObjectId,
         ref: 'User',
@@ -87,7 +87,7 @@ const WorkerProfileSchema = new Schema<IWorkerProfile>({
     },
 })
 
-const WorkerProfile = mongoose.model<IWorkerProfile>('WorkerProfile', WorkerProfileSchema);
+const CandidateProfile = mongoose.model<ICandidateProfile>('CandidateProfile', CandidateProfileSchema);
 
-export default WorkerProfile;
+export default CandidateProfile;
     

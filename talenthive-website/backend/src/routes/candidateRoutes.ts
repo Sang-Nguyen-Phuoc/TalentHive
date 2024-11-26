@@ -7,5 +7,6 @@ const router = Router();
 
 router.delete("/:id", authorizeRole(["admin"]), candidateController.deleteUserByCandidateId);
 router.put("/", candidateController.updateCandidateInfo);
+router.route("/").get(candidateController.getAllCandidates);
 
 export default router;
