@@ -47,7 +47,7 @@ export const createJob = catchAsync(async (req: Request, res: Response, next: Ne
 
     await job.save();
 
-    res.status(201).json({
+    res.status(StatusCodes.CREATED).json({
         status: "success",
         data: {
             job: job,
@@ -230,7 +230,7 @@ export const createApplication = catchAsync(async (req: Request, res: Response, 
 
     await application.save();
 
-    res.status(201).json({
+    res.status(StatusCodes.CREATED).json({
         status: "success",
         data: {
             application: application,
@@ -303,7 +303,7 @@ export const deleteApplication = catchAsync(async (req: Request, res: Response, 
 
     await Application.deleteOne({ _id: application._id });
 
-    res.status(200).json({
+    res.status(StatusCodes.OK).json({
         status: "success",
         data: {
             application: null
@@ -350,7 +350,7 @@ export const searchJobs = catchAsync(async (req: Request, res: Response, next: N
                           .populate("employer_id")
 
 
-    res.status(200).json({
+    res.status(StatusCodes.OK).json({
         status: "success",
         data: {
             jobs,
