@@ -6,6 +6,8 @@ import mongoose from "mongoose";
 import Application from "../models/application";
 
 
+import { StatusCodes } from "http-status-codes";
+
 export const createJob = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const {
         title,
@@ -59,11 +61,11 @@ export const getAllJobs = catchAsync(async (req: Request, res: Response, next: N
     const limit = (req.query.limit ? parseInt(req.query.limit as string, 10) : 0);
 
     if (page < 1) {
-        return next(new AppError("Invalid page number", 400));
+        return next(new AppError("Invalid page number", StatusCodes.BAD_REQUEST));
     }
 
     if (limit < 0) {
-        return next(new AppError("Invalid limit number", 400));
+        return next(new AppError("Invalid limit number", StatusCodes.BAD_REQUEST));
     }
 
     // count total number of jobs
@@ -74,7 +76,7 @@ export const getAllJobs = catchAsync(async (req: Request, res: Response, next: N
 
     // if page number exceeds total number of pages, return error
     if (maxPage && page > maxPage) {
-        return next(new AppError("Page number exceeds total number of pages", 400));
+        return next(new AppError("Page number exceeds total number of pages", StatusCodes.BAD_REQUEST));
     }
 
     // calculate number of jobs to skip
@@ -88,7 +90,7 @@ export const getAllJobs = catchAsync(async (req: Request, res: Response, next: N
                                             .populate("job_category");
 
    
-    res.status(200).json({
+    res.status(StatusCodes.OK).json({
         status: "success",
         data: {
             "total_jobs": totalJobs,
@@ -101,17 +103,17 @@ export const getAllJobs = catchAsync(async (req: Request, res: Response, next: N
 export const deleteJob = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const jobId = req.params.jobId;
     if (!mongoose.Types.ObjectId.isValid(jobId)) {
-        return next(new AppError("Invalid job ID", 400));
+        return next(new AppError("Invalid job ID", StatusCodes.BAD_REQUEST));
     }
 
     const job = await Job.findOne({ _id: jobId });
     if (!job) {
-        return next(new AppError("Job ID not found", 404));
+        return next(new AppError("Job ID not found", StatusCodes.NOT_FOUND));
     }
 
     await Job.deleteOne({ _id: jobId });
 
-    res.status(200).json({
+    res.status(StatusCodes.OK).json({
         status: "success",
         data: {
             job: null
@@ -122,7 +124,7 @@ export const deleteJob = catchAsync(async (req: Request, res: Response, next: Ne
 export const getAJob = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const jobId = req.params.jobId;
     if (!mongoose.Types.ObjectId.isValid(jobId)) {
-        return next(new AppError("Invalid job ID", 400));
+        return next(new AppError("Invalid job ID", StatusCodes.BAD_REQUEST));
     }
     
     const job = await Job.findOne({ _id: jobId }).populate("company_id")
@@ -131,10 +133,10 @@ export const getAJob = catchAsync(async (req: Request, res: Response, next: Next
                                                 .populate("job_category");
 
     if (!job) {
-        return next(new AppError("Job ID not found", 404));
+        return next(new AppError("Job ID not found", StatusCodes.NOT_FOUND));
     }
 
-    res.status(200).json({
+    res.status(StatusCodes.OK).json({
         status: "success",
         data: {
             "job": job
@@ -147,13 +149,13 @@ export const updateJob = catchAsync(async (req: Request, res: Response, next: Ne
     const jobId = req.params.jobId;
    
     if (!mongoose.Types.ObjectId.isValid(jobId)) {
-        return next(new AppError("Invalid job ID", 400));
+        return next(new AppError("Invalid job ID", StatusCodes.BAD_REQUEST));
     }
 
     // find job by ID
     const job = await Job.findOne({_id: jobId});
     if (!job) {
-        return next(new AppError("Job ID not found", 404));
+        return next(new AppError("Job ID not found", StatusCodes.NOT_FOUND));
     }
 
     const {
@@ -193,7 +195,7 @@ export const updateJob = catchAsync(async (req: Request, res: Response, next: Ne
         { new: true }
     );
 
-    res.status(200).json({
+    res.status(StatusCodes.OK).json({
         status: "success",
         data: {
             job: updatedJob,
@@ -216,7 +218,7 @@ export const createApplication = catchAsync(async (req: Request, res: Response, 
 
     const application = await Application.create({
         job_id: jobId,
-        worker_id: candidateId,
+        candidate_id: candidateId,
         full_name: full_name,
         resume: resume,
         email: email,
@@ -265,7 +267,7 @@ export const updateApplication = catchAsync(async (req: Request, res: Response, 
         { new: true }
     );
 
-    res.status(200).json({
+    res.status(StatusCodes.OK).json({
         status: "success",
         data: {
             application: updatedApplication,
