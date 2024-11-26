@@ -310,7 +310,6 @@ export const deleteApplication = catchAsync(async (req: Request, res: Response, 
 });
 
 export const searchJobs = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    console.log(">>> Searching jobs");
     const { title, company_id, salary_range, location, skills, job_type, job_category } = req.query;
 
     const filter: any = {};
@@ -341,9 +340,6 @@ export const searchJobs = catchAsync(async (req: Request, res: Response, next: N
             }
         };
     }
-
-    console.log(">>> Filter: ", filter);
-    console.log(mongoose.models);
 
     const jobs = await Job.find(filter)
                           .populate("company_id")
