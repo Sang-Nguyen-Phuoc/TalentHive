@@ -1,111 +1,49 @@
 import { NextFunction, Request, Response } from "express";
 import catchAsync from "../utils/catchAsync";
 import Job from "../models/job";
-import Company from "../models/company";
 import AppError from "../utils/appError";
-import EmployerProfile from "../models/employerProfile";
-import JobType from "../models/jobType";
-import JobCategory from "../models/jobCategory";
 import mongoose from "mongoose";
-import WorkerProfile from "../models/workerProfile";
 import Application from "../models/application";
-import validator from "validator";
+
 
 export const createJob = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const {
         title,
         company_id,
         location,
-        job_type_id,
+        job_type,
         description,
         requirements,
         benefits,
         employer_id,
         expires_at,
-        job_category_id,
-        skills
+        job_category,
+        skills,
+        salary_range,
+        is_public
     } = req.body;
-
-
-    if (!title) {
-        return next(new AppError("title is reqired", 400));
-    }
-    if (!company_id) {
-        return next(new AppError("company_id is reqired", 400));
-    }
-    if (!employer_id) {
-        return next(new AppError("employer_id is reqired", 400));
-    }
-    if (!expires_at) {
-        return next(new AppError("expires_at is reqired", 400));
-    }
-
-    // check if request params are valid
-    if (!mongoose.Types.ObjectId.isValid(company_id) || !(await Company.findById(company_id))) {
-        return next(new AppError("company_id is not valid", 400));
-    }
-
-    if (
-        !mongoose.Types.ObjectId.isValid(employer_id) ||
-        !(await EmployerProfile.findById(employer_id))
-    ) {
-        return next(new AppError("employer_id is not valid", 400));
-    }
-
-    if (!mongoose.Types.ObjectId.isValid(job_type_id) || !(await JobType.findById(job_type_id))) {
-        return next(new AppError("job_type_id is not valid", 400));
-    }
-
-    if (
-        !mongoose.Types.ObjectId.isValid(job_category_id) ||
-        !(await JobCategory.findById(job_category_id))
-    ) {
-        return next(new AppError("job_category_id is not valid", 400));
-    }
-
-    if (
-        requirements &&
-        (!Array.isArray(requirements) || !requirements.every((req) => typeof req === "string"))
-    ) {
-        return next(new AppError("requirements must be an array of strings", 400));
-    }
-
-    if (
-        benefits &&
-        (!Array.isArray(benefits) || !benefits.every((benefit) => typeof benefit === "string"))
-    ) {
-        return next(new AppError("benefits must be an array of strings", 400));
-    }
-    if (
-        skills &&
-        (!Array.isArray(skills) || !skills.every((benefit) => typeof benefit === "string"))
-    ) {
-        return next(new AppError("skills must be an array of strings", 400));
-    }
-
-    if (expires_at && isNaN(Date.parse(expires_at))) {
-        return next(new AppError("Invalid expires_at DATE format", 400));
-    }
-
-    if (expires_at && new Date(expires_at) <= new Date()) {
-        return next(new AppError("expires_at must be a future date", 400));
-    }
-
 
 
     const job = await Job.create({
         title: title,
         company_id: company_id,
         location: location,
-        job_type: job_type_id,
+        job_type: job_type,
         description: description,
         requirements: requirements,
         benefits: benefits,
         employer_id: employer_id,
         expires_at: expires_at,
-        job_category: job_category_id,
-        skills: skills
+        job_category: job_category,
+        skills: skills,
+        salary_range: salary_range,
+        is_public: is_public,
+        posted_at: new Date(),
+        views: 0,
+        applications_count: 0,
     });
+
+    await job.save();
 
     res.status(201).json({
         status: "success",
@@ -234,52 +172,6 @@ export const updateJob = catchAsync(async (req: Request, res: Response, next: Ne
         is_public,
     } = req.body;
 
-    // check if at least one field is provided
-    if (!title && !company_id && !employer_id && !salary_range && !location && !description && !skills && !requirements && !benefits && !expires_at && !job_type && !job_category && !is_public) {
-        return next(new AppError("At least one field is required", 400));
-    }
-
-    // check if missing required fields or invalid fields and return error
-    if (title && typeof title !== "string") {
-        return next(new AppError("title must be a string", 400));
-    }
-    if (company_id && !mongoose.Types.ObjectId.isValid(company_id)) {
-        return next(new AppError("company_id is not valid", 400));
-    }
-    if (employer_id && !mongoose.Types.ObjectId.isValid(employer_id)) {
-        return next(new AppError("employer_id is not valid", 400));
-    }
-    if (salary_range && (typeof salary_range.min !== "number" || typeof salary_range.max !== "number")) {
-        return next(new AppError("salary_range must be an object with min and max properties", 400));
-    }
-    if (location && typeof location !== "string") {
-        return next(new AppError("location must be a string", 400));
-    }
-    if (description && typeof description !== "string") {
-        return next(new AppError("description must be a string", 400));
-    }
-    if (skills && (!Array.isArray(skills) || !skills.every((skill) => typeof skill === "string"))) {
-        return next(new AppError("skills must be an array of strings", 400));
-    }
-    if (requirements && (!Array.isArray(requirements) || !requirements.every((require) => typeof require === "string"))) {
-        return next(new AppError("requirements must be an array of strings", 400));
-    }
-    if (benefits && (!Array.isArray(benefits) || !benefits.every((benefit) => typeof benefit === "string"))) {
-        return next(new AppError("benefits must be an array of strings", 400));
-    }
-    if (expires_at && isNaN(Date.parse(expires_at))) {
-        return next(new AppError("Invalid expires_at DATE format", 400));
-    }
-    if (job_type && !mongoose.Types.ObjectId.isValid(job_type)) {
-        return next(new AppError("job_type is not valid", 400));
-    }
-    if (job_category && !mongoose.Types.ObjectId.isValid(job_category)) {
-        return next(new AppError("job_category is not valid", 400));
-    }
-    if (is_public && typeof is_public !== "boolean") {
-        return next(new AppError("is_public must be a boolean", 400));
-    }
-
     // update job fields and return updated job
     const updatedJob = await Job.findOneAndUpdate(
         { _id: jobId },
@@ -310,37 +202,9 @@ export const updateJob = catchAsync(async (req: Request, res: Response, next: Ne
 });
 
 
-export const applyForJob = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+export const createApplication = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const jobId = req.params.jobId;
     const candidateId = req.body.userId;
-
-    if (!mongoose.Types.ObjectId.isValid(jobId)) {
-        return next(new AppError("Invalid job ID", 400));
-    }
-
-    if (!mongoose.Types.ObjectId.isValid(candidateId)) {
-        return next(new AppError("Invalid candidate ID", 400));
-    }
-
-
-    const job = await Job.findOne({ _id: jobId });
-    if (!job) {
-        return next(new AppError("Job ID not found", 404));
-    }
-
-    const candidate = await WorkerProfile.findOne({ user_id: candidateId });
-    if (!candidate) {
-        return next(new AppError("Candidate ID not found", 404));
-    }
-
-    const applicationExists = await Application.findOne({
-        job_id: jobId,
-        worker_id: candidateId,
-    });
-
-    if (applicationExists) {
-        return next(new AppError("You have already applied for the job.", 400));
-    }
 
     const {
         full_name,
@@ -349,34 +213,6 @@ export const applyForJob = catchAsync(async (req: Request, res: Response, next: 
         cover_letter,
         phone,
     } = req.body;
-
-    if (!full_name) {
-        return next(new AppError("full_name is required", 400));
-    }
-
-    if (!resume) {
-        return next(new AppError("resume is required", 400));
-    }
-
-    if (!email) {
-        return next(new AppError("email is required", 400));
-    }
-
-    if (!cover_letter) {
-        return next(new AppError("cover_letter is required", 400));
-    }
-
-    if (!phone) {
-        return next(new AppError("phone is required", 400));
-    }
-
-    if (!validator.isEmail(email)) {
-        return next(new AppError("Invalid email address", 400));
-    }
-
-    if (!validator.isMobilePhone(phone)) {
-        return next(new AppError("Invalid phone number", 400));
-    }
 
     const application = await Application.create({
         job_id: jobId,
@@ -405,19 +241,6 @@ export const applyForJob = catchAsync(async (req: Request, res: Response, next: 
 export const updateApplication = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const jobId = req.params.jobId;
     const userId = req.body.userId;
-    
-    if (!mongoose.Types.ObjectId.isValid(jobId)) {
-        return next(new AppError("Invalid job ID", 400));
-    }
-
-    if (!mongoose.Types.ObjectId.isValid(userId)) {
-        return next(new AppError("Invalid user ID", 400));
-    }
-
-    const job = await Job.findOne({ _id: jobId });
-    if (!job) {
-        return next(new AppError("Job ID not found", 404));
-    }
 
     const application = await Application.findOne({
         job_id: jobId,
@@ -425,28 +248,10 @@ export const updateApplication = catchAsync(async (req: Request, res: Response, 
     });
 
     if (!application) {
-        return next(new AppError("Application ID not found", 404));
+        return next(new AppError("Application not found", 404));
     }
 
-    const {
-        full_name,
-        resume,
-        email,
-        cover_letter,
-        phone,
-    } = req.body;
-
-    if (!full_name && !resume && !email && !cover_letter && !phone) {
-        return next(new AppError("At least one field is required", 400));
-    }
-
-    if (email && !validator.isEmail(email)) {
-        return next(new AppError("Invalid email address", 400));
-    }
-
-    if (phone && !validator.isMobilePhone(phone)) {
-        return next(new AppError("Invalid phone number", 400));
-    }
+    const { full_name, resume, email, cover_letter, phone } = req.body;
 
     const updatedApplication = await Application.findOneAndUpdate(
         { _id: application._id },
@@ -501,5 +306,56 @@ export const deleteApplication = catchAsync(async (req: Request, res: Response, 
         data: {
             application: null
         }
+    });
+});
+
+export const searchJobs = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    console.log(">>> Searching jobs");
+    const { title, company_id, salary_range, location, skills, job_type, job_category } = req.query;
+
+    const filter: any = {};
+
+    if (title) filter.title = { $regex: title, $options: "i" };
+    if (company_id) filter.company_id = new mongoose.Types.ObjectId(company_id.toString().trim());
+   
+   
+    if (location) filter.location = { $regex: location, $options: "i" };
+    if (job_type) filter.job_type = job_type;
+    if (job_category) filter.job_category = job_category;
+
+    // Parse salary_range
+    if (salary_range) {
+        const [min, max] = (salary_range as string).split('-').map(Number);
+        filter.$and = [
+            { 'salary_range.min': { $gte: min } },
+            { 'salary_range.max': { $lte: max } }
+        ];
+    }
+
+    // Parse skills with case-insensitive matching
+    if (skills) {
+        const skillArray = Array.isArray(skills) ? skills : [skills];
+        filter.skills = {
+            $elemMatch: {
+                $in: skillArray.map(skill => new RegExp(`^${skill}$`, "i")) // Create case-insensitive regex for each skill
+            }
+        };
+    }
+
+    console.log(">>> Filter: ", filter);
+    console.log(mongoose.models);
+
+    const jobs = await Job.find(filter)
+                          .populate("company_id")
+                          .populate("job_type")
+                          .populate("job_category")
+                          .populate("employer_id")
+
+
+    res.status(200).json({
+        status: "success",
+        data: {
+            jobs,
+        },
     });
 });
