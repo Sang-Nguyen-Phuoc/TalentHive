@@ -405,22 +405,25 @@ export const applyForJob = catchAsync(async (req: Request, res: Response, next: 
 
 export const updateApplication = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const jobId = req.params.jobId;
-    const applicationId = req.params.applicationId;
-
+    const userId = req.body.userId;
+    
     if (!mongoose.Types.ObjectId.isValid(jobId)) {
         return next(new AppError("Invalid job ID", StatusCodes.BAD_REQUEST));
     }
-
+  
     if (!mongoose.Types.ObjectId.isValid(applicationId)) {
         return next(new AppError("Invalid application ID", StatusCodes.BAD_REQUEST));
-    }
 
     const job = await Job.findOne({ _id: jobId });
     if (!job) {
         return next(new AppError("Job ID not found", StatusCodes.NOT_FOUND));
     }
 
-    const application = await Application.findOne({ _id: applicationId });
+    const application = await Application.findOne({
+        job_id: jobId,
+        worker_id: userId,
+    });
+
     if (!application) {
         return next(new AppError("Application ID not found", StatusCodes.NOT_FOUND));
     }
@@ -446,7 +449,7 @@ export const updateApplication = catchAsync(async (req: Request, res: Response, 
     }
 
     const updatedApplication = await Application.findOneAndUpdate(
-        { _id: applicationId },
+        { _id: application._id },
         {
             full_name: full_name || application.full_name,
             resume: resume || application.resume,
@@ -462,5 +465,41 @@ export const updateApplication = catchAsync(async (req: Request, res: Response, 
         data: {
             application: updatedApplication,
         },
+    });
+});
+
+export const deleteApplication = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const jobId = req.params.jobId;
+    const workerId = req.body.userId;
+
+    if (!mongoose.Types.ObjectId.isValid(jobId)) {
+        return next(new AppError("Invalid job ID", 400));
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(workerId)) {
+        return next(new AppError("Invalid worker ID", 400));
+    }
+
+    const job = await Job.findOne({ _id: jobId });
+    if (!job) {
+        return next(new AppError("Job ID not found", 404));
+    }
+
+    const application = await Application.findOne({
+        job_id: jobId,
+        worker_id: workerId,
+    });
+
+    if (!application) {
+        return next(new AppError("Application not found", 404));
+    }
+
+    await Application.deleteOne({ _id: application._id });
+
+    res.status(200).json({
+        status: "success",
+        data: {
+            application: null
+        }
     });
 });
