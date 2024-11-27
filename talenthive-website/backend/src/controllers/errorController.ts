@@ -7,7 +7,7 @@ const globalErrorHandler = (err: any, req: Request, res: Response, next: NextFun
     err.status = err.status || "error";
 
     if (req.originalUrl.startsWith("/api")) {
-        return res.status(err.statusCode).json({
+        res.status(err.statusCode).json({
             status: err.status,
             error: err,
             message: err.message,
