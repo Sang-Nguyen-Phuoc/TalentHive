@@ -11,6 +11,7 @@ import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import globalErrorHandler from "./controllers/errorController";
 import AppError from "./utils/appError";
+import applicationRouter from "./routes/applicationRoutes";
 
 const app = express();
 
@@ -34,6 +35,7 @@ app.use("/api/v1/companies", companyRouter);
 app.use("/api/v1/candidates", candidateRouter);
 app.use("/api/v1/employers", employerRouter);
 app.use("/api/v1/candidates", candidateRouter);
+app.use("/api/v1", applicationRouter);
 
 app.use('/api/v1/test', testRouter);
 
