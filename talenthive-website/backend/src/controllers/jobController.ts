@@ -246,6 +246,30 @@ export const getAllJobApplications = catchAsync(async (req: Request, res: Respon
         }
     })
 })
+export const getAJobApplication = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const jobId = req.params.jobId;
+    if (!mongoose.Types.ObjectId.isValid(jobId)) {
+        return next(new AppError("Invalid job ID", StatusCodes.BAD_REQUEST));
+    }
+
+    const candidateId = req.body.user_id;
+    if (!mongoose.Types.ObjectId.isValid(candidateId)) {
+        return next(new AppError("Invalid candidate ID", StatusCodes.BAD_REQUEST));
+    }
+
+    const application = await Application.findOne({ job_id: jobId, candidate_id: candidateId }).populate("job_id")
+                                                                                            .populate("candidate_id");
+    if (!application) {
+        return next(new AppError("Application not found", StatusCodes.NOT_FOUND));
+    }
+
+    res.status(StatusCodes.OK).json({
+        status: "success",
+        data: {
+            "application": application
+        }
+    })
+})
 
 export const createApplication = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const jobId = req.params.jobId;
