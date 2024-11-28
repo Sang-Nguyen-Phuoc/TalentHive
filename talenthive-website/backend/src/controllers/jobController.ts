@@ -357,3 +357,34 @@ export const searchJobs = catchAsync(async (req: Request, res: Response, next: N
         },
     });
 });
+
+export const responseToJobApplication = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const jobId = req.params.jobId;
+    if (!mongoose.Types.ObjectId.isValid(jobId)) {
+        return next(new AppError("Invalid job ID", StatusCodes.BAD_REQUEST));
+    }
+
+    const candidateId = req.body.user_id;
+    if (!mongoose.Types.ObjectId.isValid(candidateId)) {
+        return next(new AppError("Invalid candidate ID", StatusCodes.BAD_REQUEST));
+    }
+
+    const application = await Application.findOne({ job_id: jobId, candidate_id: candidateId });
+    if (!application) {
+        return next(new AppError("Application not found", StatusCodes.NOT_FOUND));
+    }
+
+    const response = req.params.response;
+    if (!response) {
+        return next(new AppError("Response is required", StatusCodes.BAD_REQUEST));
+    }
+
+    const responsedApplication = await Application.findOneAndUpdate({ _id: application._id }, { status: response });
+
+    res.status(StatusCodes.OK).json ({
+        status: "success",
+        data: {
+            "application": responsedApplication
+        }
+    })
+})
