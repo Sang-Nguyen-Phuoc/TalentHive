@@ -15,6 +15,7 @@ import ManageWorkers from "./pages/ManageWorkers";
 import ManageEmployers from "./pages/ManageEmployers";
 import Signin from "./pages/Signin";
 import SignUp from "./pages/SignUp";
+import ForgotPassword from "./pages/ForgotPassword";
 
 const router = createBrowserRouter([
   {
@@ -91,6 +92,10 @@ const router = createBrowserRouter([
       {
         path: "/signup",
         element: <SignUp />,
+      },
+      {
+        path: "/forgot-password",
+        element: <ForgotPassword />,
       },
     ],
   },

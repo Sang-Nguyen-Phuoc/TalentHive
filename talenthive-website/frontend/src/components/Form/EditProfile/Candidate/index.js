@@ -1,6 +1,6 @@
 import Modal from 'react-bootstrap/Modal';
 import { useState, useRef, useEffect } from 'react';
-import styles from '../../../styles/components/Application.module.css';
+import styles from '../../../../styles/components/Application.module.css';
 
 const ApplicationForm = ({ show, setShow }) => {
     const [formData, setFormData] = useState({

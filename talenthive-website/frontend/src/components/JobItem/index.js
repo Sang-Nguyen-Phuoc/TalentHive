@@ -1,4 +1,4 @@
-import { useNavigate, useNavigation } from 'react-router';
+import { useNavigate } from 'react-router';
 import styleSearch from '../../styles/components/JobItemSearch.module.css'
 import styleHome from '../../styles/components/JobItemHome.module.css'
 import styleDetail from '../../styles/components/JobItemDetail.module.css'
@@ -11,7 +11,7 @@ const JobItem = {
     HomePage: ({ props, state }) => {
         const navigate = useNavigate()
         return (
-            <div className={state ? `${styleHome.wrapper} ${styleHome['jobs-applied']}` : styleHome.wrapper} onClick={() => navigate('/job-detail', { state: props })}>
+            <div className={styleHome.wrapper} onClick={() => navigate('/jobs/detail', { state: props })}>
                 <div className={styleHome.header}>
                     <div className={styleHome['left-header']}>
                         <img src={props.image} alt='logo'></img>
@@ -84,7 +84,7 @@ const JobItem = {
         const [show, setShow] = useState(false);
 
         const handleNavigate = () => {
-            navigate('/job-detail', { state: props });
+            navigate('/jobs/detail', { state: props });
         }
 
         return (

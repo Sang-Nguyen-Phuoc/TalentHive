@@ -322,9 +322,12 @@ function HireTalent({props}) {
                     <div className={styles.information}>
                         Introduction....
                     </div>
-                    <div className={styles.link} onClick={() => navigate('/profile-dashboard', { state: props })}>
+                    <div className={styles.link} onClick={() => navigate('/profile/dashboard', { state: {
+                        data: props,
+                        role: 'Employer'
+                    } })}>
                         <span>
-                            View company
+                            View more detail
                             <FontAwesomeIcon icon={faSquareArrowUpRight} />
                         </span>
                     </div>

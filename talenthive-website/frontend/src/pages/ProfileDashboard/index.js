@@ -1,17 +1,19 @@
-import { useLocation, useNavigate } from 'react-router';
+import { useLocation } from 'react-router';
 import styles from '../../styles/pages/ProfileDashboard.module.css'
 import JobItem from '../../components/JobItem'
+import EditFormCandidate from '../../components/Form/EditProfile/Candidate'
+import EditFormEmployer from '../../components/Form/EditProfile/Employer'
 import { useState } from 'react';
 
 function ProfileDashboard({props, isReused, role}) {
     const Job = JobItem.Detail;
     const [statePost, setStatePost] = useState('')
-    const navigate = useNavigate();
     const {state} = useLocation();
+    const [show, setShow] = useState(false);
 
     console.log(state);
     if (!props)
-        props = state;
+        props = state.data;
     if (!role)
         if (state.role)
             role = state.role
@@ -21,12 +23,13 @@ function ProfileDashboard({props, isReused, role}) {
     if (role === 'Worker')
         return (
             <div className={`${styles.wrapper} ${isReused===true && styles.reused}`}>
+                <EditFormCandidate show={show} setShow={setShow}/>
                 <div className={styles['cover-page']}>
                     <div className={styles['avatar-container']}>
                         <img src={props.image} alt="Avatar" className={styles.avatar}/>
                         <h1 className={styles.name}>{props.company}</h1>
                     </div>
-                    {!isReused && <button className={styles.edit} onClick={() => navigate('/profile-dashboard/edit')}>Edit profile</button>}
+                    {!isReused && <button className={styles.edit} onClick={() => setShow(!show)}>Edit profile</button>}
                 </div>
                 <div className={styles.profile}>
                     <div className={styles.column}>
@@ -132,12 +135,13 @@ function ProfileDashboard({props, isReused, role}) {
             props = items[0];
         return (
             <div className={`${styles.wrapper} ${isReused===true && styles.reused}`}>
+                <EditFormEmployer show={show} setShow={setShow}/>
                 <div className={styles['cover-page']}>
                     <div className={styles['avatar-container']}>
                         <img src={props.image} alt="Avatar" className={styles.avatar}/>
                         <h1 className={styles.name}>{props.company}</h1>
                     </div>
-                    {!isReused && <button className={styles.edit} onClick={() => navigate('/profile-dashboard/edit')}>Edit profile</button>}
+                    {!isReused && <button className={styles.edit} onClick={() => setShow(!show)}>Edit profile</button>}
                 </div>
                 <div className={styles.profile}>
                     <div className={styles.column}>
