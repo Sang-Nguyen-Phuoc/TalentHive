@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
-import { Routes, Route, useLocation, Outlet, RouterProvider, createBrowserRouter } from "react-router-dom";
-import routes from "./pages";
+import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import AuthenticationLayout from "./layouts/AuthenticationLayout";
 import DefaultLayout from "./layouts/DefaultLayout";
 import Home from "./pages/Home";

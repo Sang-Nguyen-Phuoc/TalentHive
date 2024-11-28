@@ -5,7 +5,7 @@ import useFetch from "../../hooks/useFetch";
 import { CurrentUserContext } from "../../context/CurrentUserContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-regular-svg-icons";
-import toast, { Toaster } from "react-hot-toast";
+import { toast } from "react-toastify";
 
 const REACT_APP_BASEURL = "http://localhost:3002";
 const reqAPI = {
@@ -48,7 +48,7 @@ function Signin() {
         if (status === "success") {
             toast.success("Sign in successfully!");
             setCurrentUser(payload);
-            setTimeout(() => navigate("/"), 2000);
+            navigate("/");
         } else if (status !== "fail") {
             toast.error(status);
         }
@@ -58,7 +58,7 @@ function Signin() {
 
     return (
         <div className={styles.wrapper}>
-            <Toaster position="top-right" reverseOrder={false} />
+            {/* <Toaster position="top-right" reverseOrder={false} /> */}
             <form className={styles.form} onSubmit={handleSignIn}>
                 <div className={styles.email}>
                     <label htmlFor="emailInput">

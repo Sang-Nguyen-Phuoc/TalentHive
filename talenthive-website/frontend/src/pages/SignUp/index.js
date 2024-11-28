@@ -2,7 +2,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import styles from '../../styles/pages/Authentication.module.css'
 import { useEffect, useRef, useState } from 'react';
 import useFetch from '../../hooks/useFetch';
-import toast, { Toaster } from 'react-hot-toast';
+import { toast } from 'react-toastify';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import { faEye, faEyeSlash } from '@fortawesome/free-regular-svg-icons';
 
@@ -112,10 +112,10 @@ function SignUp() {
 
     return (
         <div className={styles.wrapper}>
-            <Toaster 
+            {/* <Toaster 
                 position='top-right'
                 reverseOrder={false}
-            />
+            /> */}
             <form className={styles.form} onSubmit={handleSignUp}>
                 <div className={styles.username}>
                     <label htmlFor='usernameInput'>
