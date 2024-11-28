@@ -18,7 +18,7 @@
     cursor: pointer;
     border: 2px solid var(--primary-color);
     border-left: 6px solid var(--primary-color);
-    transform: scale(1.04);
+    transform: scale(1.02);
     & .position {
         color: var(--primary-color);
     }

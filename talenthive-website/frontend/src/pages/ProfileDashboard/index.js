@@ -9,8 +9,9 @@ function ProfileDashboard({props, isReused, role}) {
     const navigate = useNavigate();
     const {state} = useLocation();
 
+    console.log(state);
     if (!props)
-        props = state.item;
+        props = state;
     if (!role)
         if (state.role)
             role = state.role

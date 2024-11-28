@@ -119,7 +119,6 @@ function Search() {
                         return (
                             <div key={index} onClick={(e) => handleClick(e)} order={index}>
                                 <Job props={item} selected={index===currentPost}></Job>
-                                {console.log(index, currentPost)}
                             </div>
                         )
                     })}
