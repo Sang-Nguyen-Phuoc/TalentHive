@@ -35,4 +35,6 @@ router.put("/:jobId/application",
 
 router.delete("/:jobId/application", authorizeRole(["candidate"]), jobController.deleteApplication);
 
+router.get("/:jobId/application", authorizeRole(["employer", "admin"]), jobController.getAJobApplication);
+
 export default router;
