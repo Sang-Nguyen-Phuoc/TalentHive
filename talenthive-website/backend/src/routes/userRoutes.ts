@@ -17,6 +17,7 @@ userRouter.use(attachUserId);
 userRouter.route("/")
         .delete(authorizeRole(['admin']), userController.deleteUser);
 userRouter.post('/lock', authorizeRole(['admin']), userController.lockUser);
+userRouter.post('/unlock', authorizeRole(['admin']), userController.unlockUser);
 
 
 export default userRouter;
