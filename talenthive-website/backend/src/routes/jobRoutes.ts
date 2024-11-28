@@ -42,4 +42,10 @@ router.delete("/:jobId/application", authorizeRole(["candidate"]), jobController
 
 router.get("/:jobId/application", authorizeRole(["employer", "admin"]), jobController.getAJobApplication);
 
+router.post("/:jobId/application/:response",
+    authorizeRole(["employer"]),
+    validateApplicationFields,
+    jobController.responseToJobApplication
+)
+
 export default router;
