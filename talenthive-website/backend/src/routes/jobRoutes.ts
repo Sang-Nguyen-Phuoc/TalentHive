@@ -28,12 +28,19 @@ router.post("/:jobId/apply",
     validateApplicationFields, 
     jobController.createApplication);
 
+router.get("/:jobId/applications",
+    authorizeRole(["employer", "admin"]),
+    jobController.getAllJobApplications
+);
+
 router.put("/:jobId/application", 
     authorizeRole(["candidate"]), 
     validateApplicationFields, 
     jobController.updateApplication);
 
 router.delete("/:jobId/application", authorizeRole(["candidate"]), jobController.deleteApplication);
+
+router.get("/:jobId/application", authorizeRole(["employer", "admin"]), jobController.getAJobApplication);
 
 router.post("/:jobId/application/:response",
     authorizeRole(["employer"]),
