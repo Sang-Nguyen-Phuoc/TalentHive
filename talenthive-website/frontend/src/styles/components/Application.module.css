@@ -65,7 +65,8 @@ input[type="number"] {
 
 .submitButton {
   display: block;
-  width: 100%;
+  width: 90%;
+  margin: 0 auto;
   padding: 0.5rem;
   font-size: 1rem;
   background-color: #007bff;
@@ -95,9 +96,8 @@ input[type="number"] {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 100%;
-  min-width: 300px;
-  max-width: 300px;
+  min-width: 100%;
+
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
@@ -123,7 +123,7 @@ input[type="number"] {
   display: none;
   position: absolute;
   background-color: #fff;
-  min-width: 38%;
+  width: 45%;
   max-height: 100px;
   overflow-y: scroll;
   box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.1);

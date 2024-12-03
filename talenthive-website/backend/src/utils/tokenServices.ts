@@ -59,7 +59,7 @@ export const createSendToken = (user: IUser, statusCode: number, res: Response) 
     const accessTokenStr = accessToken(user);
 
     res.cookie("refreshToken", refreshTokenStr, {
-        expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
         httpOnly: true,
     });
     // httpOnly: true,

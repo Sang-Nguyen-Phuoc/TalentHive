@@ -1,8 +1,9 @@
 import { NextFunction, Request, Response } from "express";
+import { StatusCodes } from "http-status-codes";
 
 
 const globalErrorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
-    err.statusCode = err.statusCode || 500;
+    err.statusCode = err.statusCode || StatusCodes.INTERNAL_SERVER_ERROR;
     err.status = err.status || "error";
 
     if (req.originalUrl.startsWith("/api")) {

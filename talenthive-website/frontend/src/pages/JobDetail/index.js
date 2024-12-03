@@ -141,7 +141,10 @@ function JobDetail({ props, isSearch }) {
                         Introduction....
 
                     </div>
-                    <div className={styles.link} onClick={() => navigate('/profile-dashboard', { state: props })}>
+                    <div className={styles.link} onClick={() => navigate('/profile/dashboard', { state: {
+                        data: props,
+                        role: 'Employer'
+                    } })}>
                         <span>
                             View company
                             <FontAwesomeIcon icon={faSquareArrowUpRight} />

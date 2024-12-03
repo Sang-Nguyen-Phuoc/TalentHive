@@ -7,46 +7,47 @@ import catchAsync from "../utils/catchAsync";
 import AppError from "../utils/appError";
 import Email from "../utils/email";
 import crypto from "crypto";
-import WorkerProfile from "../models/workerProfile";
+import CandidateProfile from "../models/candidateProfile";
 import EmployerProfile from "../models/employerProfile";
 import { createSendToken } from "../utils/tokenServices";
+import { StatusCodes } from "http-status-codes";
 
 export const register = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const { email, password, role } = req.body;
     // Check if all required fields are filled
     if (!email || !password || !role) {
-        return next(new AppError("Please provide email, password and role", 400));
-    }
-
-    if (role !== "candidate" && role !== "employer") {
-        return next(new AppError("Role must be candidate or employer", 400));
-    }
-
-    // Check if user already exists
-    if (await User.findOne({ email: email })) {
-        return next(new AppError("User already exists", 400));
+        return next(new AppError("Please provide email, password and role", StatusCodes.BAD_REQUEST));
     }
 
     // Check email format
     if (!validator.isEmail(email)) {
-        return next(new AppError("Email is not valid", 400));
+        return next(new AppError("Email is not valid", StatusCodes.BAD_REQUEST));
+    }
+
+    if (role !== "candidate" && role !== "employer") {
+        return next(new AppError("Role must be candidate or employer", StatusCodes.BAD_REQUEST));
+    }
+
+    // Check if user already exists
+    if (await User.findOne({ email: email })) {
+        return next(new AppError("User already exists", StatusCodes.BAD_REQUEST));
     }
 
     // Create new user
-    const newUser = new User({ email, password, role });
-    await newUser.save();
-
+    const newUser = await User.create({ email, password, role });
 
     // Create user profile
     if (role === "candidate") {
-        const newWorkerProfile = new WorkerProfile({ user_id: newUser._id, email: email });
-        await newWorkerProfile.save();
+        const newCandidateProfile = new CandidateProfile({ user_id: newUser._id, email: email });
+        await newCandidateProfile.save();
     } else if (role === "employer") {
         const newEmployerProfile = new EmployerProfile({ user_id: newUser._id, email: email });
         await newEmployerProfile.save();
     }
 
-    res.status(201).json({
+    newUser.password = undefined;
+
+    res.status(StatusCodes.CREATED).json({
         status: "success",
         data: {
             user: newUser,
@@ -58,30 +59,29 @@ export const login = catchAsync(async (req: Request, res: Response, next: NextFu
     const { email, password } = req.body;
 
     if (!email || !password) {
-        return next(new AppError("Please provide email and password", 400));
+        return next(new AppError("Please provide email and password", StatusCodes.BAD_REQUEST));
     }
 
     // Check if user exists
     const user = await User.findOne({ email: email }).select("+password");
     if (!user) {
-        return next(new AppError("Email is not found", 401));
+        return next(new AppError("Email is not found", StatusCodes.NOT_FOUND));
     }
 
     // Check if password is correct
     if (!user.password || !(await bcrypt.compare(password, user.password))) {
-        return next(new AppError("Wrong password", 401));
+        return next(new AppError("Wrong password", StatusCodes.UNAUTHORIZED));
     }
 
-    createSendToken(user, 200, res);
+    createSendToken(user, StatusCodes.OK, res);
 });
 
 export const logout = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    // Get the token
-    const authHeader = req.headers.authorization;
-    const accessToken = authHeader && authHeader.split(" ")[1];
-
+    const accessToken = req.body.accessToken;
     if (!accessToken) {
-        return next(new AppError("There is no token", 401));
+        return next(
+            new AppError("attachUserId middleware must be called before logout route", 500)
+        );
     }
 
     await tokenServices.invalidateToken(accessToken);
@@ -92,17 +92,23 @@ export const logout = catchAsync(async (req: Request, res: Response, next: NextF
         path: "/",
         sameSite: "strict",
     });
-
-    // Response if successful
-    res.status(200).json({
+    res.status(StatusCodes.OK).json({
         status: "success",
-        message: "Logged out successfully",
+        data: {
+            accessToken: null,
+        },
     });
 });
 
 export const changePassword = catchAsync(
     async (req: Request, res: Response, next: NextFunction) => {
         const { currentPassword, newPassword } = req.body;
+        if (!currentPassword) {
+            return next(new AppError("currentPassword is required", StatusCodes.BAD_REQUEST));
+        }
+        if (!newPassword) {
+            return next(new AppError("newPassword is required", StatusCodes.BAD_REQUEST));
+        }
 
         // Get userId from attachUserId middleware
         const userId = req.body.userId;
@@ -113,14 +119,6 @@ export const changePassword = catchAsync(
 
         // Get access token from attachUserId middleware
         const accessToken = req.body.accessToken;
-
-        if (!currentPassword) {
-            return next(new AppError("currentPassword is required", 400));
-        }
-
-        if (!newPassword) {
-            return next(new AppError("newPassword is required", 400));
-        }
 
         // Check if current password is correct
         if (
@@ -138,8 +136,14 @@ export const changePassword = catchAsync(
         currentUser.password_changed_at = new Date();
         await currentUser.save();
 
-        // Generate new tokens and send response
-        createSendToken(currentUser, 200, res);
+        currentUser.password = undefined;
+
+        res.status(StatusCodes.OK).json({
+            status: "success",
+            data: {
+                user: currentUser,
+            },
+        });
     }
 );
 
@@ -148,7 +152,7 @@ export const forgotPassword = catchAsync(
         // 1) Get user based on POSTed email
         const user = await User.findOne({ email: req.body.email });
         if (!user) {
-            return next(new AppError(`There is no user with email address ${req.body.email}`, 404));
+            return next(new AppError(`There is no user with email address ${req.body.email}`, StatusCodes.NOT_FOUND));
         }
 
         // 2) Generate the random reset token
@@ -162,7 +166,7 @@ export const forgotPassword = catchAsync(
             )}/api/v1/auth/resetPassword/${resetToken}`;
             await new Email(user, resetURL).sendPasswordReset();
 
-            res.status(200).json({
+            res.status(StatusCodes.OK).json({
                 status: "success",
                 message: "Token was sent to email!",
             });
@@ -194,7 +198,7 @@ export const resetPassword = catchAsync(async (req: Request, res: Response, next
 
     // 2) If token has not expired, and there is user, set the new password
     if (!user) {
-        return next(new AppError("Token is invalid or has expired", 400));
+        return next(new AppError("Token is invalid or has expired", StatusCodes.BAD_REQUEST));
     }
     user.password = req.body.password;
     user.password_reset_token = undefined;
@@ -208,60 +212,54 @@ export const resetPassword = catchAsync(async (req: Request, res: Response, next
 
     // 4) Log the user in, send JWT
 
-    createSendToken(user, 200, res);
+    createSendToken(user, StatusCodes.OK, res);
 });
 
 export const deleteMe = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const userId = req.body.userId;
-
-        if (!userId) {
-            return next(new AppError("attachUserId middleware not working", 500));
-        }
-
-        if (!(await User.findOne({ _id: userId }))) {
-            return next(new AppError("User not found", 404));
-        }
-
-        await User.updateOne({ _id: userId }, { $set: { active: false } });
-
-        await WorkerProfile.updateOne({ user_id: userId }, { $set: { active: false } });
-
-        await EmployerProfile.updateOne({ user_id: userId }, { $set: { active: false } });
-
-        res.status(200).json({
-            status: "success",
-            data: {
-                user: null,
-            },
-        });
-    } catch (error) {
-        return next(new AppError("Database error", 500));
+    const userId = req.body.userId;
+    if (!userId) {
+        return next(new AppError("attachUserId middleware not working", 500));
     }
+
+    if (!(await User.findOne({ _id: userId }))) {
+        return next(new AppError("User not found", StatusCodes.NOT_FOUND));
+    }
+
+    await User.updateOne({ _id: userId }, { $set: { active: false } });
+
+    await CandidateProfile.updateOne({ user_id: userId }, { $set: { active: false } });
+
+    await EmployerProfile.updateOne({ user_id: userId }, { $set: { active: false } });
+
+    res.status(StatusCodes.OK).json({
+        status: "success",
+        data: {
+            user: null,
+        },
+    });
 });
 
-export const getCurrentUserProfile = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-
+export const getMe = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const currentUser = req.body.user;
     if (!currentUser) {
-        return next(new AppError("attachUser middleware not working", 500));
+        return next(new AppError("attachUser middleware must be called before getMe route", 500));
     }
 
     let profile;
-    if (currentUser.role === "worker") {
-        profile = await WorkerProfile.findOne({ user_id: currentUser._id });
+    if (currentUser.role === "candidate") {
+        profile = await CandidateProfile.findOne({ user_id: currentUser._id });
     } else if (currentUser.role === "employer") {
         profile = await EmployerProfile.findOne({ user_id: currentUser._id });
     }
 
     if (!profile) {
-        return next(new AppError("Profile not found", 404));
+        return next(new AppError("Profile not found for this user", 500));
     }
 
-    res.status(200).json({
+    res.status(StatusCodes.OK).json({
         status: "success",
         data: {
-            profile: profile
-        }
+            profile: profile,
+        },
     });
 });

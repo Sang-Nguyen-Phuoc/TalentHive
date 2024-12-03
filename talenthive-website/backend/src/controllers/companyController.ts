@@ -11,7 +11,7 @@ import EmployerProfile from "../models/employerProfile";
 
 export const getAllCompanies = catchAsync(
     async (req: Request, res: Response, next: NextFunction) => {
-        const companies = await Company.find().populate("company_manager");
+        const companies = await Company.find().populate("company_manager").populate("avatar");
         res.status(StatusCodes.OK).json({
             status: "success",
             data: {
@@ -252,10 +252,11 @@ export const getACompany = catchAsync(async (req: Request, res: Response, next: 
     if (!mongoose.Types.ObjectId.isValid(companyId)) {
         return next(new AppError("Invalid company ID", StatusCodes.BAD_REQUEST));
     }
-    
-    const company = await Company.findOne({ _id: companyId }).populate("avatar")
-                                                            .populate("employers")
-                                                            .populate("company_manager");
+
+    const company = await Company.findOne({ _id: companyId })
+        .populate("avatar")
+        .populate("employers")
+        .populate("company_manager");
 
     if (!company) {
         return next(new AppError("Company ID not found", StatusCodes.NOT_FOUND));
@@ -264,7 +265,7 @@ export const getACompany = catchAsync(async (req: Request, res: Response, next: 
     res.status(StatusCodes.OK).json({
         status: "success",
         data: {
-            "company": company
-        }
+            company: company,
+        },
     });
 });

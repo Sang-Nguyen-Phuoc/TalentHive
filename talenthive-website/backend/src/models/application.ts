@@ -4,7 +4,7 @@ import validator from "validator";
 export interface IApplication {
     _id: Types.ObjectId;
     job_id: Types.ObjectId;
-    worker_id: Types.ObjectId;
+    candidate_id: Types.ObjectId;
     full_name: string;
     resume: object;
     email: string;
@@ -20,9 +20,9 @@ const ApplicationSchema = new Schema<IApplication>({
         ref: 'Job',
         required: true
     },
-    worker_id: {
+    candidate_id: {
         type: Schema.Types.ObjectId,
-        ref: 'WorkerProfile',
+        ref: 'CandidateProfile',
         required: true
     },
     full_name: {
