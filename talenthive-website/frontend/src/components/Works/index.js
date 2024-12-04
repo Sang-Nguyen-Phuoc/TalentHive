@@ -11,19 +11,16 @@ const Works = () => {
     return (
         <div className={styles.works} id="works">
             <div className={styles.awesome}>
+
                 <span>Places to Connect</span>
                 <span>Brands & Companies</span>
                 <spane>
-                    Lorem ipsum is simply dummy text of printing
-                    <br />
-                    ipsum is simply dummy text of printing
-                    Lorem ipsum is simply dummy text of printing
-                    <br />
-                    ipsum is simply dummy text of printing
-                    Lorem ipsum is simply dummy text of printing
-                    <br />
-                    ipsum is simply dummy text of printing
+                    Discover platforms and organizations that foster collaboration, innovation, and professional growth.
+                    From networking hubs that connect you with industry leaders to renowned companies
+                    driving transformative change, these are the spaces where ideas flourish, partnerships are built, and opportunities abound.
                 </spane>
+
+
             </div>
 
             {/* right side */}

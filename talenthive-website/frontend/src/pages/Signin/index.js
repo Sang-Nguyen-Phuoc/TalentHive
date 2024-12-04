@@ -1,13 +1,13 @@
 import { Link, useNavigate } from "react-router-dom";
 import styles from "../../styles/pages/Authentication.module.css";
 import { useRef, useState, useEffect, useContext } from "react";
-import useFetch from "../../hooks/useFetch";
+import { useFetch } from "../../hooks/useFetch";
 import { CurrentUserContext } from "../../context/CurrentUserContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-regular-svg-icons";
 import { toast } from "react-toastify";
+import { BASE_URL } from "../../utils/Constants";
 
-const REACT_APP_BASEURL = "http://localhost:3002";
 const reqAPI = {
     method: "POST",
     headers: {
@@ -42,7 +42,7 @@ function Signin() {
     const { setCurrentUser } = useContext(CurrentUserContext);
 
     // Call API
-    const { payload, status } = useFetch(`${REACT_APP_BASEURL}/api/v1/auth/login`, reqAPI);
+    const { payload, status } = useFetch(`${BASE_URL}/auth/login`, reqAPI);
 
     useEffect(() => {
         if (status === "success") {

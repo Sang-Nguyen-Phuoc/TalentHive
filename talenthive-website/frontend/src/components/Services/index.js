@@ -19,18 +19,19 @@ const Services = () => {
                 <span>Our Awesome</span>
                 <span>Services</span>
                 <spane>
-                    Lorem ipsum is simply dummy text of printing
-                    ipsum is simply dummy text of printing
-                    Lorem ipsum is simply dummy text of printing
-                    ipsum is simply dummy text of printing
-                    Lorem ipsum is simply dummy text of printing
-                    ipsum is simply dummy text of printing
+                    We provide a wide range of innovative and reliable services designed to meet your needs.
+                    From cutting-edge technology solutions to personalized support, our offerings are crafted
+                    to help you achieve your goals efficiently and effectively. Whether you're looking for
+                    creative designs, seamless integrations, or expert consultations, we are here to deliver
+                    excellence every step of the way.
                 </spane>
+
             </div>
 
             {/* right side */}
             <div className={styles.cards}>
-                {/* first card */}
+
+
                 <motion.div
                     initial={{ top: "1.5rem", left: "40rem" }}
                     whileInView={{ top: "1.5rem", left: "30rem" }}
@@ -38,8 +39,9 @@ const Services = () => {
                 >
                     <Card
                         emoji={HeartEmoji}
-                        heading="Design"
-                        detail="Figma, Sketch, Photoshop, Adobe Illustrator, Adobe XD"
+                        heading="Pros Networking"
+                        detail="Expand your network and connect with professionals."
+                        style={{ background: "purple" }}
                     />
                 </motion.div>
 
@@ -51,8 +53,8 @@ const Services = () => {
                 >
                     <Card
                         emoji={Glasses}
-                        heading="Developer"
-                        detail="HTML, CSS, JavaScript, React, Node.js, Express"
+                        heading="Job Opportunities"
+                        detail="Find job openings that match your skills, interests, and career aspirations, all in one place."
                     />
                 </motion.div>
 
@@ -64,10 +66,12 @@ const Services = () => {
                 >
                     <Card
                         emoji={Humble}
-                        heading="UI/UX"
-                        detail="Lorem ipsum dummy text is used as a placeholder text."
+                        heading="Skill Development"
+                        detail="Access resources to upskill and stay ahead in a competitive job market with ease."
                     />
                 </motion.div>
+
+
 
                 <div
                     className={`${styles.blur} ${styles.sBlur2}`}
