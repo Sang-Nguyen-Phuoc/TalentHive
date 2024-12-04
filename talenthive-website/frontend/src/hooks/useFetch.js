@@ -66,20 +66,26 @@ export const useFetch = (url, req) => {
     return { ...state };
 }
 
-export const fetchDataWithToken = async (url) => {
+export const useFetchDataWithToken = (url) => {
     const token = getAccessToken();
-
-    if (!token) {
-        console.error('No access token found');
-        return;
-    }
+    const [state, dispatch] = useReducer(fetchReducer, {
+        payload: [],
+        isLoading: false,
+        status: 'fail',
+    });
 
     useEffect(() => {
-        (async () => {
+        if (!token) {
+            console.error('No access token found');
+            return;
+        }
+
+        const fetchData = async () => {
             dispatch({
                 type: 'fetchAPI/request',
                 isLoading: true,
             });
+
             try {
                 const response = await fetch(url, {
                     method: 'GET',
@@ -113,6 +119,9 @@ export const fetchDataWithToken = async (url) => {
                     status: 'fail',
                 });
             }
-        })()
-    }, [url, token])
-};
+        }
+        fetchData();
+    }, [url, token]);
+
+    return { ...state };
+}; 
