@@ -22,7 +22,7 @@
   box-shadow: var(--box-shadow-button);
 }
 .search-form input[type="text"] {
-  width: 30%;
+  min-width: 300px;
 }
 
 .search-form input[type="text"]::placeholder {

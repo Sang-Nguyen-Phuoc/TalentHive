@@ -5,6 +5,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSquareArrowUpRight } from '@fortawesome/free-solid-svg-icons';
 import ApplicationForm from '../../components/Form/ApplicationForn';
 
+
+
+
+
+
 function JobDetail({ props, isSearch }) {
     // const items = [
     //     {
@@ -141,10 +146,12 @@ function JobDetail({ props, isSearch }) {
                         Introduction....
 
                     </div>
-                    <div className={styles.link} onClick={() => navigate('/profile/dashboard', { state: {
-                        data: props,
-                        role: 'Employer'
-                    } })}>
+                    <div className={styles.link} onClick={() => navigate('/profile/dashboard', {
+                        state: {
+                            data: props,
+                            role: 'Employer'
+                        }
+                    })}>
                         <span>
                             View company
                             <FontAwesomeIcon icon={faSquareArrowUpRight} />

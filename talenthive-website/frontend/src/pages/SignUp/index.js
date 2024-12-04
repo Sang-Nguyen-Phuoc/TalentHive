@@ -1,16 +1,16 @@
 import { Link, useNavigate } from 'react-router-dom';
 import styles from '../../styles/pages/Authentication.module.css'
 import { useEffect, useRef, useState } from 'react';
-import useFetch from '../../hooks/useFetch';
+import { useFetch } from '../../hooks/useFetch';
 import { toast } from 'react-toastify';
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEye, faEyeSlash } from '@fortawesome/free-regular-svg-icons';
+import { BASE_URL } from '../../utils/Constants';
 
-const REACT_APP_BASEURL = "http://localhost:3002";
 const reqAPI = {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json'
+        'Content-Type': 'application/json'
     },
     body: null,
 };
@@ -63,7 +63,7 @@ function SignUp() {
             'password': passwordRef.current.value,
             'role': roleRef.current.value
         }
-        
+
         emailRef.current.value = '';
         passwordRef.current.value = '';
         repasswordRef.current.value = '';
@@ -97,10 +97,10 @@ function SignUp() {
     const roleRef = useRef(null);
 
     // Fetch API
-    const {payload, status} = useFetch(`${REACT_APP_BASEURL}/api/v1/auth/register`, reqAPI);
+    const { payload, status } = useFetch(`${BASE_URL}/auth/register`, reqAPI);
 
     useEffect(() => {
-        if (status === 'success'){
+        if (status === 'success') {
             toast.success('Register successfully!');
             const navi = setTimeout(() => navigate('/signin'), 2000);
         }
@@ -156,7 +156,7 @@ function SignUp() {
                             onChange={password => handleValidatePassword(password.target.value)}
                             required
                         />
-                        <FontAwesomeIcon className={styles.icon} icon={showPass ? faEyeSlash : faEye} onClick={() => setShowPass(!showPass)}/>
+                        <FontAwesomeIcon className={styles.icon} icon={showPass ? faEyeSlash : faEye} onClick={() => setShowPass(!showPass)} />
                     </div>
                     <ul>
                         {rules.map((rule, index) => {
@@ -178,7 +178,7 @@ function SignUp() {
                             onChange={password => handleConfirmPassword(password.target.value)}
                             required
                         />
-                        <FontAwesomeIcon className={styles.icon} icon={showRePass ? faEyeSlash : faEye} onClick={() => setShowRePass(!showRePass)}/>
+                        <FontAwesomeIcon className={styles.icon} icon={showRePass ? faEyeSlash : faEye} onClick={() => setShowRePass(!showRePass)} />
                     </div>
                     {confirm || <p className={`${styles.invalid} ${styles.convention} ${styles.inform}`}>Password does not match</p>}
                 </div>
