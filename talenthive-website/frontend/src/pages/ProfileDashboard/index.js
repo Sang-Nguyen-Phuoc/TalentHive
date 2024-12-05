@@ -1,33 +1,31 @@
-import { useLocation } from 'react-router';
 import styles from '../../styles/pages/ProfileDashboard.module.css'
 import JobItem from '../../components/JobItem'
 import EditFormCandidate from '../../components/Form/EditProfile/Candidate'
 import EditFormEmployer from '../../components/Form/EditProfile/Employer'
-import { useState } from 'react';
+import { CurrentUserContext } from '../../context/CurrentUserContext';
+import { useContext, useState } from 'react';
+import Avatar from '../../images/account-logo.png';
 
-function ProfileDashboard({props, isReused, role}) {
+function ProfileDashboard({isReused}) {
     const Job = JobItem.Detail;
     const [statePost, setStatePost] = useState('')
-    const {state} = useLocation();
     const [show, setShow] = useState(false);
+    const {currentUser} = useContext(CurrentUserContext);
 
-    console.log(state);
-    if (!props)
-        props = state.data;
-    if (!role)
-        if (state.role)
-            role = state.role
-        else
-            role = 'Employer';
+    const {profile} = currentUser
+    
+    // console.log(state);
+    // if (!props)
+    //     props = state.data;
 
-    if (role === 'Worker')
+    if (currentUser.role === 'candidate')
         return (
             <div className={`${styles.wrapper} ${isReused===true && styles.reused}`}>
                 <EditFormCandidate show={show} setShow={setShow}/>
                 <div className={styles['cover-page']}>
                     <div className={styles['avatar-container']}>
-                        <img src={props.image} alt="Avatar" className={styles.avatar}/>
-                        <h1 className={styles.name}>{props.company}</h1>
+                        <img src={profile.image || Avatar} alt="Avatar" className={styles.avatar}/>
+                        <h1 className={styles.name}>{profile.company || 'Chos Loiwj'}</h1>
                     </div>
                     {!isReused && <button className={styles.edit} onClick={() => setShow(!show)}>Edit profile</button>}
                 </div>
@@ -55,7 +53,7 @@ function ProfileDashboard({props, isReused, role}) {
                 </div>
             </div>
         );
-    else if (role === 'Employer'){
+    else if (currentUser.role === 'employer'){
         const items = [
             {
                 state : 'Pending',
@@ -131,15 +129,13 @@ function ProfileDashboard({props, isReused, role}) {
             },
         ]
 
-        if (props === null)
-            props = items[0];
         return (
             <div className={`${styles.wrapper} ${isReused===true && styles.reused}`}>
                 <EditFormEmployer show={show} setShow={setShow}/>
                 <div className={styles['cover-page']}>
                     <div className={styles['avatar-container']}>
-                        <img src={props.image} alt="Avatar" className={styles.avatar}/>
-                        <h1 className={styles.name}>{props.company}</h1>
+                        <img src={profile.image || Avatar} alt="Avatar" className={styles.avatar}/>
+                        <h1 className={styles.name}>{profile.company || 'Chos Lowij'}</h1>
                     </div>
                     {!isReused && <button className={styles.edit} onClick={() => setShow(!show)}>Edit profile</button>}
                 </div>
@@ -156,7 +152,7 @@ function ProfileDashboard({props, isReused, role}) {
                     </div>
                     <div className={styles.column}>
                         <div className={`${styles.frame} ${styles.recruitment}`}>
-                            <div className={styles.content}>Recruitment {`(${statePost === '' ? items.filter(i => i.company === props.company).length : items.filter(i => i.company === props.company).filter(i => i.state === statePost).length} jobs)`}</div>
+                            <div className={styles.content}>Recruitment {`(${statePost === '' ? items.length : items.filter(i => i.state === statePost).length} jobs)`}</div>
                             <div className={styles['filter-container']}>
                                 <select value={statePost}
                                         onChange={(e) => setStatePost(e.target.value)}
@@ -169,12 +165,10 @@ function ProfileDashboard({props, isReused, role}) {
                             </div>
                             <div className={styles['jobs-list']}>
                                 {items.map((item, index) => {
-                                    if (item.company === props.company) {
-                                        if (statePost === '')
-                                            return <Job key={index} props={item} isEmployer></Job>
-                                        else 
-                                            return (statePost === item.state) && <Job key={index} props={item} isEmployer></Job>
-                                    }
+                                    if (statePost === '')
+                                        return <Job key={index} props={item} isEmployer></Job>
+                                    else 
+                                        return (statePost === item.state) && <Job key={index} props={item} isEmployer></Job>
                                 })}
                             </div>
                         </div>
@@ -183,7 +177,6 @@ function ProfileDashboard({props, isReused, role}) {
             </div>
     );
     }
-    else throw(new Error('Invalid User!'))
 }
 
 export default ProfileDashboard;

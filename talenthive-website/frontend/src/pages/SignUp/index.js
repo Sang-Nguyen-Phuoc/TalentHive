@@ -71,7 +71,7 @@ function SignUp() {
         setType(Array(rules.length).fill('none'));
         emailRef.current.focus();
         setRole('default');
-        reqAPI.body = JSON.stringify(newDataSignUp);
+        setFetch({...fetch, body: JSON.stringify(newDataSignUp)})
     }
 
     const rules = [
@@ -90,6 +90,7 @@ function SignUp() {
     const [chkbox, setChkbox] = useState(false);
     const [confirm, setConfirm] = useState(true);
     const [role, setRole] = useState('default');
+    const [fetch, setFetch] = useState(reqAPI);
 
     const emailRef = useRef(null);
     const passwordRef = useRef(null);
@@ -97,25 +98,21 @@ function SignUp() {
     const roleRef = useRef(null);
 
     // Fetch API
-    const { payload, status } = useFetch(`${BASE_URL}/auth/register`, reqAPI);
+    const { payload, status } = useFetch(`${BASE_URL}/auth/register`, fetch);
 
     useEffect(() => {
         if (status === 'success') {
             toast.success('Register successfully!');
-            const navi = setTimeout(() => navigate('/signin'), 2000);
+            navigate('/signin');
         }
         else if (status !== 'fail') {
             toast.error(status);
         }
-        reqAPI.body = null;
+        setFetch({...fetch, body: null})
     }, [payload, status])
 
     return (
         <div className={styles.wrapper}>
-            {/* <Toaster 
-                position='top-right'
-                reverseOrder={false}
-            /> */}
             <form className={styles.form} onSubmit={handleSignUp}>
                 <div className={styles.username}>
                     <label htmlFor='usernameInput'>

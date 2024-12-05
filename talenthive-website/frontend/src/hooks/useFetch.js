@@ -75,11 +75,6 @@ export const useFetchDataWithToken = (url) => {
     });
 
     useEffect(() => {
-        if (!token) {
-            console.error('No access token found');
-            return;
-        }
-
         const fetchData = async () => {
             dispatch({
                 type: 'fetchAPI/request',
@@ -87,29 +82,30 @@ export const useFetchDataWithToken = (url) => {
             });
 
             try {
-                const response = await fetch(url, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
-
-                const data = await response.json();
-                if (data.status === 'success') {
-                    dispatch({
-                        type: 'fetchAPI/success',
-                        payload: data.data,
-                        isLoading: false,
-                        status: 'success',
-                    });
-                } else {
-                    dispatch({
-                        type: 'fetchAPI/error',
-                        payload: [],
-                        isLoading: false,
-                        status: data.message,
-                    });
+                if (token !== null) {
+                    const response = await fetch(url, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            Authorization: `Bearer ${token}`,
+                        },
+                    });   
+                    const data = await response.json();
+                    if (data.status === 'success') {
+                        dispatch({
+                            type: 'fetchAPI/success',
+                            payload: data.data,
+                            isLoading: false,
+                            status: 'success',
+                        });
+                    } else {
+                        dispatch({
+                            type: 'fetchAPI/error',
+                            payload: [],
+                            isLoading: false,
+                            status: data.message,
+                        });
+                    }
                 }
             } catch (err) {
                 dispatch({

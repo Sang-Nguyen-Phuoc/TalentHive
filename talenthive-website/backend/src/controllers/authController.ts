@@ -255,11 +255,13 @@ export const getMe = catchAsync(async (req: Request, res: Response, next: NextFu
     if (!profile) {
         return next(new AppError("Profile not found for this user", 500));
     }
+    const data = {
+        profile,
+        role: currentUser.role
+    }
 
     res.status(StatusCodes.OK).json({
         status: "success",
-        data: {
-            profile: profile,
-        },
+        data: data,
     });
 });
