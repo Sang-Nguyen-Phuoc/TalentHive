@@ -1,17 +1,22 @@
-import { createContext, useState } from "react";
+import { createContext, useEffect, useState } from "react";
+import { useFetchDataWithToken } from "../hooks/useFetch";
+import { BASE_URL } from "../utils/Constants";
 
 export const CurrentUserContext = createContext(null);
 
 
 export const CurrentUserProvider = ({children}) => {
-    const initUser = {
-        user : {
-            role: 'guest',
-        },
-    };
-    const [currentUser, setCurrentUser] = useState(initUser);
-
-    return <CurrentUserContext.Provider value={{initUser, currentUser, setCurrentUser}}>
+    const [currentUser, setCurrentUser] = useState({role: 'guest'});
+    const {payload} = useFetchDataWithToken(`${BASE_URL}/auth/me`);
+    useEffect(() => {
+        if (payload && payload.profile) {
+          setCurrentUser({
+            profile: payload.profile,
+            role: payload.role
+          })
+        }
+      }, [payload]);
+    return <CurrentUserContext.Provider value={{currentUser, setCurrentUser}}>
         {children}
     </CurrentUserContext.Provider>
 }

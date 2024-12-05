@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-regular-svg-icons";
 import { toast } from "react-toastify";
 import { BASE_URL } from "../../utils/Constants";
+import { saveAccessToken } from "../../utils/authToken";
 
 const reqAPI = {
     method: "POST",
@@ -29,36 +30,34 @@ function Signin() {
         emailRef.current.focus();
         passwordRef.current.value = "";
 
-        reqAPI.body = JSON.stringify(dataSignIn);
         setShow(false);
-        setFetch(fetch + 1);
+        setFetch({...fetch, body: JSON.stringify(dataSignIn)});
     };
 
     const emailRef = useRef(null);
     const passwordRef = useRef(null);
     const [show, setShow] = useState(false);
-    const [fetch, setFetch] = useState(0);
+    const [fetch, setFetch] = useState(reqAPI);
     const navigate = useNavigate();
     const { setCurrentUser } = useContext(CurrentUserContext);
 
     // Call API
-    const { payload, status } = useFetch(`${BASE_URL}/auth/login`, reqAPI);
+    const { payload, status } = useFetch(`${BASE_URL}/auth/login`, fetch);
 
     useEffect(() => {
         if (status === "success") {
             toast.success("Sign in successfully!");
+            saveAccessToken(payload.accessToken);
             setCurrentUser(payload);
             navigate("/");
         } else if (status !== "fail") {
             toast.error(status);
         }
-        reqAPI.body = null;
-        setFetch(fetch + 1);
-    }, [payload, status]);
+        setFetch({...fetch, body: null})
+    }, [payload, status, setCurrentUser]);
 
     return (
         <div className={styles.wrapper}>
-            {/* <Toaster position="top-right" reverseOrder={false} /> */}
             <form className={styles.form} onSubmit={handleSignIn}>
                 <div className={styles.email}>
                     <label htmlFor="emailInput">

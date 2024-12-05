@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import AuthenticationLayout from "./layouts/AuthenticationLayout";
 import DefaultLayout from "./layouts/DefaultLayout";
@@ -8,7 +8,6 @@ import Search from "./pages/Search";
 import HireTalent from "./pages/HireTalent";
 import ProfileAccount from "./pages/ProfileAccount";
 import ProfileDashboard from "./pages/ProfileDashboard";
-import EditProfile from "./pages/EditProfile";
 import JobDetail from "./pages/JobDetail";
 import JobsApplied from "./pages/JobsApplied";
 import ManageWorkers from "./pages/ManageWorkers";
@@ -47,10 +46,6 @@ const router = createBrowserRouter([
           {
             path: "dashboard",
             element: <ProfileDashboard />,
-          },
-          {
-            path: "edit",
-            element: <EditProfile />,
           },
         ],
       },

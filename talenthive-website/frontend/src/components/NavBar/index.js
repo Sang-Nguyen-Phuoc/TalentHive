@@ -1,20 +1,22 @@
 import { useNavigate } from "react-router-dom";
 import { useContext } from 'react';
 import { CurrentUserContext } from "../../context/CurrentUserContext";
+import { removeAccessToken } from "../../utils/authToken";
 import styles from '../../styles/components/NavBar.module.css';
 import Logo from '../../images/account-logo.png';
 
 const NavBar = () => {
     const navigate = useNavigate();
-    const {initUser, currentUser, setCurrentUser} = useContext(CurrentUserContext);
-    const role = currentUser.user.role;
+    const {currentUser, setCurrentUser} = useContext(CurrentUserContext);
+    const role = currentUser.role;
 
     const handleNavigate = (path) => {
         navigate(path);
     };
 
     const handleLogout = () => {
-        setCurrentUser(initUser);
+        removeAccessToken();
+        setCurrentUser({role: 'guest'});
     }
 
 
@@ -35,8 +37,8 @@ const NavBar = () => {
                         <div className={styles['profile-logo-container']}>
                             <img src={Logo} alt="Profile" className={styles["profile-logo"]} />
                             <div className={styles['dropdown-menu']}>
-                                <div onClick={() => handleNavigate('/profile-dashboard')}>Dashboard</div>
-                                <div onClick={() => handleNavigate('/profile-account')}>Account</div>
+                                <div onClick={() => handleNavigate('/profile/dashboard')}>Dashboard</div>
+                                <div onClick={() => handleNavigate('/profile/account')}>Account</div>
                                 <div onClick={() => handleLogout()}>Log out</div>
                             </div>
                         </div>
@@ -50,8 +52,8 @@ const NavBar = () => {
                         <div className={styles['profile-logo-container']}>
                             <img src={Logo} alt="Profile" className={styles["profile-logo"]} />
                             <div className={styles['dropdown-menu']}>
-                                <div onClick={() => handleNavigate('/profile-dashboard')}>Dashboard</div>
-                                <div onClick={() => handleNavigate('/profile-account')}>Account</div>
+                                <div onClick={() => handleNavigate('/profile/dashboard')}>Dashboard</div>
+                                <div onClick={() => handleNavigate('/profile/account')}>Account</div>
                                 <div onClick={() => handleLogout()}>Log out</div>
                             </div>
                         </div>
