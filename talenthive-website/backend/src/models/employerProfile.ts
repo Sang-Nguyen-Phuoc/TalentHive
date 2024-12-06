@@ -42,7 +42,6 @@ const EmployerProfileSchema = new Schema<IEmployerProfile>({
     },
     phone: {
         type: String,
-        validate: [validator.isMobilePhone, 'Invalid phone number']
     },
     sector: {
         type: String,
