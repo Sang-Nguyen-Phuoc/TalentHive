@@ -5,7 +5,7 @@ import Image from "./image";
 export interface ICompany {
     _id: Types.ObjectId;
     name: string;
-    avatar?: Types.ObjectId | undefined;
+    avatar?: string;
     locations: string[];
     industry: string;
     address: string;
@@ -24,7 +24,7 @@ const CompanySchema = new Schema<ICompany>({
         trim: true
     },
     avatar: {
-        type: Schema.Types.ObjectId,
+        type: String,
         ref: 'Image'
     },
     locations: {

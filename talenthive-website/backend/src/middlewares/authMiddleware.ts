@@ -14,17 +14,22 @@ export const attachUserId = catchAsync(async (req: Request, res: Response, next:
         ? req.headers.authorization?.split(" ")[1]
         : null;
 
+    if (!accessToken) {
+        return next(new AppError("accessToken must be sent into header with bearer-token", StatusCodes.UNAUTHORIZED));
+    }
+
     if (await checkIfAccessTokenInBlacklist(accessToken!)) {
         return next(new AppError("accessToken is blacklisted", StatusCodes.UNAUTHORIZED));
     }
 
-    if (!accessToken) {
-        return next(new AppError("accessToken must be sent into body", StatusCodes.UNAUTHORIZED));
-    }
     if (!process.env.JWT_ACCESS_SECRET) {
-        return next(new AppError("The JWT_ACCESS_SECRET variable is not defined", StatusCodes.INTERNAL_SERVER_ERROR));
+        return next(
+            new AppError(
+                "The JWT_ACCESS_SECRET variable is not defined",
+                StatusCodes.INTERNAL_SERVER_ERROR
+            )
+        );
     }
-
 
     let decode: any;
     try {
@@ -59,11 +64,21 @@ type Role = "admin" | "employer" | "candidate";
 export const authorizeRole = (roles: Role[]) => {
     return (req: Request, res: Response, next: NextFunction) => {
         if (!req.body.user) {
-            return next(new AppError("attachUserId middleware must be called before authorizeRole middleware", StatusCodes.INTERNAL_SERVER_ERROR));
+            return next(
+                new AppError(
+                    "attachUserId middleware must be called before authorizeRole middleware",
+                    StatusCodes.INTERNAL_SERVER_ERROR
+                )
+            );
         }
         if (!roles.includes(req.body.user.role)) {
-            return next(new AppError("You do not have permission to perform this action", StatusCodes.FORBIDDEN));
+            return next(
+                new AppError(
+                    "You do not have permission to perform this action",
+                    StatusCodes.FORBIDDEN
+                )
+            );
         }
         next();
     };
-}
+};

@@ -127,12 +127,16 @@ export const unlockUser = catchAsync(async (req: Request, res: Response, next: N
 });
 
 export const createAdmin = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-  const { email, password, role } = req.body;
+  const { email, password } = req.body;
   isRequired(email, "email");
   isRequired(password, "password");
 
   if (!validator.isEmail(email)) {
     return next(new AppError("Please provide a valid email", StatusCodes.BAD_REQUEST));
+  }
+
+  if (await User.exists({ email })) {
+    return next(new AppError("User already exists with the provided email", StatusCodes.BAD_REQUEST));
   }
 
   const user = await User.create({ email, password, role: "admin" });

@@ -17,9 +17,7 @@ const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
 app.use(cors({ origin: "*" }));
-
 app.use(cookieParser());
 
 app.use(morgan("dev"));
@@ -37,11 +35,11 @@ app.use("/api/v1/employers", employerRouter);
 app.use("/api/v1/candidates", candidateRouter);
 app.use("/api/v1", applicationRouter);
 
-app.use('/api/v1/test', testRouter);
+app.use("/api/v1/test", testRouter);
 
 app.all("*", (req: Request, res: Response, next: NextFunction) => {
     next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
-})
+});
 
 app.use(globalErrorHandler);
 
