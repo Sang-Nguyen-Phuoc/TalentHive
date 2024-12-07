@@ -5,7 +5,7 @@ import Image from "./image";
 export interface ICompany {
     _id: Types.ObjectId;
     name: string;
-    avatar?: string;
+    avatar?: Types.ObjectId;
     locations: string[];
     industry: string;
     address: string;
