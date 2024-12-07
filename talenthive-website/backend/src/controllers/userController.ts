@@ -8,6 +8,7 @@ import validator from "validator";
 import { StatusCodes } from "http-status-codes";
 import { isNotFound, isObjectIdOfMongoDB, isRequired } from "../utils/validateServices";
 import Email from "../utils/email";
+import FollowCompany from "../models/followCompany";
 
 export const deleteUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
   if (!req.body.email) {
@@ -148,5 +149,40 @@ export const createAdmin = catchAsync(async (req: Request, res: Response, next: 
     data: {
       user,
     },
+  });
+});
+
+export const followCompany = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+  const userId = req.body.userId;
+  const companyId = req.params.companyId;
+  const followCompany = await FollowCompany.create({ user_id: userId, company_id: companyId });
+  res.status(StatusCodes.CREATED).json({
+      status: "success",
+      data: {
+          followCompany,
+      },
+  });
+});
+
+export const getFollowedCompanies = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+  const userId = req.body.userId;
+  const followedCompanies = await FollowCompany.find({ user_id: userId }).populate("company_id");
+  res.status(StatusCodes.OK).json({
+      status: "success",
+      data: {
+          followedCompanies,
+      },
+  });
+});
+
+export const unfollowCompany = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+  const userId = req.body.userId;
+  const companyId = req.params.companyId;
+  await FollowCompany.findOneAndDelete({ user_id: userId, company_id: companyId });
+  res.status(StatusCodes.OK).json({
+      status: "success",
+      data: {
+          followCompany: null,
+      },
   });
 });

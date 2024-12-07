@@ -2,14 +2,14 @@ import { model, Schema, Types } from "mongoose";
 
 export interface IFollowCompany {
     _id?: Types.ObjectId;
-    userId?: Types.ObjectId;
-    companyId?: Types.ObjectId;
+    user_id?: Types.ObjectId;
+    company_id?: Types.ObjectId;
     followedAt?: Date;
 }
 
 const FollowCompanySchema = new Schema<IFollowCompany>({
-    userId: { type: Types.ObjectId, ref: 'User', required: true },
-    companyId: { type: Types.ObjectId, ref: 'Company', required: true },
+    user_id: { type: Types.ObjectId, ref: 'User', required: true },
+    company_id: { type: Types.ObjectId, ref: 'Company', required: true },
     followedAt: { type: Date, default: Date.now },
 });
 
