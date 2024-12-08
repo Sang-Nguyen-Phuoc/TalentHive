@@ -1,5 +1,10 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useContext } from 'react';
 import styles from '../../styles/pages/ProfileAccount.module.css';
+import { CurrentUserContext } from '../../context/CurrentUserContext';
+import { BASE_URL } from '../../utils/Constants';
+import { getAccessToken } from '../../utils/authToken';
+import { toast } from 'react-toastify';
+
 
 const ProfileAccount = () => {
     const rules = [
@@ -13,6 +18,8 @@ const ProfileAccount = () => {
     const [type, setType] = useState(Array(rules.length).fill('none'));
     const [confirm, setConfirm] = useState(false);
     const [isPasswordValid, setIsPasswordValid] = useState(false);
+    const { currentUser } = useContext(CurrentUserContext);
+    console.log(currentUser);
 
     const currentPasswordRef = useRef(null);
     const passwordRef = useRef(null);
@@ -43,8 +50,32 @@ const ProfileAccount = () => {
     };
 
     const handleUpdatePassword = () => {
-        // Update password here
-        alert('Password updated: ' + passwordRef.current.value);
+        const accessToken = `Bearer ${getAccessToken()}`;
+        fetch(`${BASE_URL}/auth/changePassword`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: accessToken,
+            },
+            body: JSON.stringify({
+                currentPassword: currentPasswordRef.current.value,
+                newPassword: passwordRef.current.value,
+            }),
+        }).then((response) => {
+            return response.json();
+        }).then((data) => {
+            if (data.status === 'success') {
+                toast.success('Password updated successfully!');
+            }
+            else {
+                toast.error(data.message);
+            }
+        }).catch((error) => {
+            console.log(error);
+        });
+
+
+
         // Clear password fields
         currentPasswordRef.current.value = '';
         passwordRef.current.value = '';
@@ -67,12 +98,12 @@ const ProfileAccount = () => {
                 <div className={styles.info}>
                     <table>
                         <tr>
-                            <td>Username</td>
-                            <td>John Doe</td>
+                            <td>Role</td>
+                            <td>{currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1)}</td>
                         </tr>
                         <tr>
                             <td>Email</td>
-                            <td>abc@sample.com</td>
+                            <td>{currentUser ? currentUser.profile.email : "none"}</td>
                         </tr>
                     </table>
                 </div>
@@ -141,7 +172,6 @@ const ProfileAccount = () => {
                     >
                         Update New Password
                     </button>
-
                 </div>
             </div>
         </div>
