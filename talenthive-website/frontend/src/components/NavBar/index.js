@@ -7,7 +7,7 @@ import Logo from '../../images/account-logo.png';
 
 const NavBar = () => {
     const navigate = useNavigate();
-    const {currentUser, setCurrentUser} = useContext(CurrentUserContext);
+    const { currentUser, setCurrentUser } = useContext(CurrentUserContext);
     const role = currentUser.role;
 
     const handleNavigate = (path) => {
@@ -15,8 +15,9 @@ const NavBar = () => {
     };
 
     const handleLogout = () => {
+        navigate('/');
         removeAccessToken();
-        setCurrentUser({role: 'guest'});
+        setCurrentUser({ role: 'guest' });
     }
 
 

@@ -7,6 +7,7 @@ import IconChevronLeft from "../../components/icons/IconChevronLeft";
 import IconChevronRight from "../../components/icons/IconChevronRight";
 import styles from "../../styles/pages/Home.module.css";
 import { items } from "./items";
+import { BASE_URL } from "../../utils/Constants";
 
 const CustomCarouselControls = ({ activeIndex, numPage, onPrev, onNext }) => (
     <div className={styles.controlsWrapper}>
@@ -49,6 +50,26 @@ function Home() {
     useEffect(() => {
         setNumJob(calculateNumJob());
         window.addEventListener("resize", handleResize);
+
+
+
+        fetch(`${BASE_URL}/jobs?page=${activeIndex + 1}&limit=${numJob}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+            },
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                console.log(data);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            })
+
+
+
         return () => window.removeEventListener("resize", handleResize);
     }, []);
 

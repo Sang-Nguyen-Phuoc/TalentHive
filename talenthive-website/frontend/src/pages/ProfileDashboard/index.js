@@ -6,26 +6,28 @@ import { CurrentUserContext } from '../../context/CurrentUserContext';
 import { useContext, useState } from 'react';
 import Avatar from '../../images/account-logo.png';
 
-function ProfileDashboard({isReused}) {
+function ProfileDashboard({ isReused }) {
     const Job = JobItem.Detail;
     const [statePost, setStatePost] = useState('')
     const [show, setShow] = useState(false);
-    const {currentUser} = useContext(CurrentUserContext);
+    const { currentUser } = useContext(CurrentUserContext);
 
-    const {profile} = currentUser
-    
+    const { profile } = currentUser
+    console.log(profile);
+
     // console.log(state);
     // if (!props)
     //     props = state.data;
 
+
     if (currentUser.role === 'candidate')
         return (
-            <div className={`${styles.wrapper} ${isReused===true && styles.reused}`}>
-                <EditFormCandidate show={show} setShow={setShow}/>
+            <div className={`${styles.wrapper} ${isReused === true && styles.reused}`}>
+                <EditFormCandidate show={show} setShow={setShow} />
                 <div className={styles['cover-page']}>
                     <div className={styles['avatar-container']}>
-                        <img src={profile.image || Avatar} alt="Avatar" className={styles.avatar}/>
-                        <h1 className={styles.name}>{profile.company || 'Chos Loiwj'}</h1>
+                        <img src={profile.image || Avatar} alt="Avatar" className={styles.avatar} />
+                        <h1 className={styles.name}>{profile.username || 'None'}</h1>
                     </div>
                     {!isReused && <button className={styles.edit} onClick={() => setShow(!show)}>Edit profile</button>}
                 </div>
@@ -53,10 +55,10 @@ function ProfileDashboard({isReused}) {
                 </div>
             </div>
         );
-    else if (currentUser.role === 'employer'){
+    else if (currentUser.role === 'employer') {
         const items = [
             {
-                state : 'Pending',
+                state: 'Pending',
                 position: 'ReactJS Developer (All level)',
                 company: 'Sài Gòn Technology',
                 image: 'https://itviec.com/rails/active_storage/representations/proxy/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBN0tmSGc9PSIsImV4cCI6bnVsbCwicHVyIjoiYmxvYl9pZCJ9fQ==--c0fe0ff712a458d81ebedefb0b36172418e2834d/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdCem9MWm05eWJXRjBTU0lJY0c1bkJqb0dSVlE2RW5KbGMybDZaVjkwYjE5bWFYUmJCMmxwYVdrPSIsImV4cCI6bnVsbCwicHVyIjoidmFyaWF0aW9uIn19--c8c20c63b868249effdba9ba4f05aa0c5b77cab3/Black%20(3).png',
@@ -68,7 +70,7 @@ function ProfileDashboard({isReused}) {
                 endAt: '19'
             },
             {
-                state : 'Accepted',
+                state: 'Accepted',
                 position: 'Middle Frontend Engineer (ReactJS/ Typescript)',
                 company: 'MONEY FORWARD VIETNAM CO.,LTD',
                 image: 'https://itviec.com/rails/active_storage/representations/proxy/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBOVVIRFE9PSIsImV4cCI6bnVsbCwicHVyIjoiYmxvYl9pZCJ9fQ==--1ae7acc317bfb2f261c8b580725af2d56ae34b7e/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdCem9MWm05eWJXRjBTU0lJY0c1bkJqb0dSVlE2RW5KbGMybDZaVjkwYjE5bWFYUmJCMmxwYVdrPSIsImV4cCI6bnVsbCwicHVyIjoidmFyaWF0aW9uIn19--c8c20c63b868249effdba9ba4f05aa0c5b77cab3/money-forward-vi-t-nam-logo.png',
@@ -80,7 +82,7 @@ function ProfileDashboard({isReused}) {
                 endAt: '21'
             },
             {
-                state : 'Pending',
+                state: 'Pending',
                 position: 'Frontend Engineer (ReactJS) - NAVER FINANCIAL',
                 company: 'NAVER VIETNAM',
                 image: 'https://itviec.com/rails/active_storage/representations/proxy/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBODF1SkE9PSIsImV4cCI6bnVsbCwicHVyIjoiYmxvYl9pZCJ9fQ==--da4ae1908c127c677e6c706e25596035b231b592/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdCem9MWm05eWJXRjBTU0lJY0c1bkJqb0dSVlE2RW5KbGMybDZaVjkwYjE5bWFYUmJCMmxwYVdrPSIsImV4cCI6bnVsbCwicHVyIjoidmFyaWF0aW9uIn19--c8c20c63b868249effdba9ba4f05aa0c5b77cab3/Naver_Logo(2)-white.png',
@@ -92,7 +94,7 @@ function ProfileDashboard({isReused}) {
                 endAt: '15'
             },
             {
-                state : 'Rejected',
+                state: 'Rejected',
                 position: 'ReactJS Developer (All level)',
                 company: 'Sài Gòn Technology',
                 image: 'https://itviec.com/rails/active_storage/representations/proxy/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBN0tmSGc9PSIsImV4cCI6bnVsbCwicHVyIjoiYmxvYl9pZCJ9fQ==--c0fe0ff712a458d81ebedefb0b36172418e2834d/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdCem9MWm05eWJXRjBTU0lJY0c1bkJqb0dSVlE2RW5KbGMybDZaVjkwYjE5bWFYUmJCMmxwYVdrPSIsImV4cCI6bnVsbCwicHVyIjoidmFyaWF0aW9uIn19--c8c20c63b868249effdba9ba4f05aa0c5b77cab3/Black%20(3).png',
@@ -104,7 +106,7 @@ function ProfileDashboard({isReused}) {
                 endAt: '19'
             },
             {
-                state : 'Pending',
+                state: 'Pending',
                 position: 'Middle Frontend Engineer (ReactJS/ Typescript)',
                 company: 'MONEY FORWARD VIETNAM CO.,LTD',
                 image: 'https://itviec.com/rails/active_storage/representations/proxy/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBOVVIRFE9PSIsImV4cCI6bnVsbCwicHVyIjoiYmxvYl9pZCJ9fQ==--1ae7acc317bfb2f261c8b580725af2d56ae34b7e/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdCem9MWm05eWJXRjBTU0lJY0c1bkJqb0dSVlE2RW5KbGMybDZaVjkwYjE5bWFYUmJCMmxwYVdrPSIsImV4cCI6bnVsbCwicHVyIjoidmFyaWF0aW9uIn19--c8c20c63b868249effdba9ba4f05aa0c5b77cab3/money-forward-vi-t-nam-logo.png',
@@ -116,7 +118,7 @@ function ProfileDashboard({isReused}) {
                 endAt: '21'
             },
             {
-                state : 'Accepted',
+                state: 'Accepted',
                 position: 'Frontend Engineer (ReactJS) - NAVER FINANCIAL',
                 company: 'NAVER VIETNAM',
                 image: 'https://itviec.com/rails/active_storage/representations/proxy/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBODF1SkE9PSIsImV4cCI6bnVsbCwicHVyIjoiYmxvYl9pZCJ9fQ==--da4ae1908c127c677e6c706e25596035b231b592/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdCem9MWm05eWJXRjBTU0lJY0c1bkJqb0dSVlE2RW5KbGMybDZaVjkwYjE5bWFYUmJCMmxwYVdrPSIsImV4cCI6bnVsbCwicHVyIjoidmFyaWF0aW9uIn19--c8c20c63b868249effdba9ba4f05aa0c5b77cab3/Naver_Logo(2)-white.png',
@@ -130,11 +132,11 @@ function ProfileDashboard({isReused}) {
         ]
 
         return (
-            <div className={`${styles.wrapper} ${isReused===true && styles.reused}`}>
-                <EditFormEmployer show={show} setShow={setShow}/>
+            <div className={`${styles.wrapper} ${isReused === true && styles.reused}`}>
+                <EditFormEmployer show={show} setShow={setShow} />
                 <div className={styles['cover-page']}>
                     <div className={styles['avatar-container']}>
-                        <img src={profile.image || Avatar} alt="Avatar" className={styles.avatar}/>
+                        <img src={profile.image || Avatar} alt="Avatar" className={styles.avatar} />
                         <h1 className={styles.name}>{profile.company || 'Chos Lowij'}</h1>
                     </div>
                     {!isReused && <button className={styles.edit} onClick={() => setShow(!show)}>Edit profile</button>}
@@ -155,8 +157,8 @@ function ProfileDashboard({isReused}) {
                             <div className={styles.content}>Recruitment {`(${statePost === '' ? items.length : items.filter(i => i.state === statePost).length} jobs)`}</div>
                             <div className={styles['filter-container']}>
                                 <select value={statePost}
-                                        onChange={(e) => setStatePost(e.target.value)}
-                                        className={styles.filter}>
+                                    onChange={(e) => setStatePost(e.target.value)}
+                                    className={styles.filter}>
                                     <option value="">All</option>
                                     <option value="Pending">Pending</option>
                                     <option value="Accepted">Accepted</option>
@@ -167,7 +169,7 @@ function ProfileDashboard({isReused}) {
                                 {items.map((item, index) => {
                                     if (statePost === '')
                                         return <Job key={index} props={item} isEmployer></Job>
-                                    else 
+                                    else
                                         return (statePost === item.state) && <Job key={index} props={item} isEmployer></Job>
                                 })}
                             </div>
@@ -175,7 +177,7 @@ function ProfileDashboard({isReused}) {
                     </div>
                 </div>
             </div>
-    );
+        );
     }
 }
 
