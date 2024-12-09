@@ -1,17 +1,19 @@
 import express, { NextFunction, Request, Response } from "express";
 import cors from "cors";
 import userRouter from "./routes/userRoutes";
-import authRouter from "./routes/authRoutes";
-import jobRouter from "./routes/jobRoutes";
+import authRouter from "./routes/authRouter";
+import jobRouter from "./routes/jobRouter";
 import testRouter from "./routes/testRoutes";
-import companyRouter from "./routes/companyRoutes";
-import candidateRouter from "./routes/candidateRoutes";
-import employerRouter from "./routes/employerRoutes";
+import companyRouter from "./routes/companyRouter";
+import candidateRouter from "./routes/candidateRouter";
+import employerRouter from "./routes/employerRouter";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import globalErrorHandler from "./controllers/errorController";
 import AppError from "./utils/appError";
-import applicationRouter from "./routes/applicationRoutes";
+import applicationRouter from "./routes/applicationRouter";
+import savedJobRouter from "./routes/savedJobRoutes";
+import { StatusCodes } from "http-status-codes";
 
 const app = express();
 
@@ -34,11 +36,12 @@ app.use("/api/v1/candidates", candidateRouter);
 app.use("/api/v1/employers", employerRouter);
 app.use("/api/v1/candidates", candidateRouter);
 app.use("/api/v1", applicationRouter);
-
 app.use("/api/v1/test", testRouter);
 
+app.use("/api/v1/saved-jobs", savedJobRouter);
+
 app.all("*", (req: Request, res: Response, next: NextFunction) => {
-    next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
+    next(new AppError(`Can't find ${req.originalUrl} on this server!`, StatusCodes.NOT_FOUND));
 });
 
 app.use(globalErrorHandler);

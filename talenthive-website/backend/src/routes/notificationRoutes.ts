@@ -5,5 +5,4 @@ const router = Router();
 
 router.put("/:notificationId/markAsRead", notificationController.markNotificationAsRead);
 
-
 export default router;
