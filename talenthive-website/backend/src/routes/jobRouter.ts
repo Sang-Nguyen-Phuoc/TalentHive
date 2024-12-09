@@ -16,45 +16,20 @@ const jobRouter = Router();
 
 jobRouter.get("/search", trimJobFields, validateJobFields, jobController.searchJobs);
 
-jobRouter.use(attachUserId);
-
 jobRouter.post(
     "/",
-    attachUserId,
     authorizeRole(["employer"]),
     validateMissingJobFields,
     validateJobFields,
     jobController.createJob
 );
-jobRouter.put(
-    "/:jobId",
-    attachUserId,
-    authorizeRole(["employer"]),
-    validateJobFields,
-    jobController.updateJob
-);
-jobRouter.delete(
-    "/:jobId",
-    attachUserId,
-    authorizeRole(["employer", "admin"]),
-    jobController.deleteJob
-);
-jobRouter.get(
-    "/",
-    attachUserId,
-    authorizeRole(["candidate", "employer", "admin"]),
-    jobController.getAllJobs
-);
-jobRouter.get(
-    "/:jobId",
-    attachUserId,
-    authorizeRole(["candidate", "employer", "admin"]),
-    jobController.getAJob
-);
+jobRouter.put("/:jobId", authorizeRole(["employer"]), validateJobFields, jobController.updateJob);
+jobRouter.delete("/:jobId", authorizeRole(["employer", "admin"]), jobController.deleteJob);
+jobRouter.get("/", authorizeRole(["candidate", "employer", "admin"]), jobController.getAllJobs);
+jobRouter.get("/:jobId", authorizeRole(["candidate", "employer", "admin"]), jobController.getAJob);
 
 jobRouter.post(
     "/:jobId/apply",
-    attachUserId,
     authorizeRole(["candidate"]),
     validateMissingApplicationFields,
     validateApplicationFields,
@@ -63,7 +38,6 @@ jobRouter.post(
 
 jobRouter.get(
     "/:jobId/applications",
-    attachUserId,
     authorizeRole(["employer", "admin"]),
     jobController.getAllJobApplications
 );
@@ -78,21 +52,18 @@ jobRouter.put(
 
 jobRouter.delete(
     "/:jobId/application",
-    attachUserId,
     authorizeRole(["candidate"]),
     jobController.deleteApplication
 );
 
 jobRouter.get(
     "/:jobId/application",
-    attachUserId,
     authorizeRole(["employer", "admin"]),
     jobController.getAJobApplication
 );
 
 jobRouter.post(
     "/:jobId/application/:response",
-    attachUserId,
     authorizeRole(["employer"]),
     validateApplicationFields,
     jobController.responseToJobApplication
