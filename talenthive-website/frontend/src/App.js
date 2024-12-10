@@ -1,5 +1,5 @@
 import React from "react";
-import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import { Navigate, RouterProvider, createBrowserRouter } from "react-router-dom";
 import AuthenticationLayout from "./layouts/AuthenticationLayout";
 import DefaultLayout from "./layouts/DefaultLayout";
 import Home from "./pages/Home";
@@ -63,7 +63,7 @@ const router = createBrowserRouter([
         ],
       },
       {
-        path: "admin",
+        path: "/admin",
         children: [
           {
             path: "workers",

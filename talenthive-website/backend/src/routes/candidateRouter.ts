@@ -5,6 +5,7 @@ import { authorizeRole } from "../middlewares/authMiddleware";
 
 const candidateRouter = Router();
 
+
 candidateRouter.delete(
     "/:id",
     authorizeRole(["admin"]),

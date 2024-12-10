@@ -61,8 +61,10 @@ export const attachUserId = catchAsync(async (req: Request, res: Response, next:
 
 type Role = "admin" | "employer" | "candidate";
 
-export const authorizeRole = (roles: Role[]) => {
+// if roles is not provided, it will authorize all roles
+export const authorizeRole = (roles?: Role[] | undefined) => {
     return (req: Request, res: Response, next: NextFunction) => {
+        attachUserId(req, res, next);
         if (!req.body.user) {
             return next(
                 new AppError(
@@ -70,6 +72,9 @@ export const authorizeRole = (roles: Role[]) => {
                     StatusCodes.INTERNAL_SERVER_ERROR
                 )
             );
+        }
+        if (!roles) {
+            roles = ["admin", "employer", "candidate"];
         }
         if (!roles.includes(req.body.user.role)) {
             return next(

@@ -6,7 +6,6 @@ const applicationRouter = Router();
 
 applicationRouter.post(
     "/jobs/:jobId/applications/:applicationId",
-    attachUserId,
     authorizeRole(["employer"]),
     applicationController.rejectOrAcceptApplication
 );
