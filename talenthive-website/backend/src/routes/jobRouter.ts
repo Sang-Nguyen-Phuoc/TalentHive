@@ -25,8 +25,8 @@ jobRouter.post(
 );
 jobRouter.put("/:jobId", authorizeRole(["employer"]), validateJobFields, jobController.updateJob);
 jobRouter.delete("/:jobId", authorizeRole(["employer", "admin"]), jobController.deleteJob);
-jobRouter.get("/", authorizeRole(["candidate", "employer", "admin"]), jobController.getAllJobs);
-jobRouter.get("/:jobId", authorizeRole(["candidate", "employer", "admin"]), jobController.getAJob);
+jobRouter.get("/", jobController.getAllJobs);
+jobRouter.get("/:jobId", jobController.getAJob);
 
 jobRouter.post(
     "/:jobId/apply",
