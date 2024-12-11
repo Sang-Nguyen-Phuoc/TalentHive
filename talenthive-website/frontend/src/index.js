@@ -14,7 +14,17 @@ root.render(
     <UserProvider>
         <CurrentUserProvider>
             <App />
-            <ToastContainer />
+            <ToastContainer 
+                position="top-right"
+                autoClose={2000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+            />
         </CurrentUserProvider>
     </UserProvider>
 );

@@ -2,7 +2,6 @@ import { NextFunction, Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import User from "../models/user";
 import validator from "validator";
-import * as tokenServices from "../utils/tokenServices";
 import catchAsync from "../utils/catchAsync";
 import AppError from "../utils/appError";
 import Email from "../utils/email";
@@ -33,17 +32,15 @@ export const register = catchAsync(async (req: Request, res: Response, next: Nex
         return next(new AppError("User already exists", StatusCodes.BAD_REQUEST));
     }
 
-    // Create new user
-    const newUser = await User.create({ email, password, role });
+    let profile = null;
 
-    // Create user profile
     if (role === "candidate") {
-        const newCandidateProfile = new CandidateProfile({ user_id: newUser._id, email: email });
-        await newCandidateProfile.save();
+        profile = await CandidateProfile.create({ email: email });
     } else if (role === "employer") {
-        const newEmployerProfile = new EmployerProfile({ user_id: newUser._id, email: email });
-        await newEmployerProfile.save();
+        profile = await EmployerProfile.create({ email: email });
     }
+
+    const newUser = await User.create({ email, password, role, profile_id: profile ? profile._id : undefined });
 
     newUser.password = undefined;
 
@@ -83,8 +80,6 @@ export const logout = catchAsync(async (req: Request, res: Response, next: NextF
             new AppError("attachUserId middleware must be called before logout route", 500)
         );
     }
-
-    await tokenServices.invalidateToken(accessToken);
 
     // Clear the refresh token cookie
     res.clearCookie("refreshToken", {
@@ -127,9 +122,6 @@ export const changePassword = catchAsync(
         ) {
             return next(new AppError("Current password is incorrect", 403));
         }
-
-        // Invalidate current token since password is changing
-        tokenServices.invalidateToken(accessToken);
 
         // Update password and timestamp
         currentUser.password = newPassword;
@@ -255,13 +247,12 @@ export const getMe = catchAsync(async (req: Request, res: Response, next: NextFu
     if (!profile) {
         return next(new AppError("Profile not found for this user", 500));
     }
-    const data = {
-        profile,
-        role: currentUser.role
-    }
 
     res.status(StatusCodes.OK).json({
         status: "success",
-        data: data,
+        data: {
+            profile,
+            user: currentUser
+        }
     });
 });

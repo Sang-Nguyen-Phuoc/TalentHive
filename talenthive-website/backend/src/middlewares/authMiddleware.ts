@@ -8,11 +8,12 @@ import User from "../models/user";
 import { StatusCodes } from "http-status-codes";
 
 export const attachUserId = async (req: Request, res: Response, next: NextFunction) => {
-    const accessToken = req.headers.authorization?.startsWith("Bearer ") && req.headers.authorization.length > 12
-        ? req.headers.authorization?.split(" ")[1]
-        : null;
+    const accessToken =
+        req.headers.authorization?.startsWith("Bearer ") && req.headers.authorization.length > 12
+            ? req.headers.authorization?.split(" ")[1]
+            : null;
 
-    if (!accessToken) {         
+    if (!accessToken) {
         throw new AppError(
             "accessToken must be sent into header with bearer-token",
             StatusCodes.UNAUTHORIZED
@@ -46,6 +47,7 @@ export const attachUserId = async (req: Request, res: Response, next: NextFuncti
     // Grant access to protected route
     req.body.user = user;
     req.body.userId = userId;
+    
     req.body.accessToken = accessToken;
 };
 

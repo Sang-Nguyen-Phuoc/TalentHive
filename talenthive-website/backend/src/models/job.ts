@@ -20,6 +20,7 @@ export interface IJob {
     job_type: Types.ObjectId;
     job_category: Types.ObjectId;
     is_public: boolean;
+    status: string;
 }
 
 const JobSchema = new Schema<IJob>({
@@ -65,6 +66,11 @@ const JobSchema = new Schema<IJob>({
     },
     benefits: {
         type: [String],
+    },
+    status: {
+        type: String,
+        enum: ['pending', 'approved', 'rejected'],
+        default: 'pending'
     },
     posted_at: {
         type: Date,

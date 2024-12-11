@@ -25,7 +25,7 @@ const jobList = [
     {
         title: "Graphic Designer",
         company_name: "Creative Minds Agency",
-        employer_email: "employer1@techcorp.com",
+        employer_email: "nguyennam002004@gmail.com",
         salary_range: {
             min: 40000,
             max: 60000
@@ -42,7 +42,7 @@ const jobList = [
     {
         title: "Digital Marketing Specialist",
         company_name: "MarketPros Ltd",
-        employer_email: "employer1@techcorp.com",
+        employer_email: "nguyennam002004@gmail.com",
         salary_range: {
             min: 45000,
             max: 65000
@@ -76,7 +76,7 @@ const jobList = [
     {
         title: "Human Resources Manager",
         company_name: "PeopleFirst HR",
-        employer_email: "employer4@foodielife.com",
+        employer_email: "nguyennam002004@gmail.com",
         salary_range: {
             min: 50000,
             max: 75000

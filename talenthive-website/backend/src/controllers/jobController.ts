@@ -2,11 +2,11 @@ import { NextFunction, Request, Response } from "express";
 import catchAsync from "../utils/catchAsync";
 import Job from "../models/job";
 import AppError from "../utils/appError";
-import mongoose from "mongoose";
+import mongoose, { Query, QueryOpThatReturnsDocument } from "mongoose";
 import Application from "../models/application";
 
-
 import { StatusCodes } from "http-status-codes";
+import { isObjectIdOfMongoDB } from "../utils/validateServices";
 
 export const createJob = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const {
@@ -22,9 +22,8 @@ export const createJob = catchAsync(async (req: Request, res: Response, next: Ne
         job_category,
         skills,
         salary_range,
-        is_public
+        is_public,
     } = req.body;
-
 
     const job = await Job.create({
         title: title,
@@ -55,10 +54,9 @@ export const createJob = catchAsync(async (req: Request, res: Response, next: Ne
     });
 });
 
-export const getAllJobs = catchAsync(async (req: Request, res: Response, next: NextFunction) => { 
-
-    const page = (req.query.page ? parseInt(req.query.page as string, 10) : 1);
-    const limit = (req.query.limit ? parseInt(req.query.limit as string, 10) : 0);
+export const getAllJobs = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const page = req.query.page ? parseInt(req.query.page as string, 10) : 1;
+    const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 0;
 
     if (page < 1) {
         return next(new AppError("Invalid page number", StatusCodes.BAD_REQUEST));
@@ -76,26 +74,88 @@ export const getAllJobs = catchAsync(async (req: Request, res: Response, next: N
 
     // if page number exceeds total number of pages, return error
     if (maxPage && page > maxPage) {
-        return next(new AppError("Page number exceeds total number of pages", StatusCodes.BAD_REQUEST));
+        return next(
+            new AppError("Page number exceeds total number of pages", StatusCodes.BAD_REQUEST)
+        );
     }
 
     // calculate number of jobs to skip
-    const skip = (page - 1) * limit; 
+    const skip = (page - 1) * limit;
 
     // if page and limit are not provided, return all jobs
-    const jobs = await Job.find().skip(skip).limit(limit)
-                                            .populate("company_id")
-                                            .populate("employer_id")
-                                            .populate("job_type")
-                                            .populate("job_category");
+    const jobs = await Job.find()
+        .skip(skip)
+        .limit(limit)
+        .populate("company_id")
+        .populate("employer_id")
+        .populate("job_type")
+        .populate("job_category");
 
-   
     res.status(StatusCodes.OK).json({
         status: "success",
         data: {
-            "total_jobs": totalJobs,
-            "max_page": maxPage,
-            "jobs": jobs,
+            total_jobs: totalJobs,
+            max_page: maxPage,
+            jobs: jobs,
+        },
+    });
+});
+export const getJobList = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    // const { role, id } = req.user!;
+    // const { status, page, limit } = req.query;
+
+    // let jobs = null;
+
+    // if (role === "employer") {
+    //     jobs = await Job .find({ employer_id: id })
+    // } else if (role === "candidate") {
+    //     jobs = await Job.find()
+    // } else if (role === "admin") {
+
+    // } else {
+
+    // }
+
+    // const page = req.query.page ? parseInt(req.query.page as string, 10) : 1;
+    // const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 0;
+    // if (page < 1) {
+    //     return next(new AppError("Invalid page number", StatusCodes.BAD_REQUEST));
+    // }
+    // if (limit < 0) {
+    //     return next(new AppError("Invalid limit number", StatusCodes.BAD_REQUEST));
+    // }
+
+    // count total number of jobs
+    const totalJobs = await Job.countDocuments();
+
+    // // calculate max page number
+    // const maxPage = limit != 0 ? Math.ceil(totalJobs / limit) : null;
+
+    // // if page number exceeds total number of pages, return error
+    // if (maxPage && page > maxPage) {
+    //     return next(
+    //         new AppError("Page number exceeds total number of pages", StatusCodes.BAD_REQUEST)
+    //     );
+    // }
+
+    // calculate number of jobs to skip
+    // const skip = (page - 1) * limit;
+
+    // // if page and limit are not provided, return all jobs
+    // const jobs = await Job.find()
+    //     .skip(skip)
+    //     .limit(limit)
+    //     .populate("company_id")
+    //     .populate("employer_id")
+    //     .populate("job_type")
+    //     .populate("job_category");
+
+    res.status(StatusCodes.OK).json({
+        status: "success",
+        data: {
+            total_jobs: totalJobs,
+            // max_page: maxPage,
+            // jobs: jobs,
         },
     });
 });
@@ -116,8 +176,8 @@ export const deleteJob = catchAsync(async (req: Request, res: Response, next: Ne
     res.status(StatusCodes.OK).json({
         status: "success",
         data: {
-            job: null
-        }
+            job: null,
+        },
     });
 });
 
@@ -126,11 +186,12 @@ export const getAJob = catchAsync(async (req: Request, res: Response, next: Next
     if (!mongoose.Types.ObjectId.isValid(jobId)) {
         return next(new AppError("Invalid job ID", StatusCodes.BAD_REQUEST));
     }
-    
-    const job = await Job.findOne({ _id: jobId }).populate("company_id")
-                                                .populate("employer_id")
-                                                .populate("job_type")
-                                                .populate("job_category");
+
+    const job = await Job.findOne({ _id: jobId })
+        .populate("company_id")
+        .populate("employer_id")
+        .populate("job_type")
+        .populate("job_category");
 
     if (!job) {
         return next(new AppError("Job ID not found", StatusCodes.NOT_FOUND));
@@ -139,21 +200,20 @@ export const getAJob = catchAsync(async (req: Request, res: Response, next: Next
     res.status(StatusCodes.OK).json({
         status: "success",
         data: {
-            "job": job
-        }
+            job: job,
+        },
     });
 });
 
 export const updateJob = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    
     const jobId = req.params.jobId;
-   
+
     if (!mongoose.Types.ObjectId.isValid(jobId)) {
         return next(new AppError("Invalid job ID", StatusCodes.BAD_REQUEST));
     }
 
     // find job by ID
-    const job = await Job.findOne({_id: jobId});
+    const job = await Job.findOne({ _id: jobId });
     if (!job) {
         return next(new AppError("Job ID not found", StatusCodes.NOT_FOUND));
     }
@@ -203,180 +263,188 @@ export const updateJob = catchAsync(async (req: Request, res: Response, next: Ne
     });
 });
 
-export const getAllJobApplications = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const jobId = req.params.jobId;
-    if (!mongoose.Types.ObjectId.isValid(jobId)) {
-        return next(new AppError("Invalid job ID", StatusCodes.BAD_REQUEST));
-    }
-
-    const page = (req.query.page ? parseInt(req.query.page as string, 10) : 1);
-    const limit = (req.query.limit ? parseInt(req.query.limit as string, 10) : 0);
-
-    if (page < 1) {
-        return next(new AppError("Invalid page number", StatusCodes.BAD_REQUEST));
-    }
-
-    if (limit < 0) {
-        return next(new AppError("Invalid limit number", StatusCodes.BAD_REQUEST));
-    }
-
-    // count total number of jobs
-    const totalJobs = await Job.countDocuments();
-
-    // calculate max page number
-    const maxPage = limit != 0 ? Math.ceil(totalJobs / limit) : null;
-
-    // if page number exceeds total number of pages, return error
-    if (maxPage && page > maxPage) {
-        return next(new AppError("Page number exceeds total number of pages", StatusCodes.BAD_REQUEST));
-    }
-
-    // calculate number of jobs to skip
-    const skip = (page - 1) * limit;
-
-    const applications = await Application.find({ job_id: jobId }).skip(skip).limit(limit).populate("job_id")
-                                                                                        .populate("candidate_id");
-
-    res.status(StatusCodes.OK).json({
-        status: "success",
-        data: {
-            "total_jobs": totalJobs,
-            "max_page": maxPage,
-            "applications": applications
+export const getAllJobApplications = catchAsync(
+    async (req: Request, res: Response, next: NextFunction) => {
+        const jobId = req.params.jobId;
+        if (!mongoose.Types.ObjectId.isValid(jobId)) {
+            return next(new AppError("Invalid job ID", StatusCodes.BAD_REQUEST));
         }
-    })
-})
-export const getAJobApplication = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const jobId = req.params.jobId;
-    if (!mongoose.Types.ObjectId.isValid(jobId)) {
-        return next(new AppError("Invalid job ID", StatusCodes.BAD_REQUEST));
-    }
 
-    const candidateId = req.body.user_id;
-    if (!mongoose.Types.ObjectId.isValid(candidateId)) {
-        return next(new AppError("Invalid candidate ID", StatusCodes.BAD_REQUEST));
-    }
+        const page = req.query.page ? parseInt(req.query.page as string, 10) : 1;
+        const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 0;
 
-    const application = await Application.findOne({ job_id: jobId, candidate_id: candidateId }).populate("job_id")
-                                                                                            .populate("candidate_id");
-    if (!application) {
-        return next(new AppError("Application not found", StatusCodes.NOT_FOUND));
-    }
-
-    res.status(StatusCodes.OK).json({
-        status: "success",
-        data: {
-            "application": application
+        if (page < 1) {
+            return next(new AppError("Invalid page number", StatusCodes.BAD_REQUEST));
         }
-    })
-})
 
-export const createApplication = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const jobId = req.params.jobId;
-    const candidateId = req.body.userId;
-
-    const {
-        full_name,
-        resume,
-        email,
-        cover_letter,
-        phone,
-    } = req.body;
-
-    const application = await Application.create({
-        job_id: jobId,
-        candidate_id: candidateId,
-        full_name: full_name,
-        resume: resume,
-        email: email,
-        cover_letter: cover_letter,
-        phone: phone,
-        status: "pending",
-        applied_at: new Date()
-    });
-
-    await application.save();
-
-    res.status(StatusCodes.CREATED).json({
-        status: "success",
-        data: {
-            application: application,
-        },
-    });
-
-});
-
-
-export const updateApplication = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const jobId = req.params.jobId;
-    const userId = req.body.userId;
-
-    const application = await Application.findOne({
-        job_id: jobId,
-        worker_id: userId,
-    });
-
-    if (!application) {
-        return next(new AppError("Application not found", 404));
-    }
-
-    const { full_name, resume, email, cover_letter, phone } = req.body;
-
-    const updatedApplication = await Application.findOneAndUpdate(
-        { _id: application._id },
-        {
-            full_name: full_name || application.full_name,
-            resume: resume || application.resume,
-            email: email || application.email,
-            cover_letter: cover_letter || application.cover_letter,
-            phone: phone || application.phone,
-        },
-        { new: true }
-    );
-
-    res.status(StatusCodes.OK).json({
-        status: "success",
-        data: {
-            application: updatedApplication,
-        },
-    });
-});
-
-export const deleteApplication = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const jobId = req.params.jobId;
-    const workerId = req.body.userId;
-
-    if (!mongoose.Types.ObjectId.isValid(jobId)) {
-        return next(new AppError("Invalid job ID", 400));
-    }
-
-    if (!mongoose.Types.ObjectId.isValid(workerId)) {
-        return next(new AppError("Invalid worker ID", 400));
-    }
-
-    const job = await Job.findOne({ _id: jobId });
-    if (!job) {
-        return next(new AppError("Job ID not found", 404));
-    }
-
-    const application = await Application.findOne({
-        job_id: jobId,
-        worker_id: workerId,
-    });
-
-    if (!application) {
-        return next(new AppError("Application not found", 404));
-    }
-
-    await Application.deleteOne({ _id: application._id });
-
-    res.status(StatusCodes.OK).json({
-        status: "success",
-        data: {
-            application: null
+        if (limit < 0) {
+            return next(new AppError("Invalid limit number", StatusCodes.BAD_REQUEST));
         }
-    });
-});
+
+        // count total number of jobs
+        const totalJobs = await Job.countDocuments();
+
+        // calculate max page number
+        const maxPage = limit != 0 ? Math.ceil(totalJobs / limit) : null;
+
+        // if page number exceeds total number of pages, return error
+        if (maxPage && page > maxPage) {
+            return next(
+                new AppError("Page number exceeds total number of pages", StatusCodes.BAD_REQUEST)
+            );
+        }
+
+        // calculate number of jobs to skip
+        const skip = (page - 1) * limit;
+
+        const applications = await Application.find({ job_id: jobId })
+            .skip(skip)
+            .limit(limit)
+            .populate("job_id")
+            .populate("candidate_id");
+
+        res.status(StatusCodes.OK).json({
+            status: "success",
+            data: {
+                total_jobs: totalJobs,
+                max_page: maxPage,
+                applications: applications,
+            },
+        });
+    }
+);
+export const getAJobApplication = catchAsync(
+    async (req: Request, res: Response, next: NextFunction) => {
+        const jobId = req.params.jobId;
+        if (!mongoose.Types.ObjectId.isValid(jobId)) {
+            return next(new AppError("Invalid job ID", StatusCodes.BAD_REQUEST));
+        }
+
+        const candidateId = req.body.user_id;
+        if (!mongoose.Types.ObjectId.isValid(candidateId)) {
+            return next(new AppError("Invalid candidate ID", StatusCodes.BAD_REQUEST));
+        }
+
+        const application = await Application.findOne({ job_id: jobId, candidate_id: candidateId })
+            .populate("job_id")
+            .populate("candidate_id");
+        if (!application) {
+            return next(new AppError("Application not found", StatusCodes.NOT_FOUND));
+        }
+
+        res.status(StatusCodes.OK).json({
+            status: "success",
+            data: {
+                application: application,
+            },
+        });
+    }
+);
+
+export const createApplication = catchAsync(
+    async (req: Request, res: Response, next: NextFunction) => {
+        const jobId = req.params.jobId;
+        const candidateId = req.body.userId;
+
+        const { full_name, resume, email, cover_letter, phone } = req.body;
+
+        const application = await Application.create({
+            job_id: jobId,
+            candidate_id: candidateId,
+            full_name: full_name,
+            resume: resume,
+            email: email,
+            cover_letter: cover_letter,
+            phone: phone,
+            status: "pending",
+            applied_at: new Date(),
+        });
+
+        await application.save();
+
+        res.status(StatusCodes.CREATED).json({
+            status: "success",
+            data: {
+                application: application,
+            },
+        });
+    }
+);
+
+export const updateApplication = catchAsync(
+    async (req: Request, res: Response, next: NextFunction) => {
+        const jobId = req.params.jobId;
+        const userId = req.body.userId;
+
+        const application = await Application.findOne({
+            job_id: jobId,
+            worker_id: userId,
+        });
+
+        if (!application) {
+            return next(new AppError("Application not found", 404));
+        }
+
+        const { full_name, resume, email, cover_letter, phone } = req.body;
+
+        const updatedApplication = await Application.findOneAndUpdate(
+            { _id: application._id },
+            {
+                full_name: full_name || application.full_name,
+                resume: resume || application.resume,
+                email: email || application.email,
+                cover_letter: cover_letter || application.cover_letter,
+                phone: phone || application.phone,
+            },
+            { new: true }
+        );
+
+        res.status(StatusCodes.OK).json({
+            status: "success",
+            data: {
+                application: updatedApplication,
+            },
+        });
+    }
+);
+
+export const deleteApplication = catchAsync(
+    async (req: Request, res: Response, next: NextFunction) => {
+        const jobId = req.params.jobId;
+        const workerId = req.body.userId;
+
+        if (!mongoose.Types.ObjectId.isValid(jobId)) {
+            return next(new AppError("Invalid job ID", 400));
+        }
+
+        if (!mongoose.Types.ObjectId.isValid(workerId)) {
+            return next(new AppError("Invalid worker ID", 400));
+        }
+
+        const job = await Job.findOne({ _id: jobId });
+        if (!job) {
+            return next(new AppError("Job ID not found", 404));
+        }
+
+        const application = await Application.findOne({
+            job_id: jobId,
+            worker_id: workerId,
+        });
+
+        if (!application) {
+            return next(new AppError("Application not found", 404));
+        }
+
+        await Application.deleteOne({ _id: application._id });
+
+        res.status(StatusCodes.OK).json({
+            status: "success",
+            data: {
+                application: null,
+            },
+        });
+    }
+);
 
 export const searchJobs = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const { title, company_id, salary_range, location, skills, job_type, job_category } = req.query;
@@ -385,18 +453,17 @@ export const searchJobs = catchAsync(async (req: Request, res: Response, next: N
 
     if (title) filter.title = { $regex: title, $options: "i" };
     if (company_id) filter.company_id = new mongoose.Types.ObjectId(company_id.toString().trim());
-   
-   
+
     if (location) filter.location = { $regex: location, $options: "i" };
     if (job_type) filter.job_type = job_type;
     if (job_category) filter.job_category = job_category;
 
     // Parse salary_range
     if (salary_range) {
-        const [min, max] = (salary_range as string).split('-').map(Number);
+        const [min, max] = (salary_range as string).split("-").map(Number);
         filter.$and = [
-            { 'salary_range.min': { $gte: min } },
-            { 'salary_range.max': { $lte: max } }
+            { "salary_range.min": { $gte: min } },
+            { "salary_range.max": { $lte: max } },
         ];
     }
 
@@ -405,17 +472,16 @@ export const searchJobs = catchAsync(async (req: Request, res: Response, next: N
         const skillArray = Array.isArray(skills) ? skills : [skills];
         filter.skills = {
             $elemMatch: {
-                $in: skillArray.map(skill => new RegExp(`^${skill}$`, "i")) // Create case-insensitive regex for each skill
-            }
+                $in: skillArray.map((skill) => new RegExp(`^${skill}$`, "i")), // Create case-insensitive regex for each skill
+            },
         };
     }
 
     const jobs = await Job.find(filter)
-                          .populate("company_id")
-                          .populate("job_type")
-                          .populate("job_category")
-                          .populate("employer_id")
-
+        .populate("company_id")
+        .populate("job_type")
+        .populate("job_category")
+        .populate("employer_id");
 
     res.status(StatusCodes.OK).json({
         status: "success",
@@ -425,33 +491,89 @@ export const searchJobs = catchAsync(async (req: Request, res: Response, next: N
     });
 });
 
-export const responseToJobApplication = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const jobId = req.params.jobId;
-    if (!mongoose.Types.ObjectId.isValid(jobId)) {
-        return next(new AppError("Invalid job ID", StatusCodes.BAD_REQUEST));
-    }
-
-    const candidateId = req.body.user_id;
-    if (!mongoose.Types.ObjectId.isValid(candidateId)) {
-        return next(new AppError("Invalid candidate ID", StatusCodes.BAD_REQUEST));
-    }
-
-    const application = await Application.findOne({ job_id: jobId, candidate_id: candidateId });
-    if (!application) {
-        return next(new AppError("Application not found", StatusCodes.NOT_FOUND));
-    }
-
-    const response = req.params.response;
-    if (!response) {
-        return next(new AppError("Response is required", StatusCodes.BAD_REQUEST));
-    }
-
-    const responsedApplication = await Application.findOneAndUpdate({ _id: application._id }, { status: response });
-
-    res.status(StatusCodes.OK).json ({
-        status: "success",
-        data: {
-            "application": responsedApplication
+export const responseToJobApplication = catchAsync(
+    async (req: Request, res: Response, next: NextFunction) => {
+        const jobId = req.params.jobId;
+        if (!mongoose.Types.ObjectId.isValid(jobId)) {
+            return next(new AppError("Invalid job ID", StatusCodes.BAD_REQUEST));
         }
-    })
-})
+
+        const candidateId = req.body.user_id;
+        if (!mongoose.Types.ObjectId.isValid(candidateId)) {
+            return next(new AppError("Invalid candidate ID", StatusCodes.BAD_REQUEST));
+        }
+
+        const application = await Application.findOne({ job_id: jobId, candidate_id: candidateId });
+        if (!application) {
+            return next(new AppError("Application not found", StatusCodes.NOT_FOUND));
+        }
+
+        const response = req.params.response;
+        if (!response) {
+            return next(new AppError("Response is required", StatusCodes.BAD_REQUEST));
+        }
+
+        const responsedApplication = await Application.findOneAndUpdate(
+            { _id: application._id },
+            { status: response }
+        );
+
+        res.status(StatusCodes.OK).json({
+            status: "success",
+            data: {
+                application: responsedApplication,
+            },
+        });
+    }
+);
+
+export const getJobListingsByEmployer = catchAsync(
+    async (req: Request, res: Response, next: NextFunction) => {
+        const { role, id } = req.body.user;
+        const { status, page, limit } = req.query;
+
+        if (role !== "employer") {
+            return next(
+                new AppError("You are not authorized to view this page", StatusCodes.UNAUTHORIZED)
+            );
+        }
+
+        const filter: any = { employer_id: id };
+        const validStatus = ["pending", "approved", "rejected"];
+        if (status && validStatus.includes(status as string)) filter.status = status;
+
+        let jobsQuery = Job.find(filter)
+            .populate("company_id")
+            .populate("employer_id")
+            .populate("job_type")
+            .populate("job_category");
+
+        if (page && limit) {
+            const pageNum = parseInt(page as string, 10);
+            const limitNum = parseInt(limit as string, 10);
+            const skip = (pageNum - 1) * limitNum;
+
+            jobsQuery = jobsQuery.skip(skip).limit(limitNum);
+        }
+
+        const jobs = await jobsQuery;
+
+        const totalJobs = page && limit ? await Job.countDocuments(filter) : jobs.length;
+
+        res.status(StatusCodes.OK).json({
+            status: "success",
+            data: {
+                total_jobs: totalJobs,
+                pagination:
+                    page && limit
+                        ? {
+                              totalJobs,
+                              totalPages: Math.ceil(totalJobs / parseInt(limit as string, 10)),
+                              currentPage: parseInt(page as string, 10),
+                          }
+                        : undefined,
+                jobs,
+            },
+        });
+    }
+);

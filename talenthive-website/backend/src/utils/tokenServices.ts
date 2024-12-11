@@ -8,7 +8,7 @@ export const accessToken = (user: IUser) => {
         throw new AppError("JWT_ACCESS_SECRET not defined", 500);
     }
     return jwt.sign({ id: user._id, role: user.role }, process.env.JWT_ACCESS_SECRET, {
-        expiresIn: "1h",
+        expiresIn: "10h",
     });
 };
 
@@ -21,30 +21,6 @@ export const refreshToken = (user: IUser) => {
     });
 };
 
-export const invalidateToken = async (token: string) => {
-    if (!token) {
-        throw new Error("Token is not valid");
-    }
-
-    // await TokenBlacklist.create({ token });
-
-    return {
-        token,
-        invalidatedAt: Date.now(),
-    };
-};
-
-// export const checkIfAccessTokenInBlacklist = async (token: string) => {
-//     if (!token) {
-//         throw new AppError("Token is not valid", 400);
-//     }
-
-//     const isBlacklisted = await TokenBlacklist.findOne({
-//         token,
-//     });
-
-//     return !!isBlacklisted;
-// };
 
 export const verifyAccessToken = (token: string) => {
     if (!process.env.JWT_ACCESS_SECRET) {

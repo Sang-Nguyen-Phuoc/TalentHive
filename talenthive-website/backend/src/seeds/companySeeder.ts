@@ -1,4 +1,5 @@
 import Company from "../models/company";
+import EmployerProfile from "../models/employerProfile";
 import User from "../models/user";
 
 const companyList = [
@@ -10,7 +11,7 @@ const companyList = [
         address: "10 Tech Street, Berlin, Germany",
         website: "https://techsolutions.com",
         employers: ["employer2@healthcareplus.com"],
-        company_manager_email: "employer1@techcorp.com"
+        company_manager_email: "nguyennam002004@gmail.com"
     },
     {
         name: "Creative Minds Agency",
@@ -19,7 +20,7 @@ const companyList = [
         industry: "Design",
         address: "20 Design Avenue, New York, USA",
         website: "https://creativeminds.com",
-        employers: ["employer1@techcorp.com", "employer2@healthcareplus.com"],
+        employers: ["nguyennam002004@gmail.com", "employer2@healthcareplus.com"],
         company_manager_email: "employer3@greenthumb.com"
     },
     {
@@ -100,7 +101,7 @@ export const companySeeder = async () => {
                 console.log(`Company manager with email ${company.company_manager_email} not found`);
                 continue;
             }
-            const employers = [];
+            const employers = []; 
             for (let i = 0; i < company.employers.length; i++) {
                 const employer = await User.findOne({ email: company.employers[i] });
                 if (!employer) {
@@ -109,7 +110,7 @@ export const companySeeder = async () => {
                 }
                 employers.push(employer._id);
             }
-            await Company.create({
+            const newCompany = await Company.create({
                 name: company.name,
                 avatar: company.avatar,
                 locations: company.locations,
@@ -119,6 +120,7 @@ export const companySeeder = async () => {
                 employers: employers,
                 company_manager: companyManager._id,
             });
+            await EmployerProfile.findOneAndUpdate({ _id: companyManager.profile_id }, { company_role: "company_manager", company_id: newCompany._id }); 
             console.log(`Company created with name: ${company.name}`);
         }
     } catch (error) {

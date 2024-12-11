@@ -4,40 +4,19 @@ import { removeAccessToken } from "../../utils/authToken";
 import styles from '../../styles/components/NavBar.module.css';
 import Logo from '../../images/account-logo.png';
 import { useUser } from "../../context/UserContext";
-import { getMe } from "../../services/authServices";
-
-export const getMeLoader = async () => {
-    try {
-        const data = await getMe();
-        console.log({ data });
-        
-        return data;
-    } catch (error) {
-        throw error;
-    }
-}
 
 const NavBar = () => {
     const { user } = useUser();
     const navigate = useNavigate();
-    const [role, setRole] = useState("guest");
-    console.log({ user });
+    const [role, setRole] = useState(localStorage.getItem('role') || 'guest');
+
+    console.log("User: ", user);
+    
 
     useEffect(() => {
-        getMe()
-            .then((data) => {
-                console.log({ data });
-                setRole(data.user.role);
-            })
-            .catch((err) => {
-                console.log({ err });
-            });
-
-    }, [])
-
-    useEffect(() => {
-        if (user) {
-            setRole(user.role);
+        if (user?.user) {
+            setRole(user?.user?.role);
+            localStorage.setItem('role', user?.user?.role);
         }
     }, [user]);
 
@@ -76,7 +55,7 @@ const NavBar = () => {
                 {/* Employer */}
                 {role === 'employer' && (
                     <>
-                        <div className={styles['text']} onClick={() => navigate('/hire-talent')}><span>Hire Talent</span></div>
+                        <div className={styles['text']} onClick={() => navigate('/dashboard/jobs')}><span>Dashboard</span></div>
                         <div className={styles['profile-logo-container']}>
                             <img src={Logo} alt="Profile" className={styles["profile-logo"]} />
                             <div className={styles['dropdown-menu']}>

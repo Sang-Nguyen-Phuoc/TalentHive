@@ -8,6 +8,8 @@ export interface IEmployerProfile {
     avatar: object;
     introduction: string;
     address: string;
+    company_id: Types.ObjectId;
+    company_role: string;
     email: string;
     phone: string;
     sector: string;
@@ -35,6 +37,15 @@ const EmployerProfileSchema = new Schema<IEmployerProfile>({
     address: {
         type: String,
         trim: true
+    },
+    company_id: {
+        type: Schema.Types.ObjectId,
+        ref: 'Company',
+    },
+    company_role: {
+        type: String,
+        trim: true,
+        enum: ["company_manager", "employee"]
     },
     email: {
         type: String,

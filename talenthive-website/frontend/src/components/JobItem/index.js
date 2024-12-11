@@ -1,24 +1,27 @@
-import { useNavigate } from 'react-router';
-import styleSearch from '../../styles/components/JobItemSearch.module.css'
-import styleHome from '../../styles/components/JobItemHome.module.css'
-import styleDetail from '../../styles/components/JobItemDetail.module.css'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCircleDollarToSlot, faFilter, faLocationDot } from '@fortawesome/free-solid-svg-icons';
-import { useState } from 'react';
+import { useNavigate } from "react-router";
+import styleSearch from "../../styles/components/JobItemSearch.module.css";
+import styleHome from "../../styles/components/JobItemHome.module.css";
+import styleDetail from "../../styles/components/JobItemDetail.module.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCircleDollarToSlot, faFilter, faLocationDot } from "@fortawesome/free-solid-svg-icons";
+import { useState } from "react";
 
 const JobItem = {
     ////// HOME PAGE //////
     HomePage: ({ props, state }) => {
-        const navigate = useNavigate()
+        const navigate = useNavigate();
         return (
-            <div className={styleHome.wrapper} onClick={() => navigate('/jobs/detail', { state: props })}>
+            <div
+                className={styleHome.wrapper}
+                onClick={() => navigate("/jobs/detail", { state: props })}
+            >
                 <div className={styleHome.header}>
-                    <div className={styleHome['left-header']}>
-                        <img src={props.image} alt='logo'></img>
+                    <div className={styleHome["left-header"]}>
+                        <img src={props.image} alt="logo"></img>
                     </div>
-                    <div className={styleHome['right-header']}>
+                    <div className={styleHome["right-header"]}>
                         <p className={styleHome.position}>{props.position}</p>
-                        <p className={styleHome['company-name']}>{props.company}</p>
+                        <p className={styleHome["company-name"]}>{props.company}</p>
                     </div>
                     {state && <p className={`${styleHome[state]} ${styleHome.toggle}`}>{state}</p>}
                 </div>
@@ -52,11 +55,11 @@ const JobItem = {
                     <p className={styleSearch.position}>{props.position}</p>
                     {state && <p className={styleSearch[state]}>{state}</p>}
                 </div>
-                <div className={styleSearch['company-container']}>
-                    <img className={styleSearch['company-img']} src={props.image} alt='logo'></img>
-                    <p className={styleSearch['company-name']}>{props.company}</p>
+                <div className={styleSearch["company-container"]}>
+                    <img className={styleSearch["company-img"]} src={props.image} alt="logo"></img>
+                    <p className={styleSearch["company-name"]}>{props.company}</p>
                 </div>
-                <div className={styleSearch['salary-container']}>
+                <div className={styleSearch["salary-container"]}>
                     <FontAwesomeIcon icon={faCircleDollarToSlot} className={styleSearch.icon} />
                     <p>{props.salary}</p>
                 </div>
@@ -84,20 +87,20 @@ const JobItem = {
         const [show, setShow] = useState(false);
 
         const handleNavigate = () => {
-            navigate('/jobs/detail', { state: props });
-        }
+            navigate("/jobs/detail", { state: props });
+        };
 
         return (
             <div className={styleDetail.wrapper} onClick={handleNavigate}>
                 <div className={styleDetail.header}>
-                    <p className={styleDetail.position}>{props.position}</p>
-                    {isEmployer && <p className={styleDetail[props.state]}>{props.state}</p>}
+                    <p className={styleDetail.position}>{props.title}</p>
+                    {isEmployer && <p className={styleDetail[props.status]}>{props.status}</p>}
                 </div>
 
                 <div className={styleDetail.description}>
                     <div className={styleDetail.salary}>
                         <FontAwesomeIcon icon={faCircleDollarToSlot} className={styleDetail.icon} />
-                        <p>{props.salary}</p>
+                        <p>{props?.salary_range?.min} - {props?.salary_range?.max}</p>
                     </div>
                     <div className={styleDetail.location}>
                         <FontAwesomeIcon icon={faLocationDot} className={styleDetail.icon} />
@@ -109,11 +112,15 @@ const JobItem = {
                     </div>
                 </div>
                 <div className={styleDetail.timeline}>
-                    <p className={styleDetail.createAt}>Post {props.createAt} hours ago</p>
-                    <p>{props.endAt} days left</p>
+                    <p className={styleDetail.createAt}>Post {props.created_at} hours ago</p>
+                    <p>{props.expires_at} days left</p>
                 </div>
                 <div className={styleDetail.footer}>
-                    {isEmployer && props.state === 'Accepted' && <p className={styleDetail.candidate}>{`Candidate list (${props.candidate})`}</p>}
+                    {isEmployer && props.status === "accepted" && (
+                        <p
+                            className={styleDetail.candidate}
+                        >{`Candidate list (${props.applications_count})`}</p>
+                    )}
                 </div>
                 {!isEmployer && (
                     <>
@@ -133,7 +140,6 @@ const JobItem = {
             </div>
         );
     },
-}
-
+};
 
 export default JobItem;
