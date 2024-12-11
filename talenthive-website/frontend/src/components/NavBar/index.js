@@ -1,45 +1,72 @@
 import { useNavigate } from "react-router-dom";
-import { useContext } from 'react';
-import { CurrentUserContext } from "../../context/CurrentUserContext";
+import { useEffect, useState } from 'react';
 import { removeAccessToken } from "../../utils/authToken";
 import styles from '../../styles/components/NavBar.module.css';
 import Logo from '../../images/account-logo.png';
+import { useUser } from "../../context/UserContext";
+import { getMe } from "../../services/authServices";
+
+export const getMeLoader = async () => {
+    try {
+        const data = await getMe();
+        console.log({ data });
+        
+        return data;
+    } catch (error) {
+        throw error;
+    }
+}
 
 const NavBar = () => {
+    const { user } = useUser();
     const navigate = useNavigate();
-    const { currentUser, setCurrentUser } = useContext(CurrentUserContext);
-    const role = currentUser.role;
+    const [role, setRole] = useState("guest");
+    console.log({ user });
 
-    const handleNavigate = (path) => {
-        navigate(path);
-    };
+    useEffect(() => {
+        getMe()
+            .then((data) => {
+                console.log({ data });
+                setRole(data.user.role);
+            })
+            .catch((err) => {
+                console.log({ err });
+            });
+
+    }, [])
+
+    useEffect(() => {
+        if (user) {
+            setRole(user.role);
+        }
+    }, [user]);
 
     const handleLogout = () => {
-        navigate('/');
         removeAccessToken();
-        setCurrentUser({ role: 'guest' });
+        navigate('/');
+        setRole('guest');
     }
 
 
     return (
         <div className={styles["navbar-container"]}>
-            <div className={styles['logo-container']} onClick={() => handleNavigate('/')} >
+            <div className={styles['logo-container']} onClick={() => navigate('/')} >
                 <img src="/logo192.png" alt="TalentHive" className={styles["logo"]} />
                 <p>TalentHive</p>
             </div>
             <div className={styles['navbar-cta']}>
-                <div className={styles['text']} onClick={() => handleNavigate('/about-us')}><span>About Us</span></div>
+                <div className={styles['text']} onClick={() => navigate('/about-us')}><span>About Us</span></div>
 
                 {role === 'candidate' && (
                     <>
-                        <div className={styles['text']} onClick={() => handleNavigate('/jobs-applied')}><span>Jobs Applied</span></div>
+                        <div className={styles['text']} onClick={() => navigate('/jobs-applied')}><span>Jobs Applied</span></div>
 
                         {/* Profile Logo with Dropdown */}
                         <div className={styles['profile-logo-container']}>
                             <img src={Logo} alt="Profile" className={styles["profile-logo"]} />
                             <div className={styles['dropdown-menu']}>
-                                <div onClick={() => handleNavigate('/profile/dashboard')}>Dashboard</div>
-                                <div onClick={() => handleNavigate('/profile/account')}>Account</div>
+                                <div onClick={() => navigate('/profile/dashboard')}>Dashboard</div>
+                                <div onClick={() => navigate('/profile/account')}>Account</div>
                                 <div onClick={() => handleLogout()}>Log out</div>
                             </div>
                         </div>
@@ -49,12 +76,12 @@ const NavBar = () => {
                 {/* Employer */}
                 {role === 'employer' && (
                     <>
-                        <div className={styles['text']} onClick={() => handleNavigate('/hire-talent')}><span>Hire Talent</span></div>
+                        <div className={styles['text']} onClick={() => navigate('/hire-talent')}><span>Hire Talent</span></div>
                         <div className={styles['profile-logo-container']}>
                             <img src={Logo} alt="Profile" className={styles["profile-logo"]} />
                             <div className={styles['dropdown-menu']}>
-                                <div onClick={() => handleNavigate('/profile/dashboard')}>Dashboard</div>
-                                <div onClick={() => handleNavigate('/profile/account')}>Account</div>
+                                <div onClick={() => navigate('/profile/dashboard')}>Dashboard</div>
+                                <div onClick={() => navigate('/profile/account')}>Account</div>
                                 <div onClick={() => handleLogout()}>Log out</div>
                             </div>
                         </div>
@@ -69,9 +96,9 @@ const NavBar = () => {
                                 <span>Manage</span>
                             </div>
                             <div className={styles['dropdown-menu']}>
-                                <div onClick={() => handleNavigate('/recruitment')}>Recruitment</div>
-                                <div onClick={() => handleNavigate('/manage-workers')}>Worker</div>
-                                <div onClick={() => handleNavigate('/manage-employers')}>Employer</div>
+                                <div onClick={() => navigate('/recruitment')}>Recruitment</div>
+                                <div onClick={() => navigate('/manage-workers')}>Worker</div>
+                                <div onClick={() => navigate('/manage-employers')}>Employer</div>
                             </div>
                         </div>
 
@@ -84,7 +111,7 @@ const NavBar = () => {
 
                 {role === 'guest' && (
                     <>
-                        <div className={styles['text']} onClick={() => handleNavigate('/signin')}><span>Sign In</span></div>
+                        <div className={styles['text']} onClick={() => navigate('/signin')}><span>Sign In</span></div>
                     </>
                 )}
             </div>

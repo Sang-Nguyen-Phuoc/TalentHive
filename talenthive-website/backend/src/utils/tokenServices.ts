@@ -1,5 +1,4 @@
 import { IUser } from "../models/user";
-import TokenBlacklist from "../models/tokenBlacklist";
 import jwt from "jsonwebtoken";
 import AppError from "./appError";
 import { Response } from "express";
@@ -27,7 +26,7 @@ export const invalidateToken = async (token: string) => {
         throw new Error("Token is not valid");
     }
 
-    await TokenBlacklist.create({ token });
+    // await TokenBlacklist.create({ token });
 
     return {
         token,
@@ -35,17 +34,17 @@ export const invalidateToken = async (token: string) => {
     };
 };
 
-export const checkIfAccessTokenInBlacklist = async (token: string) => {
-    if (!token) {
-        throw new AppError("Token is not valid", 400);
-    }
+// export const checkIfAccessTokenInBlacklist = async (token: string) => {
+//     if (!token) {
+//         throw new AppError("Token is not valid", 400);
+//     }
 
-    const isBlacklisted = await TokenBlacklist.findOne({
-        token,
-    });
+//     const isBlacklisted = await TokenBlacklist.findOne({
+//         token,
+//     });
 
-    return !!isBlacklisted;
-};
+//     return !!isBlacklisted;
+// };
 
 export const verifyAccessToken = (token: string) => {
     if (!process.env.JWT_ACCESS_SECRET) {

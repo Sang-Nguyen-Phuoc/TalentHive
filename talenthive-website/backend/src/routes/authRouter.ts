@@ -12,6 +12,6 @@ authRouter.patch("/resetPassword/:token", authController.resetPassword);
 authRouter.post("/logout", authorizeRole(), authController.logout);
 authRouter.post("/changePassword",authorizeRole(), authController.changePassword);
 authRouter.delete("/me",authorizeRole(), authController.deleteMe);
-authRouter.get("/me",authorizeRole(), attachUserId, authController.getMe);
+authRouter.get("/me",authorizeRole(), authController.getMe);
 
 export default authRouter;

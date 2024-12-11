@@ -11,7 +11,6 @@ const SavedJobSchema = new Schema<ISavedJob>({
     userId: { type: Types.ObjectId, ref: 'User', required: true },
     jobId: { type: Types.ObjectId, ref: 'Job', required: true },
     savedAt: { type: Date, default: Date.now },
-
 });
 
 const SavedJob = model<ISavedJob>('SavedJob', SavedJobSchema);
