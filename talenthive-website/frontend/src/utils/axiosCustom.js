@@ -1,4 +1,5 @@
 import axios from "axios";
+import { getAccessToken } from "./authToken";
 
 const axiosCustom = axios.create({
     baseURL: "http://localhost:3002",
@@ -8,6 +9,12 @@ const axiosCustom = axios.create({
 axiosCustom.interceptors.request.use(
     function (config) {
         // Do something before request is sent
+        const token = getAccessToken();
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+        console.log(config.headers.Authorization);
+        
         return config;
     },
     function (error) {

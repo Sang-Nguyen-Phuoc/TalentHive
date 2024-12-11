@@ -1,64 +1,49 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, Form } from "react-router-dom";
 import styles from "../../styles/pages/Authentication.module.css";
 import { useRef, useState, useEffect, useContext } from "react";
-import { useFetch } from "../../hooks/useFetch";
-import { CurrentUserContext } from "../../context/CurrentUserContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-regular-svg-icons";
+import { postLogin } from "../../services/authServices";
+import { useUser } from "../../context/UserContext";
 import { toast } from "react-toastify";
-import { BASE_URL } from "../../utils/Constants";
+import { motion } from "framer-motion";
 import { saveAccessToken } from "../../utils/authToken";
 
-const reqAPI = {
-    method: "POST",
-    headers: {
-        "Content-Type": "application/json",
-    },
-    body: null,
-};
-
 function Signin() {
-    const handleSignIn = (e) => {
+    const emailRef = useRef(null);
+    const passwordRef = useRef(null);
+    const [show, setShow] = useState(false);
+    const navigate = useNavigate();
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const { login } = useUser();
+
+
+    const handleSignIn = async (e) => {
         e.preventDefault();
+        setIsSubmitting(true);
 
         const dataSignIn = {
             email: emailRef.current.value,
             password: passwordRef.current.value,
         };
-
-        emailRef.current.value = "";
-        emailRef.current.focus();
-        passwordRef.current.value = "";
-
-        setShow(false);
-        setFetch({...fetch, body: JSON.stringify(dataSignIn)});
-    };
-
-    const emailRef = useRef(null);
-    const passwordRef = useRef(null);
-    const [show, setShow] = useState(false);
-    const [fetch, setFetch] = useState(reqAPI);
-    const navigate = useNavigate();
-    const { setCurrentUser } = useContext(CurrentUserContext);
-
-    // Call API
-    const { payload, status } = useFetch(`${BASE_URL}/auth/login`, fetch);
-
-    useEffect(() => {
-        if (status === "success") {
-            toast.success("Sign in successfully!");
-            saveAccessToken(payload.accessToken);
-            setCurrentUser(payload);
+        try {
+            const data = await postLogin(dataSignIn.email, dataSignIn.password);
+            console.log({ data });
+            saveAccessToken(data.accessToken);
+            login(data.user);
+            toast.success("Logged in successfully");
             navigate("/");
-        } else if (status !== "fail") {
-            toast.error(status);
+        } catch (error) {
+            toast.error(error?.message || error);
         }
-        setFetch({...fetch, body: null})
-    }, [payload, status, setCurrentUser]);
+        emailRef.current.focus();
+        setShow(false);
+        setIsSubmitting(false);
+    };
 
     return (
         <div className={styles.wrapper}>
-            <form className={styles.form} onSubmit={handleSignIn}>
+            <Form className={styles.form} onSubmit={handleSignIn}>
                 <div className={styles.email}>
                     <label htmlFor="emailInput">
                         Email
@@ -100,9 +85,25 @@ function Signin() {
                     </div>
                 </div>
                 <div className={styles.container}>
-                    <button type="submit" className={styles.btn}>
-                        SIGN IN
-                    </button>
+                    <motion.button type="submit" className={styles.btn} whileTap={{scale: 1.1}} whileHover={{translateY: '-5px'}}>
+                        {isSubmitting ? (
+                            <motion.div
+                            
+                                animate={{ rotate: 360 }}
+                                transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+                                style={{
+                                    height: '27px',
+                                    aspectRatio: 1,
+                                    border: "3px solid #fff",
+                                    borderTop: "3px solid transparent",
+                                    borderRadius: "50%",
+                                    margin: "0 auto",
+                                }}
+                            />
+                        ) : (
+                            "SIGN IN"
+                        )}
+                    </motion.button>
                 </div>
                 <div className={`${styles.container} ${styles.signup}`}>
                     <p className={styles.question}>Do you have any account yet?</p>
@@ -110,7 +111,7 @@ function Signin() {
                         Sign up now
                     </Link>
                 </div>
-            </form>
+            </Form>
         </div>
     );
 }
