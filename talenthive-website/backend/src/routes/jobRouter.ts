@@ -25,8 +25,11 @@ jobRouter.post(
 );
 jobRouter.put("/:jobId", authorizeRole(["employer"]), validateJobFields, jobController.updateJob);
 jobRouter.delete("/:jobId", authorizeRole(["employer", "admin"]), jobController.deleteJob);
-jobRouter.get("/", jobController.getAllJobs);
+jobRouter.get("/public", jobController.getAllJobs);
+jobRouter.get("/", authorizeRole(), jobController.getJobList);
+jobRouter.get("/employer", authorizeRole(["employer"]), jobController.getJobListingsByEmployer);
 jobRouter.get("/:jobId", jobController.getAJob);
+
 
 jobRouter.post(
     "/:jobId/apply",

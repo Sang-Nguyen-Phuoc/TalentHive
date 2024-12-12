@@ -1,28 +1,32 @@
-import React, { createContext, useState, useContext } from "react";
+import React, { createContext, useState, useContext, useEffect } from "react";
 import { getMe } from "../services/authServices";
+import { getAccessToken } from "../utils/authToken";
 
 const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
     const [user, setUser] = useState(null);
-    // const [loading, setLoading] = useState(false);
-    // const [error, setError] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
 
-    // useEffect(() => {
-    //     const token = localStorage.getItem("accessToken");
-    //     if (token) {
-    //         setLoading(true);
-    //         getMe()
-    //             .then((response) => {
-    //                 setUser(response.data);
-    //                 setLoading(false);
-    //             })
-    //             .catch((err) => {
-    //                 setError("Failed to fetch user data");
-    //                 setLoading(false);
-    //             });
-    //     }
-    // }, []);
+    const fetchUser = async () => {
+        try {
+            setLoading(true);
+            const data = await getMe();
+            setUser(data);
+        } catch (error) {
+            setError(error);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    useEffect(() => {
+        const token = getAccessToken();
+        if (token && !user) {
+            fetchUser();
+        }
+    }, []);
 
     const login = (userInfo) => {
         setUser(userInfo);
@@ -32,7 +36,7 @@ export const UserProvider = ({ children }) => {
         setUser(null);
     };
 
-    return <UserContext.Provider value={{ user, login, logout }}>{children}</UserContext.Provider>;
+    return <UserContext.Provider value={{ user, login, logout, loading, error }}>{children}</UserContext.Provider>;
 };
 
 export const useUser = () => {

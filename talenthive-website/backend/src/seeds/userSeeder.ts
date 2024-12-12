@@ -9,8 +9,8 @@ const userList = [
         role: "admin",
     },
     {
-        email: "employer1@techcorp.com",
-        password: "Employer@12345",
+        email: "nguyennam002004@gmail.com",
+        password: "123456789@Aa",
         role: "employer",
         profile: {
             full_name: "Michael Johnson",
@@ -166,22 +166,11 @@ export const userSeeder = async () => {
                 console.log(`User with email ${user.email} already exists`);
                 continue;
             }
+            let profile = null;
             if (user.role === "admin") {
-                const admin = await User.create({
-                    email: user.email,
-                    password: user.password,
-                    role: user.role,
-                })
-                console.log("Admin created with email: ", admin.email);
-                
+
             } else if (user.role === "employer") {
-                const employer = await User.create({
-                    email: user.email,
-                    password: user.password,
-                    role: user.role,
-                });
-                const employerProfile = await EmployerProfile.create({
-                    user_id: employer._id,
+                profile = await EmployerProfile.create({
                     full_name: user?.profile?.full_name,
                     avatar: user?.profile?.avatar,
                     introduction: user?.profile?.introduction,
@@ -190,15 +179,9 @@ export const userSeeder = async () => {
                     phone: user?.profile?.phone,
                     sector: user?.profile?.sector,
                 })
-                console.log("Employer created with email: ", employer.email);
+                console.log("Employer created with email: ", profile.email);
             } else if (user.role === "candidate") {
-                const candidate = await User.create({
-                    email: user.email,
-                    password: user.password,
-                    role: user.role,
-                });
-                const candidateProfile = await CandidateProfile.create({
-                    user_id: candidate._id,
+                const profile = await CandidateProfile.create({
                     full_name: user?.profile?.full_name,
                     avatar: user?.profile?.avatar,
                     introduction: user?.profile?.introduction,
@@ -207,9 +190,14 @@ export const userSeeder = async () => {
                     phone: user?.profile?.phone,
                     sector: user?.profile?.sector,
                 })
-                console.log("Candidate created with email: ", candidate.email);
+                console.log("Candidate created with email: ", profile.email);
             }
-            
+            const newUser = await User.create({
+                email: user.email,
+                password: user.password,
+                role: user.role,
+                profile_id: profile ? profile._id : undefined
+            })
         }
         console.log("User seed completed");
     } catch (error) {

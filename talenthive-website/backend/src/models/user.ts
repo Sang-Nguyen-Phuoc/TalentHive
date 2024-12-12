@@ -8,6 +8,7 @@ export interface IUser {
     email: string;
     role: string;
     password?: string;
+    profile_id?: Types.ObjectId;
     active: boolean;
     password_reset_token?: string;
     password_reset_expires?: Date;
@@ -36,6 +37,19 @@ const UserSchema = new Schema<IUser>({
         type: String,
         required: true,
         enum: ['candidate', 'employer', 'admin'],
+    },
+    profile_id: {
+        type: Schema.Types.ObjectId,
+        ref: function() {
+            if (this.role === 'candidate') {
+                return 'CandidateProfile';
+            } else if (this.role === 'employer') {
+                return 'EmployerProfile';
+            } else {
+                return null;
+            }
+        }
+        // refPath: 'role'
     },
     password_changed_at: Date,
     password_reset_token: String,

@@ -8,6 +8,8 @@ import catchAsync from "../utils/catchAsync";
 import Company from "../models/company";
 import Image from "../models/image";
 import EmployerProfile from "../models/employerProfile";
+import { isObjectIdOfMongoDB } from "../utils/validateServices";
+import User from "../models/user";
 
 export const getAllCompanies = catchAsync(
     async (req: Request, res: Response, next: NextFunction) => {
@@ -252,10 +254,8 @@ export const getACompany = catchAsync(async (req: Request, res: Response, next: 
     if (!mongoose.Types.ObjectId.isValid(companyId)) {
         return next(new AppError("Invalid company ID", StatusCodes.BAD_REQUEST));
     }
-
     const company = await Company.findOne({ _id: companyId })
-        .populate("avatar")
-        .populate("employers")
+        // .populate("employers")
         .populate("company_manager");
 
     if (!company) {
@@ -269,3 +269,33 @@ export const getACompany = catchAsync(async (req: Request, res: Response, next: 
         },
     });
 });
+
+export const getACompanyByEmployer = catchAsync(
+    async (req: Request, res: Response, next: NextFunction) => {
+        const role = req.body.user.role; // from token
+        const id = req.body.user._id; // from token
+        isObjectIdOfMongoDB(id, "id");
+
+
+        if (role !== "employer") {
+            return next(
+                new AppError("Only employer can access this route", StatusCodes.UNAUTHORIZED)
+            );
+        }
+
+        const company = await Company.findOne({
+            $or: [{ employers: { $in: [id] } }, { company_manager: id }],
+        });
+
+        if (!company) {
+            return next(new AppError("Company not found", StatusCodes.NOT_FOUND));
+        }
+
+        res.status(StatusCodes.OK).json({
+            status: "success",
+            data: {
+                company: company,
+            },
+        });
+    }
+);
