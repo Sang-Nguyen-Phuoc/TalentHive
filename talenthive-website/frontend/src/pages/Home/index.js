@@ -6,10 +6,8 @@ import JobItem from "../../components/JobItem";
 import IconChevronLeft from "../../components/icons/IconChevronLeft";
 import IconChevronRight from "../../components/icons/IconChevronRight";
 import styles from "../../styles/pages/Home.module.css";
-import { items } from "./items";
-import { BASE_URL } from "../../utils/Constants";
 import { getPublicJobList } from "../../services/jobsServices";
-import { useLoaderData } from "react-router";
+
 
 const CustomCarouselControls = ({ activeIndex, numPage, onPrev, onNext }) => (
     <div className={styles.controlsWrapper}>
@@ -25,16 +23,6 @@ const CustomCarouselControls = ({ activeIndex, numPage, onPrev, onNext }) => (
         </button>
     </div>
 );
-
-export const homePageLoader = async () => {
-    try {
-        const data = await getPublicJobList();
-        return { total_jobs: data.total_jobs, jobs: data.jobs };
-    } catch (error) {
-        console.error('Error:', error);
-        throw error;
-    }
-}
 
 function Home() {
     const [jobs, setJobs] = useState([]);

@@ -2,7 +2,7 @@ import React from "react";
 import { Navigate, RouterProvider, createBrowserRouter } from "react-router-dom";
 import AuthenticationLayout from "./layouts/AuthenticationLayout";
 import DefaultLayout from "./layouts/DefaultLayout";
-import Home, { homePageLoader } from "./pages/Home";
+import Home from "./pages/Home";
 import AboutUs from "./pages/AboutUs";
 import Search from "./pages/Search";
 import HireTalent from "./pages/HireTalent";
@@ -23,8 +23,7 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <Home />,
-        loader: homePageLoader,
+        element: <Home />
       },
       {
         path: "/about-us",
