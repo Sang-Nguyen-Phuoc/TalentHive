@@ -16,3 +16,18 @@ export const getJobListAsEmployer = async (status, page, limit) => {
         throw error;
     }
 }
+
+export const getPublicJobList = async (page, limit) => {
+    try {
+        const data = await axiosCustom.get("/api/v1/jobs/public", {
+            query: {
+                page,
+                limit,
+            }
+        });
+        return data;
+    } catch (error) {
+        console.error("Error while getting job list", error?.message || error);
+        throw error;
+    }
+}

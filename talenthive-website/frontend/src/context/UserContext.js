@@ -8,14 +8,21 @@ export const UserProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [role, setRole] = useState(localStorage.getItem('role') || 'guest');
 
+    console.log("chào");
+    
     const fetchUser = async () => {
         try {
             setLoading(true);
             const data = await getMe();
-            setUser(data);
+            console.log("data: ", data);
+            
+            setUser(data?.user);
+            setRole(data?.user?.role);
         } catch (error) {
             setError(error);
+            setRole('guest');
         } finally {
             setLoading(false);
         }
@@ -30,13 +37,15 @@ export const UserProvider = ({ children }) => {
 
     const login = (userInfo) => {
         setUser(userInfo);
+        setRole(userInfo?.role);
     };
 
     const logout = () => {
         setUser(null);
+        setRole('guest');
     };
 
-    return <UserContext.Provider value={{ user, login, logout, loading, error }}>{children}</UserContext.Provider>;
+    return <UserContext.Provider value={{ user, login, logout, loading, error, role }}>{children}</UserContext.Provider>;
 };
 
 export const useUser = () => {

@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import bcrypt from "bcryptjs";
-import User from "../models/user";
+import User, { IUser } from "../models/user";
 import validator from "validator";
 import catchAsync from "../utils/catchAsync";
 import AppError from "../utils/appError";
@@ -10,6 +10,7 @@ import CandidateProfile from "../models/candidateProfile";
 import EmployerProfile from "../models/employerProfile";
 import { createSendToken } from "../utils/tokenServices";
 import { StatusCodes } from "http-status-codes";
+import { userSeeder } from "../seeds/userSeeder";
 
 export const register = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const { email, password, role } = req.body;
@@ -208,20 +209,17 @@ export const resetPassword = catchAsync(async (req: Request, res: Response, next
 });
 
 export const deleteMe = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const user = req.body.user as IUser;
     const userId = req.body.userId;
     if (!userId) {
         return next(new AppError("attachUserId middleware not working", 500));
     }
 
-    if (!(await User.findOne({ _id: userId }))) {
-        return next(new AppError("User not found", StatusCodes.NOT_FOUND));
-    }
-
     await User.updateOne({ _id: userId }, { $set: { active: false } });
 
-    await CandidateProfile.updateOne({ user_id: userId }, { $set: { active: false } });
+    await CandidateProfile.updateOne({ _id: user.profile_id }, { $set: { active: false } });
 
-    await EmployerProfile.updateOne({ user_id: userId }, { $set: { active: false } });
+    await EmployerProfile.updateOne({ _id: user.profile_id }, { $set: { active: false } });
 
     res.status(StatusCodes.OK).json({
         status: "success",
@@ -237,22 +235,12 @@ export const getMe = catchAsync(async (req: Request, res: Response, next: NextFu
         return next(new AppError("attachUser middleware must be called before getMe route", 500));
     }
 
-    let profile;
-    if (currentUser.role === "candidate") {
-        profile = await CandidateProfile.findOne({ user_id: currentUser._id });
-    } else if (currentUser.role === "employer") {
-        profile = await EmployerProfile.findOne({ user_id: currentUser._id });
-    }
-
-    if (!profile) {
-        return next(new AppError("Profile not found for this user", 500));
-    }
+    const resultRecord = await User.findOne({ _id: currentUser._id }).populate("profile_id");
 
     res.status(StatusCodes.OK).json({
         status: "success",
         data: {
-            profile,
-            user: currentUser
+            user: resultRecord,
         }
     });
 });

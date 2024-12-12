@@ -5,43 +5,46 @@ import styleDetail from "../../styles/components/JobItemDetail.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleDollarToSlot, faFilter, faLocationDot } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
+import { formatDistanceToNow } from 'date-fns';
 
 const JobItem = {
     ////// HOME PAGE //////
-    HomePage: ({ props, state }) => {
+    HomePage: ({ job, state }) => {
         const navigate = useNavigate();
+
         return (
             <div
                 className={styleHome.wrapper}
-                onClick={() => navigate("/jobs/detail", { state: props })}
+                onClick={() => navigate("/jobs/detail")}
             >
                 <div className={styleHome.header}>
                     <div className={styleHome["left-header"]}>
-                        <img src={props.image} alt="logo"></img>
+                        <img src={job?.image || "https://via.placeholder.com/150"} 
+                        alt="logo"></img>
                     </div>
                     <div className={styleHome["right-header"]}>
-                        <p className={styleHome.position}>{props.position}</p>
-                        <p className={styleHome["company-name"]}>{props.company}</p>
+                        <p className={styleHome.position}>{job?.position}</p>
+                        <p className={styleHome["company-name"]}>{job?.company}</p>
                     </div>
                     {state && <p className={`${styleHome[state]} ${styleHome.toggle}`}>{state}</p>}
                 </div>
                 <div className={styleHome.description}>
                     <div className={styleHome.salary}>
                         <FontAwesomeIcon icon={faCircleDollarToSlot} className={styleHome.icon} />
-                        <p>{props.salary}</p>
+                        <p>{job?.salary}</p>
                     </div>
                     <div className={styleHome.location}>
                         <FontAwesomeIcon icon={faLocationDot} className={styleHome.icon} />
-                        <p>{props.location}</p>
+                        <p>{job?.location}</p>
                     </div>
                     <div className={styleHome.sector}>
                         <FontAwesomeIcon icon={faFilter} className={styleHome.icon} />
-                        <p>{props.sector}</p>
+                        <p>{job?.sector}</p>
                     </div>
                 </div>
                 <div className={styleHome.timeline}>
-                    <p>Post {props.createAt} hours ago</p>
-                    <p>{props.endAt} days left</p>
+                    <p>Post {formatDistanceToNow(new Date(job?.posted_at), { addSuffix: true })}</p>
+                    <p>{formatDistanceToNow(new Date(job?.expires_at), { addSuffix: true })}</p>
                 </div>
             </div>
         );

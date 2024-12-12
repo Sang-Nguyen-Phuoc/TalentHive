@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { getJobListAsEmployer } from "../../services/jobsServices";
 import { getACompany } from "../../services/companyServices";
+import { useUser } from "../../context/UserContext";
 
 const items = [
     {
@@ -289,6 +290,7 @@ function HireTalent({ props }) {
     const [state, setState] = useState("all");
     if (!props) props = items[0];
     const [jobListData, setJobListData] = useState();
+    const { user} = useUser();
 
     const fetchJobsList = async () => {
         try {
@@ -301,17 +303,25 @@ function HireTalent({ props }) {
         }
     };
 
-    // const fetchCompany = async () => {
-    //     try {
-    //         const data = await getACompany()
-    //     } catch (error) {
+    const fetchCompany = async () => {
+        try {
+            const employerId = user
+            console.log({employerId});
             
-    //     }
-    // }
+            // const data = await getACompany()
+        } catch (error) {
+            console.log(error);
+            toast.error("Failed to fetch company");
+        }
+    }
 
     useEffect(() => {
         fetchJobsList();
     }, [state]);
+
+    useEffect(() => {
+        Promise.all([fetchCompany(), fetchJobsList()])
+    }, [])
     return (
         <div className={styles.wrapper}>
             <PostForm show={showForm} setShow={setShowForm} />

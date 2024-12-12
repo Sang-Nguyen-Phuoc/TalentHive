@@ -2,7 +2,7 @@ import React from "react";
 import { Navigate, RouterProvider, createBrowserRouter } from "react-router-dom";
 import AuthenticationLayout from "./layouts/AuthenticationLayout";
 import DefaultLayout from "./layouts/DefaultLayout";
-import Home from "./pages/Home";
+import Home, { homePageLoader } from "./pages/Home";
 import AboutUs from "./pages/AboutUs";
 import Search from "./pages/Search";
 import HireTalent from "./pages/HireTalent";
@@ -19,10 +19,12 @@ import ForgotPassword from "./pages/ForgotPassword";
 const router = createBrowserRouter([
   {
     element: <DefaultLayout />,
+    path: "/",
     children: [
       {
-        path: "/",
+        index: true,
         element: <Home />,
+        loader: homePageLoader,
       },
       {
         path: "/about-us",
@@ -38,6 +40,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/profile",
+        element: <Navigate to="account" />,
         children: [
           {
             path: "account",

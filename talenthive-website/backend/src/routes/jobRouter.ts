@@ -2,34 +2,14 @@ import { Router } from "express";
 
 import * as jobController from "../controllers/jobController";
 import { attachUserId, authorizeRole } from "../middlewares/authMiddleware";
-import {
-    validateJobFields,
-    trimJobFields,
-    validateMissingJobFields,
-} from "../middlewares/jobMiddleware";
-import {
-    validateApplicationFields,
-    validateMissingApplicationFields,
-} from "../middlewares/applicationMiddleware";
+import { validateJobFields, trimJobFields, validateMissingJobFields } from "../middlewares/jobMiddleware";
+import { validateApplicationFields, validateMissingApplicationFields } from "../middlewares/applicationMiddleware";
 
 const jobRouter = Router();
 
 jobRouter.get("/search", trimJobFields, validateJobFields, jobController.searchJobs);
-
-jobRouter.post(
-    "/",
-    authorizeRole(["employer"]),
-    validateMissingJobFields,
-    validateJobFields,
-    jobController.createJob
-);
-jobRouter.put("/:jobId", authorizeRole(["employer"]), validateJobFields, jobController.updateJob);
-jobRouter.delete("/:jobId", authorizeRole(["employer", "admin"]), jobController.deleteJob);
-jobRouter.get("/public", jobController.getAllJobs);
-jobRouter.get("/", authorizeRole(), jobController.getJobList);
+jobRouter.get("/public", jobController.getPublicJobList);
 jobRouter.get("/employer", authorizeRole(["employer"]), jobController.getJobListingsByEmployer);
-jobRouter.get("/:jobId", jobController.getAJob);
-
 
 jobRouter.post(
     "/:jobId/apply",
@@ -39,31 +19,13 @@ jobRouter.post(
     jobController.createApplication
 );
 
-jobRouter.get(
-    "/:jobId/applications",
-    authorizeRole(["employer", "admin"]),
-    jobController.getAllJobApplications
-);
+jobRouter
+    .route("/:jobId/application")
+    .get(authorizeRole(["employer", "admin"]), jobController.getAJobApplication)
+    .put(authorizeRole(["candidate"]), validateApplicationFields, jobController.updateApplication)
+    .delete(authorizeRole(["candidate"]), jobController.deleteApplication);
 
-jobRouter.put(
-    "/:jobId/application",
-    attachUserId,
-    authorizeRole(["candidate"]),
-    validateApplicationFields,
-    jobController.updateApplication
-);
-
-jobRouter.delete(
-    "/:jobId/application",
-    authorizeRole(["candidate"]),
-    jobController.deleteApplication
-);
-
-jobRouter.get(
-    "/:jobId/application",
-    authorizeRole(["employer", "admin"]),
-    jobController.getAJobApplication
-);
+jobRouter.get("/:jobId/all-applications", authorizeRole(["employer", "admin"]), jobController.getAllJobApplications);
 
 jobRouter.post(
     "/:jobId/application/:response",
@@ -71,5 +33,16 @@ jobRouter.post(
     validateApplicationFields,
     jobController.responseToJobApplication
 );
+
+jobRouter
+    .route("/")
+    .get(authorizeRole(), jobController.getJobList)
+    .post(authorizeRole(["employer"]), validateMissingJobFields, validateJobFields, jobController.createJob);
+
+jobRouter
+    .route("/:jobId")
+    .get(jobController.getAJob)
+    .put(authorizeRole(["employer"]), validateJobFields, jobController.updateJob)
+    .delete(authorizeRole(["employer", "admin"]), jobController.deleteJob);
 
 export default jobRouter;
