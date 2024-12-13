@@ -8,7 +8,6 @@ import IconChevronRight from "../../components/icons/IconChevronRight";
 import styles from "../../styles/pages/Home.module.css";
 import { getPublicJobList } from "../../services/jobsServices";
 
-
 const CustomCarouselControls = ({ activeIndex, numPage, onPrev, onNext }) => (
     <div className={styles.controlsWrapper}>
         <button className={styles.control} onClick={onPrev}>
@@ -26,7 +25,6 @@ const CustomCarouselControls = ({ activeIndex, numPage, onPrev, onNext }) => (
 
 function Home() {
     const [jobs, setJobs] = useState([]);
-    const [page, setPage] = useState(1);
     const [numPage, setNumPage] = useState(0);
     const [activeIndex, setActiveIndex] = useState(0);
     const Job = JobItem.HomePage;
@@ -35,7 +33,7 @@ function Home() {
     const fetchJobs = useCallback(async () => {
         try {
             const numJob = calculateNumJob();
-            const data = await getPublicJobList(page, numJob);
+            const data = await getPublicJobList(activeIndex + 1, numJob);
             setJobs(data.jobs);
             setNumPage(Math.ceil(data.total_jobs / numJob));
             console.log(data);
@@ -43,7 +41,7 @@ function Home() {
         } catch (error) {
             console.error('Error:', error);
         }
-    }, [page]);
+    }, [activeIndex]);
 
     const handleResize = useCallback(() => {
         fetchJobs();

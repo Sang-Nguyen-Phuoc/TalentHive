@@ -8,7 +8,7 @@ import Search from "./pages/Search";
 import HireTalent from "./pages/HireTalent";
 import ProfileAccount from "./pages/ProfileAccount";
 import ProfileDashboard from "./pages/ProfileDashboard";
-import JobDetail from "./pages/JobDetail";
+import JobDetail, {jobDetailLoader} from "./pages/JobDetail";
 import JobsApplied from "./pages/JobsApplied";
 import ManageWorkers from "./pages/ManageWorkers";
 import ManageEmployers from "./pages/ManageEmployers";
@@ -55,8 +55,10 @@ const router = createBrowserRouter([
         path: "/jobs",
         children: [
           {
-            path: "detail",
+            path: ":id",
             element: <JobDetail />,
+            loader: jobDetailLoader            
+            
           },
           {
             path: "apply",

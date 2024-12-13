@@ -15,7 +15,7 @@ const JobItem = {
         return (
             <div
                 className={styleHome.wrapper}
-                onClick={() => navigate("/jobs/detail")}
+                onClick={() => navigate(`/jobs/${job?._id}`)}
             >
                 <div className={styleHome.header}>
                     <div className={styleHome["left-header"]}>
@@ -59,7 +59,7 @@ const JobItem = {
                     {state && <p className={styleSearch[state]}>{state}</p>}
                 </div>
                 <div className={styleSearch["company-container"]}>
-                    <img className={styleSearch["company-img"]} src={props.image} alt="logo"></img>
+                    <img className={styleSearch["company-img"]} src={props?.image} alt="logo"></img>
                     <p className={styleSearch["company-name"]}>{props.company}</p>
                 </div>
                 <div className={styleSearch["salary-container"]}>
@@ -85,44 +85,44 @@ const JobItem = {
     },
 
     ////// HIRE TALENT PAGE //////
-    Detail: ({ props, isEmployer, ApplicationForm }) => {
+    Detail: ({ job, isEmployer, ApplicationForm }) => {
         const navigate = useNavigate();
         const [show, setShow] = useState(false);
 
         const handleNavigate = () => {
-            navigate("/jobs/detail", { state: props });
+            navigate("/jobs/detail");
         };
 
         return (
             <div className={styleDetail.wrapper} onClick={handleNavigate}>
                 <div className={styleDetail.header}>
-                    <p className={styleDetail.position}>{props.title}</p>
-                    {isEmployer && <p className={styleDetail[props.status]}>{props.status}</p>}
+                    <p className={styleDetail.position}>{job?.title}</p>
+                    {isEmployer && <p className={styleDetail[job?.status]}>{job?.status}</p>}
                 </div>
 
                 <div className={styleDetail.description}>
                     <div className={styleDetail.salary}>
                         <FontAwesomeIcon icon={faCircleDollarToSlot} className={styleDetail.icon} />
-                        <p>{props?.salary_range?.min} - {props?.salary_range?.max}</p>
+                        <p>{job?.salary}</p>
                     </div>
                     <div className={styleDetail.location}>
                         <FontAwesomeIcon icon={faLocationDot} className={styleDetail.icon} />
-                        <p>{props.location}</p>
+                        <p>{job?.location}</p>
                     </div>
                     <div className={styleDetail.sector}>
                         <FontAwesomeIcon icon={faFilter} className={styleDetail.icon} />
-                        <p>{props.sector}</p>
+                        <p>{job?.category}</p>
                     </div>
                 </div>
                 <div className={styleDetail.timeline}>
-                    <p className={styleDetail.createAt}>Post {props.created_at} hours ago</p>
-                    <p>{props.expires_at} days left</p>
+                    <p className={styleDetail.createAt}>Post {formatDistanceToNow(new Date(job?.posted_at || 0), { addSuffix: true })}</p>
+                    <p>{formatDistanceToNow(new Date(job?.expires_at || 0), { addSuffix: true })}</p>
                 </div>
                 <div className={styleDetail.footer}>
-                    {isEmployer && props.status === "accepted" && (
+                    {isEmployer && job?.status === "accepted" && (
                         <p
                             className={styleDetail.candidate}
-                        >{`Candidate list (${props.applications_count})`}</p>
+                        >{`Candidate list (${job?.applications_count})`}</p>
                     )}
                 </div>
                 {!isEmployer && (
