@@ -29,5 +29,5 @@ companyRouter.put(
     companyController.updateCompany
 );
 companyRouter.get("/:companyId",authorizeRole(), companyController.getACompany);
-
+companyRouter.get("/employer/:employerId", companyController.getACompanyByEmployerId)
 export default companyRouter;

@@ -299,3 +299,39 @@ export const getACompanyByEmployer = catchAsync(
         });
     }
 );
+
+export const getACompanyByEmployerId = catchAsync(
+    async (req: Request, res: Response, next: NextFunction) => {
+        const employerId = req.params.employerId;
+        if (!mongoose.Types.ObjectId.isValid(employerId)) {
+            return next(new AppError("Invalid employer ID", StatusCodes.BAD_REQUEST));
+        }
+
+        const employer = await User.findById(employerId);
+        if (!employer) {
+            return next(new AppError(`Employer with id: ${employerId} not found`, StatusCodes.NOT_FOUND));
+        }
+        if (employer.role !== "employer") {
+            return next(new AppError(`User with id: ${employerId} is not an employer`, StatusCodes.BAD_REQUEST));
+        }
+
+        const employerProfile = await EmployerProfile.findById(employer.profile_id);
+        if (!employerProfile) {
+            return next(new AppError(`Employer profile with id: ${employer.profile_id} not found`, StatusCodes.NOT_FOUND));
+        }
+        if (!employerProfile.company_id) {
+            return next(new AppError(`Employer with id: ${employerId} is not associated with any company`, StatusCodes.NOT_FOUND));
+        }
+        const company = await Company.findById(employerProfile.company_id).populate("company_manager");
+        if (!company) {
+            return next(new AppError(`Company with id: ${employerProfile.company_id} in employer profile not found`, StatusCodes.NOT_FOUND));
+        }
+
+        res.status(StatusCodes.OK).json({
+            status: "success",
+            data: {
+                company: company,
+            },
+        });
+    }
+)

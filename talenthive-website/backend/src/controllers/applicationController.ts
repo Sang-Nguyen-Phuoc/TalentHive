@@ -19,7 +19,6 @@ export const rejectOrAcceptApplication = catchAsync(
         }
 
         const application = await Application.findOneAndUpdate({ _id: applicationId, job_id: jobId }, { status }, { new: true });
-        console.log({application});
         
         isNotFound(application, "application");
 
