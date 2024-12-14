@@ -335,3 +335,43 @@ export const getACompanyByEmployerId = catchAsync(
         });
     }
 )
+
+export const getMyCompanyAsEmployer = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
+    const role = req.body.user.role; // from token
+    const id = req.body.user._id; // from token
+    isObjectIdOfMongoDB(id, "id");
+
+    if (role !== "employer") {
+        return next(new AppError("Only employer can access this route", StatusCodes.UNAUTHORIZED));
+    }
+
+    const employer = await User.findById(id);
+    if (!employer) {
+        return next(new AppError(`Employer with id: ${id} not found`, StatusCodes.NOT_FOUND));
+    }
+    if (employer.role !== "employer") {
+        return next(new AppError(`User with id: ${id} is not an employer`, StatusCodes.BAD_REQUEST));
+    }
+    if (!employer.profile_id) {
+        return next(new AppError(`Employer with id: ${id} has no profile`, StatusCodes.NOT_FOUND));
+    }
+    const employerProfile = await EmployerProfile.findById(employer.profile_id);
+    if (!employerProfile) {
+        return next(new AppError(`Employer profile with id: ${employer.profile_id} not found`, StatusCodes.NOT_FOUND));
+    }
+    if (!employerProfile.company_id) {
+        return next(new AppError(`Employer with id: ${id} is not associated with any company`, StatusCodes.NOT_FOUND));
+    }
+    const company = await Company.findById(employerProfile.company_id).populate("company_manager");
+    if (!company) {
+        return next(new AppError(`Company with id: ${employerProfile.company_id} in employer profile not found`, StatusCodes.NOT_FOUND));
+    }
+    
+    res.status(StatusCodes.OK).json({
+        status: "success",
+        data: {
+            company: company,
+        },
+    });
+
+})

@@ -30,4 +30,5 @@ companyRouter.put(
 );
 companyRouter.get("/:companyId",authorizeRole(), companyController.getACompany);
 companyRouter.get("/employer/:employerId", companyController.getACompanyByEmployerId)
+companyRouter.get("/employer", authorizeRole(["employer"]), companyController.getMyCompanyAsEmployer);
 export default companyRouter;

@@ -97,7 +97,7 @@ const JobItem = {
             <div className="container shadow rounded-3 px-4 mb-4 border-5">
                 <div className="row py-3">
                     <h2 className="col-sm-8 fw-bold fs-4 m-0">{job?.title}</h2>
-                    {1 && <p className="col-sm-4 fw-bold m-0 d-flex align-items-center justify-content-end" style={{color: "green"}}>{"Accept"}</p>}
+                    <p className="col-sm-4 fw-bold m-0 d-flex align-items-center justify-content-end" style={{color: "green"}}>{job?.status}</p>
                 </div>
 
                 <hr className="m-0"/>
@@ -127,27 +127,27 @@ const JobItem = {
                         >{`Candidate list (${job?.applications_count})`}</p>
                     )}
                 </div>
-                {!0 && (
-                    <div>
-                        <hr className="m-0"/>
-                        <div className="d-flex justify-content-center py-3">
-                            <button
-                                className="col col-sm-8 btn btn-primary "
-                                onClick={(e) => {
-                                    e.stopPropagation(); // Prevent navigation
-                                    setShow(true); // Show modal
-                                }}
-                            >
-                                Apply now
-                            </button>
-                            {/* Render ApplicationForm */}
-                            <ApplicationForm show={show} setShow={setShow} />
-                        </div>
-                    </div>
-                )}
             </div>
         );
     },
 };
 
 export default JobItem;
+// {0 && (
+//     <div>
+//         <hr className="m-0"/>
+//         <div className="d-flex justify-content-center py-3">
+//             <button
+//                 className="col col-sm-8 btn btn-primary "
+//                 onClick={(e) => {
+//                     e.stopPropagation(); // Prevent navigation
+//                     setShow(true); // Show modal
+//                 }}
+//             >
+//                 Apply now
+//             </button>
+//             {/* Render ApplicationForm */}
+//             <ApplicationForm show={show} setShow={setShow} />
+//         </div>
+//     </div>
+// )}

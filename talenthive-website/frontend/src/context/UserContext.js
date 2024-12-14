@@ -1,65 +1,58 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
 import { getMe } from "../services/authServices";
-import { getAccessToken } from "../utils/authToken";
+import { getAccessToken, saveAccessToken } from "../utils/authToken";
 
 const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
-    const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')) || null);
+    const [user, setUser] = useState(() => JSON.parse(localStorage.getItem('user')) || null);
+    const [role, setRole] = useState(localStorage.getItem('role') || 'guest');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    const [role, setRole] = useState(localStorage.getItem('role') || 'guest');
+
+    const setGuest = () => {
+        setUser(null);
+        setRole('guest');
+        localStorage.removeItem('user');
+        localStorage.setItem('role', 'guest');
+        saveAccessToken(null);
+    };
 
     const fetchUser = async () => {
         try {
             setLoading(true);
             const data = await getMe();
-            console.log("data: ", data);
-            
             if (data?.user) {
-                
-                setUser(data?.user);
-                setRole(data?.user?.role);
-                localStorage.setItem('user', JSON.stringify(data?.user));
-                localStorage.setItem('role', data?.user?.role);
+                setUser(data.user);
+                setRole(data.user.role);
+                localStorage.setItem('user', JSON.stringify(data.user));
+                localStorage.setItem('role', data.user.role);
             } else {
-                setRole('guest');
-                localStorage.setItem('user', null);
-                localStorage.setItem('role', 'guest');
+                setGuest();
             }
         } catch (error) {
             setError(error);
-            setRole('guest');
+            setGuest();
         } finally {
             setLoading(false);
         }
-    }
+    };
 
     useEffect(() => {
         const token = getAccessToken();
-        console.log("token: ", token);
-        
-        if (token) {
-            fetchUser();
-        } else {
-            setRole('guest');
-            localStorage.setItem('role', 'guest');
-        }
+        if (token) fetchUser();
+        else setGuest();
     }, []);
 
-    const login = (userInfo) => {
-        setUser(userInfo);
-        setRole(userInfo?.role);
-    };
+    const login = async () => fetchUser();
 
-    const logout = () => {
-        setUser(null);
-        setRole('guest');
-    };
+    const logout = setGuest;
 
-    return <UserContext.Provider value={{ user, login, logout, loading, error, role }}>{children}</UserContext.Provider>;
+    return (
+        <UserContext.Provider value={{ user, login, logout, loading, error, role }}>
+            {children}
+        </UserContext.Provider>
+    );
 };
 
-export const useUser = () => {
-    return useContext(UserContext);
-};
+export const useUser = () => useContext(UserContext);

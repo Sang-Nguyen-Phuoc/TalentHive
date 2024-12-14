@@ -1,13 +1,10 @@
 import { useState } from "react";
-import styles from "../../styles/pages/ProfileAccount.module.css";
 import { toast } from "react-toastify";
 import { useUser } from "../../context/UserContext";
 import { getUserById } from "../../services/userServices";
 import { redirect, useLoaderData, useNavigation, useParams } from "react-router";
 import { postChangePassword } from "../../services/authServices";
 import { Form, useSubmit } from "react-router-dom";
-import { motion } from "framer-motion";
-import { set } from "date-fns";
 
 export const profileLoader = async ({ params }) => {
     try {

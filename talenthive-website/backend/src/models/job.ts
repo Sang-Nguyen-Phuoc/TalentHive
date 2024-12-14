@@ -4,6 +4,7 @@ export interface IJob {
     _id: Types.ObjectId;
     title: string;
     company_id: Types.ObjectId;
+    image: string;
     employer_id: Types.ObjectId;
     salary_range: {min: number, max: number},
     location: string;
