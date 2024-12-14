@@ -3,10 +3,12 @@ import { removeAccessToken } from "../../utils/authToken";
 import styles from "../../styles/components/NavBar.module.css";
 import { useUser } from "../../context/UserContext";
 import { Dropdown } from "react-bootstrap";
+import { ROLES } from "../../utils/Constants";
 
 const NavBar = () => {
-    const { user, role, logout } = useUser();		
+    const { user, role, logout } = useUser();
     const navigate = useNavigate();
+    console.log("User in NavBar", user, role);
 
     const handleLogout = () => {
         const confirmLogout = window.confirm("Are you sure you want to log out?");
@@ -44,10 +46,17 @@ const NavBar = () => {
                                 Dashboard
                             </Link>
                         </li>
+                        {role === ROLES.EMPLOYER ? (
+                            <li className="nav-item">
+                                <Link className="nav-link link-light fs-5 link-opacity-75-hover" to="/hire-talent">
+                                    Hire Talent
+                                </Link>
+                            </li>
+                        ) : "" }
                     </ul>
                 </nav>
 
-                {role === "guest"? (
+                {role === "guest" ? (
                     <nav className="d-flex align-items-center">
                         <ul className="nav nav-pills">
                             <li className="nav-item">

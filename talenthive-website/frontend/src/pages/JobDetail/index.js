@@ -21,6 +21,7 @@ export const jobDetailLoader = async ({ params }) => {
 function JobDetail({ isSearch }) {
     const data = useLoaderData();
     const { job } = data;
+
     const Job = JobItem.Detail;
 
     const role = "Employer";
@@ -33,7 +34,7 @@ function JobDetail({ isSearch }) {
     return (
         // <div className={`${styles.wrapper} ${isSearch && styles["is-search"]}`}>
         <div className="container">
-            <main className="row g-lg-5 mt-5 mt-lg-0">
+            <main className="row g-3 g-md-4 g-lg-5 mt-5 mt-lg-0">
                 <div className="col-md-8">
                     <Job job={job} isEmployer={role === "Employer"} ApplicationForm={ApplicationForm} />
                     <div className="container">
@@ -44,24 +45,48 @@ function JobDetail({ isSearch }) {
                                 <h2 className="fs-5 fw-bold">🚀Job Description 🫣🫣🫣</h2>
                                 <p className="mb-4">{job?.description}</p>
                                 <h2 className="fs-5 fw-bold">🚀 Skills and Experience 🎯📚💡</h2>
-                                <p className="mb-4">{job?.skills}</p>
+                                <ul className="ms-0 ms-sm-4">
+                                    {job?.skills && Array.isArray(job.skills) ? (
+                                        job.skills.map((skill, index) => (
+                                            <li key={index} className="">
+                                                {skill}
+                                            </li>
+                                        ))
+                                    ) : (
+                                        <li className="list-group-item">No skills available</li>
+                                    )}
+                                </ul>
                                 <h2 className="fs-5 fw-bold">🚀 Benefits 🎁🏆🌈</h2>
-                                <p className="mb-4">{job?.benefits}</p>
+                                <ul className="ms-0 ms-sm-4">
+                                    {job?.benefits && Array.isArray(job.benefits) ? (
+                                        job.benefits.map((benefit, index) => (
+                                            <li key={index} className="">
+                                                {benefit}
+                                            </li>
+                                        ))
+                                    ) : (
+                                        <li className="list-group-item">No benefits available</li>
+                                    )}
+                                </ul>
                                 {role === "Employer" && (
-                                    <div className="row d-flex justify-content-evenly">
-                                        <button
-                                            onClick={handleUpdate}
-                                            className="col-8 mb-4 mb-sm-0 col-md-4 col-sm-5 btn btn-primary"
-                                        >
-                                            Update
-                                        </button>
-                                        <button
-                                            onClick={handleRemove}
-                                            className="col-8 col-md-4 col-sm-4 btn btn-danger"
-                                        >
-                                            Remove
-                                        </button>
-                                    </div>
+                                    
+                                    <>
+                                        <hr/>
+                                        <div className="row d-flex justify-content-evenly">
+                                            <button
+                                                onClick={handleUpdate}
+                                                className="col-8 mb-2 mb-sm-0 col-md-4 col-sm-5 btn btn-primary"
+                                            >
+                                                Update
+                                            </button>
+                                            <button
+                                                onClick={handleRemove}
+                                                className="col-8 col-md-4 col-sm-4 btn btn-danger"
+                                            >
+                                                Remove
+                                            </button>
+                                        </div>
+                                    </>
                                 )}
                             </div>
                         </div>
@@ -89,7 +114,7 @@ function JobDetail({ isSearch }) {
                         </div>
                         <div className="m-3">
                             <span className="fw-bold">Our website: </span>
-                            <a className="cursor-pointer" href={job?.company?.website}>
+                            <a className="cursor-pointer text-break" href={job?.company?.website}>
                                 {job?.company?.website || "Nothing more"}
                             </a>
                         </div>

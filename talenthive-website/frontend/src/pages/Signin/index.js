@@ -28,9 +28,8 @@ function Signin() {
         };
         try {
             const data = await postLogin(dataSignIn.email, dataSignIn.password);
-            console.log({ data });
             saveAccessToken(data.accessToken);
-            login(data.user);
+            login();
             toast.success("Logged in successfully");
             navigate("/");
         } catch (error) {

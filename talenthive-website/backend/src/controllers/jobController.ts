@@ -336,6 +336,28 @@ export const getJobListingsByEmployer = catchAsync(async (req: Request, res: Res
 
     const totalJobs = page && limit ? await Job.countDocuments(filter) : jobs.length;
 
+    const jobsFilter = jobs.map((job: any) => {
+        return {
+            _id: job._id,
+            title: job?.title,
+            company: job?.company_id?.name || null,
+            image: job?.image || null,
+            salary: (job?.salary_range?.min || job?.salary_range?.max) ? job?.salary_range?.min + " - " + job?.salary_range?.max + " USD" : null,
+            category: job?.job_category?.name || null,
+            type: job?.job_type?.name || null,
+            skills: job?.skills || null,
+            benefits: job?.benefits || null,
+            requirements: job?.requirements || null,
+            description: job?.description || null,
+            location: job?.location || null,
+            posted_at: job?.posted_at || null,
+            expires_at: job?.expires_at || null,
+            views: job?.views || null,
+            applications_count: job?.applications_count || null,
+            status: job?.status || null,
+        }
+    })
+    
     res.status(StatusCodes.OK).json({
         status: "success",
         data: {
@@ -348,7 +370,7 @@ export const getJobListingsByEmployer = catchAsync(async (req: Request, res: Res
                           currentPage: parseInt(page as string, 10),
                       }
                     : undefined,
-            jobs,
+            jobs: jobsFilter,
         },
     });
 });
@@ -403,6 +425,7 @@ export const getAJob = catchAsync(async (req: Request, res: Response, next: Next
         requirements: job.requirements || null,
         views: job.views || null,
         applications_count: job.applications_count || null,
+        employer_id: job.employer_id || null,
         company: {
             name: job?.company_id?.name || null,
             logo: job?.company_id?.avatar || null,
