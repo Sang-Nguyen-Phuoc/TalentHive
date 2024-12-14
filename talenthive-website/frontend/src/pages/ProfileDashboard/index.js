@@ -13,12 +13,6 @@ function ProfileDashboard({ isReused }) {
     const { currentUser } = useContext(CurrentUserContext);
 
     const { profile } = currentUser
-    console.log(profile);
-
-    // console.log(state);
-    // if (!props)
-    //     props = state.data;
-
 
     if (currentUser.role === 'candidate')
         return (

@@ -94,29 +94,31 @@ const JobItem = {
         };
 
         return (
-            <div className={styleDetail.wrapper} onClick={handleNavigate}>
-                <div className={styleDetail.header}>
-                    <p className={styleDetail.position}>{job?.title}</p>
-                    {isEmployer && <p className={styleDetail[job?.status]}>{job?.status}</p>}
+            <div className="container shadow rounded-3 px-4 mb-4 border-5">
+                <div className="row py-3">
+                    <h2 className="col-sm-8 fw-bold fs-4 m-0">{job?.title}</h2>
+                    {1 && <p className="col-sm-4 fw-bold m-0 d-flex align-items-center justify-content-end" style={{color: "green"}}>{"Accept"}</p>}
                 </div>
 
-                <div className={styleDetail.description}>
-                    <div className={styleDetail.salary}>
+                <hr className="m-0"/>
+
+                <div className="row d-flex justify-content-between align-content-center flex-wrap py-3">
+                    <div className="col-md-4 d-flex align-items-center gap-2 mb-4 mb-md-0">
                         <FontAwesomeIcon icon={faCircleDollarToSlot} className={styleDetail.icon} />
-                        <p>{job?.salary}</p>
+                        <span>{job?.salary}</span>
                     </div>
-                    <div className={styleDetail.location}>
+                    <div className="col-md-4 d-flex align-items-center gap-2 mb-4 mb-md-0">
                         <FontAwesomeIcon icon={faLocationDot} className={styleDetail.icon} />
-                        <p>{job?.location}</p>
+                        <span>{job?.location}</span>
                     </div>
-                    <div className={styleDetail.sector}>
+                    <div className="col-md-4 d-flex align-items-center gap-2 mb-4 mb-md-0">
                         <FontAwesomeIcon icon={faFilter} className={styleDetail.icon} />
-                        <p>{job?.category}</p>
+                        <span>{job?.category}</span>
                     </div>
                 </div>
-                <div className={styleDetail.timeline}>
-                    <p className={styleDetail.createAt}>Post {formatDistanceToNow(new Date(job?.posted_at || 0), { addSuffix: true })}</p>
-                    <p>{formatDistanceToNow(new Date(job?.expires_at || 0), { addSuffix: true })}</p>
+                <div className="d-flex justify-content-between align-content-center flex-wrap py-2 pb-3">
+                    <span className="text-muted" style={{fontSize: '0.8rem'}}>Post {formatDistanceToNow(new Date(job?.posted_at || 0), { addSuffix: true })}</span>
+                    <span className="text-muted" style={{fontSize: '0.8rem'}}>{formatDistanceToNow(new Date(job?.expires_at || 0), { addSuffix: true })}</span>
                 </div>
                 <div className={styleDetail.footer}>
                     {isEmployer && job?.status === "accepted" && (
@@ -125,20 +127,23 @@ const JobItem = {
                         >{`Candidate list (${job?.applications_count})`}</p>
                     )}
                 </div>
-                {!isEmployer && (
-                    <>
-                        <button
-                            className={styleDetail.apply}
-                            onClick={(e) => {
-                                e.stopPropagation(); // Prevent navigation
-                                setShow(true); // Show modal
-                            }}
-                        >
-                            Apply now
-                        </button>
-                        {/* Render ApplicationForm */}
-                        <ApplicationForm show={show} setShow={setShow} />
-                    </>
+                {!0 && (
+                    <div>
+                        <hr className="m-0"/>
+                        <div className="d-flex justify-content-center py-3">
+                            <button
+                                className="col col-sm-8 btn btn-primary "
+                                onClick={(e) => {
+                                    e.stopPropagation(); // Prevent navigation
+                                    setShow(true); // Show modal
+                                }}
+                            >
+                                Apply now
+                            </button>
+                            {/* Render ApplicationForm */}
+                            <ApplicationForm show={show} setShow={setShow} />
+                        </div>
+                    </div>
                 )}
             </div>
         );

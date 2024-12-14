@@ -11,6 +11,7 @@ import EmployerProfile from "../models/employerProfile";
 import { createSendToken } from "../utils/tokenServices";
 import { StatusCodes } from "http-status-codes";
 import { userSeeder } from "../seeds/userSeeder";
+import { isRequired } from "../utils/validateServices";
 
 export const register = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const { email, password, role } = req.body;
@@ -77,9 +78,7 @@ export const login = catchAsync(async (req: Request, res: Response, next: NextFu
 export const logout = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const accessToken = req.body.accessToken;
     if (!accessToken) {
-        return next(
-            new AppError("attachUserId middleware must be called before logout route", 500)
-        );
+        return next(new AppError("attachUserId middleware must be called before logout route", 500));
     }
 
     // Clear the refresh token cookie
@@ -96,89 +95,74 @@ export const logout = catchAsync(async (req: Request, res: Response, next: NextF
     });
 });
 
-export const changePassword = catchAsync(
-    async (req: Request, res: Response, next: NextFunction) => {
-        const { currentPassword, newPassword } = req.body;
-        if (!currentPassword) {
-            return next(new AppError("currentPassword is required", StatusCodes.BAD_REQUEST));
-        }
-        if (!newPassword) {
-            return next(new AppError("newPassword is required", StatusCodes.BAD_REQUEST));
-        }
+export const changePassword = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const { currentPassword, newPassword, newPasswordConfirm } = req.body;
+    isRequired(currentPassword, "currentPassword");
+    isRequired(newPassword, "newPassword");
+    isRequired(newPasswordConfirm, "newPasswordConfirm");
 
-        // Get userId from attachUserId middleware
-        const userId = req.body.userId;
-        if (!userId) {
-            return next(new AppError("attachUserId middleware not working", 500));
-        }
-        const currentUser = await User.findOne({ _id: userId }).select("+password");
+    if (newPassword !== newPasswordConfirm) {
+        return next(new AppError("New password and confirm password do not match", 400));
+    }
 
-        // Get access token from attachUserId middleware
-        const accessToken = req.body.accessToken;
+    // Get userId from attachUserId middleware
+    const userId = req.body.userId;
+    if (!userId) {
+        return next(new AppError("attachUserId middleware not working", 500));
+    }
+    const currentUser = await User.findOne({ _id: userId }).select("+password");
 
-        // Check if current password is correct
-        if (
-            !currentUser?.password ||
-            !(await bcrypt.compare(currentPassword, currentUser?.password))
-        ) {
-            return next(new AppError("Current password is incorrect", 403));
-        }
+    // Check if current password is correct
+    if (!currentUser?.password || !(await bcrypt.compare(currentPassword, currentUser?.password))) {
+        return next(new AppError("Current password is incorrect", 403));
+    }
 
-        // Update password and timestamp
-        currentUser.password = newPassword;
-        currentUser.password_changed_at = new Date();
-        await currentUser.save();
+    // Update password and timestamp
+    currentUser.password = newPassword;
+    currentUser.password_changed_at = new Date();
+    await currentUser.save();
 
-        currentUser.password = undefined;
+    currentUser.password = undefined;
+
+    res.status(StatusCodes.OK).json({
+        status: "success",
+        data: {
+            user: currentUser,
+        },
+    });
+});
+
+export const forgotPassword = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    // 1) Get user based on POSTed email
+    const user = await User.findOne({ email: req.body.email });
+    if (!user) {
+        return next(new AppError(`There is no user with email address ${req.body.email}`, StatusCodes.NOT_FOUND));
+    }
+
+    // 2) Generate the random reset token
+    const resetToken = user?.createPasswordResetToken();
+    await user?.save({ validateBeforeSave: false });
+
+    // 3) Send it to user's email
+    try {
+        const resetURL = `${req.protocol}://${req.get("host")}/api/v1/auth/resetPassword/${resetToken}`;
+        await new Email(user, resetURL).sendPasswordReset();
 
         res.status(StatusCodes.OK).json({
             status: "success",
-            data: {
-                user: currentUser,
-            },
+            message: "Token was sent to email!",
         });
-    }
-);
-
-export const forgotPassword = catchAsync(
-    async (req: Request, res: Response, next: NextFunction) => {
-        // 1) Get user based on POSTed email
-        const user = await User.findOne({ email: req.body.email });
+    } catch (err) {
         if (!user) {
-            return next(new AppError(`There is no user with email address ${req.body.email}`, StatusCodes.NOT_FOUND));
+            return next(new AppError("There was an error sending the email. Try again later!", 500));
         }
-
-        // 2) Generate the random reset token
-        const resetToken = user?.createPasswordResetToken();
+        user.password_reset_token = undefined;
+        user.password_reset_expires = undefined;
         await user?.save({ validateBeforeSave: false });
 
-        // 3) Send it to user's email
-        try {
-            const resetURL = `${req.protocol}://${req.get(
-                "host"
-            )}/api/v1/auth/resetPassword/${resetToken}`;
-            await new Email(user, resetURL).sendPasswordReset();
-
-            res.status(StatusCodes.OK).json({
-                status: "success",
-                message: "Token was sent to email!",
-            });
-        } catch (err) {
-            if (!user) {
-                return next(
-                    new AppError("There was an error sending the email. Try again later!", 500)
-                );
-            }
-            user.password_reset_token = undefined;
-            user.password_reset_expires = undefined;
-            await user?.save({ validateBeforeSave: false });
-
-            return next(
-                new AppError("There was an error sending the email. Try again later!", 500)
-            );
-        }
+        return next(new AppError("There was an error sending the email. Try again later!", 500));
     }
-);
+});
 
 export const resetPassword = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     // 1) Get user based on the token
@@ -235,12 +219,24 @@ export const getMe = catchAsync(async (req: Request, res: Response, next: NextFu
         return next(new AppError("attachUser middleware must be called before getMe route", 500));
     }
 
-    const resultRecord = await User.findOne({ _id: currentUser._id }).populate("profile_id");
+    const resultRecord = (await User.findOne({ _id: currentUser._id }).populate("profile_id")) as any;
+
+    const userFiltered = {
+        _id: resultRecord?._id,
+        email: resultRecord?.email || null,
+        role: resultRecord?.role || null,
+        avatar: resultRecord?.profile_id?.avatar || null,
+        name: resultRecord?.profile_id?.full_name || null,
+        phone: resultRecord?.profile_id?.phone || null,
+        address: resultRecord?.profile_id?.address || null,
+        introduction: resultRecord?.profile_id?.introduction || null,
+        company_id: resultRecord?.profile_id?.company_id || null,
+    };
 
     res.status(StatusCodes.OK).json({
         status: "success",
         data: {
-            user: resultRecord,
-        }
+            user: userFiltered,
+        },
     });
 });

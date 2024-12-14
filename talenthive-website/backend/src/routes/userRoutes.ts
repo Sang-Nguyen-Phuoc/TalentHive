@@ -12,4 +12,6 @@ userRouter.post("/follow/:companyId", attachUserId, userController.followCompany
 userRouter.delete("/unfollow/:companyId", attachUserId, userController.unfollowCompany);
 userRouter.get("/followed", attachUserId, userController.getFollowedCompanies);
 
+userRouter.route("/:id")
+    .get(userController.getUser)
 export default userRouter;

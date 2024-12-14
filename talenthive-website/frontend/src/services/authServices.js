@@ -31,3 +31,14 @@ export const getMe = async () => {
         throw error;
     }
 }
+
+export const postChangePassword = async (currentPassword, newPassword, newPasswordConfirm) => {
+    const bodyData = { currentPassword, newPassword, newPasswordConfirm };
+    try {
+        const data = await axiosCustom.post("/api/v1/auth/change-password", bodyData);
+        return data;
+    } catch (error) {
+        console.error("Error while changing password", error?.message || error);
+        throw error;
+    }
+}

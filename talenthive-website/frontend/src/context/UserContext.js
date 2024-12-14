@@ -5,21 +5,28 @@ import { getAccessToken } from "../utils/authToken";
 const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
-    const [user, setUser] = useState(null);
+    const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')) || null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [role, setRole] = useState(localStorage.getItem('role') || 'guest');
 
-    console.log("chào");
-    
     const fetchUser = async () => {
         try {
             setLoading(true);
             const data = await getMe();
             console.log("data: ", data);
             
-            setUser(data?.user);
-            setRole(data?.user?.role);
+            if (data?.user) {
+                
+                setUser(data?.user);
+                setRole(data?.user?.role);
+                localStorage.setItem('user', JSON.stringify(data?.user));
+                localStorage.setItem('role', data?.user?.role);
+            } else {
+                setRole('guest');
+                localStorage.setItem('user', null);
+                localStorage.setItem('role', 'guest');
+            }
         } catch (error) {
             setError(error);
             setRole('guest');
@@ -30,8 +37,13 @@ export const UserProvider = ({ children }) => {
 
     useEffect(() => {
         const token = getAccessToken();
-        if (token && !user) {
+        console.log("token: ", token);
+        
+        if (token) {
             fetchUser();
+        } else {
+            setRole('guest');
+            localStorage.setItem('role', 'guest');
         }
     }, []);
 

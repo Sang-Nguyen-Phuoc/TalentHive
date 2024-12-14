@@ -69,7 +69,7 @@ function AboutUs() {
     ];
 
     return (
-        <div>
+        <div className="overflow-hidden">
             <h1 style={{
                 marginTop: "46px",
                 textAlign: "center",
