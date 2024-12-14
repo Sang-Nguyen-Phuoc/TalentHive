@@ -34,7 +34,6 @@ body {
   min-height: 100vh;
   /* min-width: 1140px; */
   background-image: var(--body-gradient) !important;
-  overflow-x: hidden;
   margin: 0;
   padding: 0;
 }

@@ -1,15 +1,12 @@
-import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import { removeAccessToken } from "../../utils/authToken";
 import styles from "../../styles/components/NavBar.module.css";
-import Logo from "../../images/account-logo.png";
 import { useUser } from "../../context/UserContext";
+import { Dropdown } from "react-bootstrap";
 
 const NavBar = () => {
-    const { user, role, logout } = useUser();
+    const { user, role, logout } = useUser();		
     const navigate = useNavigate();
-
-    console.log("role: ", role);
 
     const handleLogout = () => {
         const confirmLogout = window.confirm("Are you sure you want to log out?");
@@ -20,89 +17,91 @@ const NavBar = () => {
         }
     };
 
-    console.log(user);
-    
-
     return (
-        <div className={styles["navbar-container"]}>
-            <div className={styles["logo-container"]} onClick={() => navigate("/")}>
-                <img src="/logo192.png" alt="TalentHive" className={styles["logo"]} />
-                <p>TalentHive</p>
-            </div>
-            <div className={styles["navbar-cta"]}>
-                <div className={styles["text"]} onClick={() => navigate("/about-us")}>
-                    <span>About Us</span>
+        <header className="">
+            <div className="container p-3 d-flex justify-content-between align-items-center">
+                <div className="d-flex align-items-center gap-3 justify-content-center flex-wrap">
+                    <img src={"/logo192.png"} alt="TalentHive" className="rounded-1" style={{ width: 75 }} />
+                    <span className="fw-bold fs-1" style={{ color: "#fff" }}>
+                        TalentHive
+                    </span>
                 </div>
 
-                {role === "candidate" && (
-                    <>
-                        <div className={styles["text"]} onClick={() => navigate("/jobs-applied")}>
-                            <span>Jobs Applied</span>
-                        </div>
+                <nav className="d-flex align-items-center">
+                    <ul className="nav nav-pills">
+                        <li className="nav-item">
+                            <Link className="nav-link link-light fs-5 link-opacity-75-hover" to="/">
+                                Home
+                            </Link>
+                        </li>
+                        <li className="nav-item">
+                            <Link className="nav-link link-light fs-5 link-opacity-75-hover" to="/about-us">
+                                About Us
+                            </Link>
+                        </li>
+                        <li className="nav-item">
+                            <Link className="nav-link link-light fs-5 link-opacity-75-hover" to="/">
+                                Dashboard
+                            </Link>
+                        </li>
+                    </ul>
+                </nav>
 
-                        {/* Profile Logo with Dropdown */}
-                        <div className={styles["profile-logo-container"]}>
-                            <img
-                                src={user?.profile_id?.avatar || Logo}
-                                alt="Profile"
-                                className={styles["profile-logo"]}
-                            />
-                            <div className={styles["dropdown-menu"]}>
-                                <div onClick={() => navigate("/profile/dashboard")}>Dashboard</div>
-                                <div onClick={() => navigate("/profile/account")}>Account</div>
-                                <div onClick={() => handleLogout()}>Log out</div>
-                            </div>
-                        </div>
-                    </>
-                )}
+                {role === "guest"? (
+                    <nav className="d-flex align-items-center">
+                        <ul className="nav nav-pills">
+                            <li className="nav-item">
+                                <Link className="nav-link link-light fs-5 link-opacity-75-hover fw-bold" to="/signin">
+                                    Sign In
+                                </Link>
+                            </li>
+                            <li className="nav-item">
+                                <Link className="nav-link link-light fs-5 link-opacity-75-hover fw-bold" to="/signup">
+                                    Sign Up
+                                </Link>
+                            </li>
+                        </ul>
+                    </nav>
+                ) : (
+                    <div className="text-end ms-3 d-flex align-items-center gap-3 flex-wrap-reverse justify-content-center">
+                        <p className="m-0 text-light fs-5 fw-bold">{user?.name || "No Name"}</p>
+                        <Dropdown>
+                            <Dropdown.Toggle
+                                as="a"
+                                href="#"
+                                className="d-block link-dark text-decoration-none"
+                                id="dropdownUser1"
+                            >
+                                <img
+                                    src={user?.avatar || "/logo192.png"}
+                                    alt="mdo"
+                                    width={50}
+                                    height={50}
+                                    className="rounded-circle shadow border bg-gradient"
+                                />
+                            </Dropdown.Toggle>
 
-                {/* Employer */}
-                {role === "employer" && (
-                    <>
-                        <div className={styles["text"]} onClick={() => navigate("/dashboard/jobs")}>
-                            <span>Dashboard</span>
-                        </div>
-                        <div className={styles["profile-logo-container"]}>
-                            <img src={user?.profile_id?.avatar || Logo} alt="Profile" className={styles["profile-logo"]} />
-                            <div className={styles["dropdown-menu"]}>
-                                <div onClick={() => navigate("/profile/dashboard")}>Dashboard</div>
-                                <div onClick={() => navigate("/profile/account")}>Account</div>
-                                <div onClick={() => handleLogout()}>Log out</div>
-                            </div>
-                        </div>
-                    </>
-                )}
-
-                {/* Admin */}
-                {role === "admin" && (
-                    <>
-                        <div className={styles["manage-option"]}>
-                            <div className={styles["text"]}>
-                                <span>Manage</span>
-                            </div>
-                            <div className={styles["dropdown-menu"]}>
-                                <div onClick={() => navigate("/recruitment")}>Recruitment</div>
-                                <div onClick={() => navigate("/manage-workers")}>Worker</div>
-                                <div onClick={() => navigate("/manage-employers")}>Employer</div>
-                            </div>
-                        </div>
-
-                        {/* Log out option */}
-                        <div className={styles["text"]} onClick={handleLogout}>
-                            <span>Log out</span>
-                        </div>
-                    </>
-                )}
-
-                {role === "guest" && (
-                    <>
-                        <div className={styles["text"]} onClick={() => navigate("/signin")}>
-                            <span>Sign In</span>
-                        </div>
-                    </>
+                            <Dropdown.Menu align="end" className="text-small">
+                                <Dropdown.Item>
+                                    <Link className="text-decoration-none text-dark" to={`/profile/${user?._id}`}>
+                                        Settings
+                                    </Link>
+                                </Dropdown.Item>
+                                <Dropdown.Item>
+                                    <Link className="text-decoration-none text-dark" to={`/profile/${user?._id}`}>
+                                        Profile
+                                    </Link>
+                                </Dropdown.Item>
+                                <Dropdown.Divider />
+                                <Dropdown.Item href="#" onClick={handleLogout}>
+                                    Sign out
+                                </Dropdown.Item>
+                            </Dropdown.Menu>
+                        </Dropdown>
+                    </div>
                 )}
             </div>
-        </div>
+        </header>
     );
 };
 

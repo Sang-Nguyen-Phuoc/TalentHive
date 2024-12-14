@@ -77,6 +77,8 @@
 
 .i-img {
   min-height: 400px;
+  aspect-ratio: 1/1;
+  object-fit: cover;
 }
 
 .i-right > :nth-child(1) {

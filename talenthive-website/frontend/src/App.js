@@ -6,7 +6,7 @@ import Home from "./pages/Home";
 import AboutUs from "./pages/AboutUs";
 import Search from "./pages/Search";
 import HireTalent from "./pages/HireTalent";
-import ProfileAccount from "./pages/ProfileAccount";
+import ProfileAccount, { changePasswordAction, profileLoader } from "./pages/ProfileAccount";
 import ProfileDashboard from "./pages/ProfileDashboard";
 import JobDetail, {jobDetailLoader} from "./pages/JobDetail";
 import JobsApplied from "./pages/JobsApplied";
@@ -38,17 +38,22 @@ const router = createBrowserRouter([
         element: <HireTalent />,
       },
       {
-        path: "/profile",
-        element: <Navigate to="account" />,
+        path: "/profile/:id",
         children: [
-          {
-            path: "account",
-            element: <ProfileAccount />,
-          },
           {
             path: "dashboard",
             element: <ProfileDashboard />,
+            
           },
+          {
+            index: true,
+            element: <ProfileAccount />,
+            loader: profileLoader,
+          },
+          {
+            path: "change-password",
+            action: changePasswordAction,
+          }
         ],
       },
       {

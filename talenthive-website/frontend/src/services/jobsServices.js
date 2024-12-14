@@ -33,8 +33,6 @@ export const getPublicJobList = async (page, limit) => {
 }
 
 export const getJobDetail = async (id) => {
-    console.log("helloooooooooooo");
-    
     try {
         const data = await axiosCustom.get(`/api/v1/jobs/${id}`);
         console.log("data", data);
