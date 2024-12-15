@@ -29,30 +29,32 @@ function Home() {
     const [activeIndex, setActiveIndex] = useState(0);
     const Job = JobItem.HomePage;
     const calculateNumJob = () => (window.innerWidth >= 1400 ? 12 : 8);
+    const [numJob, setNumJob] = useState(calculateNumJob());
 
-    const fetchJobs = useCallback(async () => {
+    const fetchJobs = async () => {
         try {
             const numJob = calculateNumJob();
             const data = await getPublicJobList(activeIndex + 1, numJob);
             setJobs(data.jobs);
             setNumPage(Math.ceil(data.total_jobs / numJob));
             console.log(data);
-            
         } catch (error) {
             console.error('Error:', error);
         }
-    }, [activeIndex]);
-
-    const handleResize = useCallback(() => {
-        fetchJobs();
-    }, [fetchJobs]);
-
+    }
     useEffect(() => {
         fetchJobs();
-        window.addEventListener("resize", handleResize);
+    }, [activeIndex, numJob]);
 
+
+    const handleResize = useCallback(() => {
+        setNumJob(calculateNumJob());
+    }, []);
+
+    useEffect(() => {
+        window.addEventListener("resize", handleResize);
         return () => window.removeEventListener("resize", handleResize);
-    }, [fetchJobs, handleResize]);
+    }, [handleResize]);
 
     const handlePrev = () => {
         setActiveIndex((prevIndex) => (prevIndex > 0 ? prevIndex - 1 : numPage - 1));
@@ -61,8 +63,6 @@ function Home() {
     const handleNext = () => {
         setActiveIndex((prevIndex) => (prevIndex + 1) % numPage);
     };
-
-    const numJob = calculateNumJob();
 
     const renderCarouselItems = () => {
         const numPage = Math.ceil(jobs.length / calculateNumJob());
