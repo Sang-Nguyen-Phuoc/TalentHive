@@ -57,7 +57,7 @@
     color: #FF0000;
 }
 
-.description, .salary, .location, .sector, .timeline {
+.description, .salary, .location, .category, .timeline {
     display: flex;
     align-items: center;
 }

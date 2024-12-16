@@ -86,12 +86,12 @@
     color: #6f7882;
 }
 
-.salary-container, .description, .location, .sector, .timeline {
+.salary-container, .description, .location, .category, .timeline {
     display: flex;
     align-items: center;
 }
 
-.sector {
+.category {
     margin-left: 20px;
 }
 

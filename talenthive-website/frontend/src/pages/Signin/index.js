@@ -17,7 +17,6 @@ function Signin() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const { login } = useUser();
 
-
     const handleSignIn = async (e) => {
         e.preventDefault();
         setIsSubmitting(true);
@@ -41,77 +40,79 @@ function Signin() {
     };
 
     return (
-        <div className={styles.wrapper}>
-            <Form className={styles.form} onSubmit={handleSignIn}>
-                <div className={styles.email}>
-                    <label htmlFor="emailInput">
-                        Email
-                        <span>*</span>
-                    </label>
+        <Form className={`${styles.form} container p-3 p-sm-4 p-md-5 `} onSubmit={handleSignIn}>
+            <div className={styles.email}>
+                <label htmlFor="emailInput">
+                    Email
+                    <span>*</span>
+                </label>
+                <input
+                    className={styles["email-input"]}
+                    ref={emailRef}
+                    id="emailInput"
+                    type="email"
+                    placeholder="Email"
+                    required
+                />
+            </div>
+            <div className={styles.password}>
+                <label htmlFor="passwordInput">
+                    Password
+                    <span>*</span>
+                </label>
+                <div className={styles["input-icon-container"]}>
                     <input
-                        className={styles["email-input"]}
-                        ref={emailRef}
-                        id="emailInput"
-                        type="email"
-                        placeholder="Email"
+                        className={styles["password-input"]}
+                        ref={passwordRef}
+                        id="passwordInput"
+                        type={show ? "input" : "password"}
+                        placeholder="Password"
                         required
                     />
+                    <FontAwesomeIcon
+                        className={styles.icon}
+                        icon={show ? faEyeSlash : faEye}
+                        onClick={() => setShow(!show)}
+                    />
                 </div>
-                <div className={styles.password}>
-                    <label htmlFor="passwordInput">
-                        Password
-                        <span>*</span>
-                    </label>
-                    <div className={styles["input-icon-container"]}>
-                        <input
-                            className={styles["password-input"]}
-                            ref={passwordRef}
-                            id="passwordInput"
-                            type={show ? "input" : "password"}
-                            placeholder="Password"
-                            required
-                        />
-                        <FontAwesomeIcon
-                            className={styles.icon}
-                            icon={show ? faEyeSlash : faEye}
-                            onClick={() => setShow(!show)}
-                        />
-                    </div>
-                    <div>
-                        <Link to="/forgot-password" className={styles.link}>
-                            Forgot Password?
-                        </Link>
-                    </div>
-                </div>
-                <div className={styles.container}>
-                    <motion.button type="submit" className={styles.btn} whileTap={{scale: 1.1}} whileHover={{translateY: '-5px'}}>
-                        {isSubmitting ? (
-                            <motion.div
-                            
-                                animate={{ rotate: 360 }}
-                                transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
-                                style={{
-                                    height: '27px',
-                                    aspectRatio: 1,
-                                    border: "3px solid #fff",
-                                    borderTop: "3px solid transparent",
-                                    borderRadius: "50%",
-                                    margin: "0 auto",
-                                }}
-                            />
-                        ) : (
-                            "SIGN IN"
-                        )}
-                    </motion.button>
-                </div>
-                <div className={`${styles.container} ${styles.signup}`}>
-                    <p className={styles.question}>Do you have any account yet?</p>
-                    <Link to="/signup" className={`${styles.link} ${styles["signup-link"]}`}>
-                        Sign up now
+                <div>
+                    <Link to="/forgot-password" className={styles.link}>
+                        Forgot Password?
                     </Link>
                 </div>
-            </Form>
-        </div>
+            </div>
+            <div className={styles.container}>
+                <motion.button
+                    type="submit"
+                    className={styles.btn}
+                    whileTap={{ scale: 1.1 }}
+                    whileHover={{ translateY: "-5px" }}
+                >
+                    {isSubmitting ? (
+                        <motion.div
+                            animate={{ rotate: 360 }}
+                            transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+                            style={{
+                                height: "27px",
+                                aspectRatio: 1,
+                                border: "3px solid #fff",
+                                borderTop: "3px solid transparent",
+                                borderRadius: "50%",
+                                margin: "0 auto",
+                            }}
+                        />
+                    ) : (
+                        "SIGN IN"
+                    )}
+                </motion.button>
+            </div>
+            <div className={`${styles.container} ${styles.signup} align-items-center gap-3`}>
+                <p className={`${styles.question} m-0`}>Do you have any account yet?</p>
+                <Link to="/signup" className={`${styles.link} ${styles["signup-link"]}`}>
+                    Sign up now
+                </Link>
+            </div>
+        </Form>
     );
 }
 

@@ -4,7 +4,7 @@ import style from '../../styles/components/Search.module.css';
 const Search = () => {
     const [formData, setFormData] = useState({
         location: '',
-        sector: [],
+        category: [],
         keyword: '',
     });
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -18,24 +18,24 @@ const Search = () => {
         });
     };
 
-    const handleSectorChange = (e) => {
+    const handlecategoryChange = (e) => {
         const { value, checked } = e.target;
         setFormData((prevData) => {
             if (checked) {
-                return { ...prevData, sector: [...prevData.sector, value] };
+                return { ...prevData, category: [...prevData.category, value] };
             } else {
-                return { ...prevData, sector: prevData.sector.filter((sector) => sector !== value) };
+                return { ...prevData, category: prevData.category.filter((category) => category !== value) };
             }
         });
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        alert(`Keyword: ${formData.keyword}, Location: ${formData.location}, Sector: ${formData.sector.join(', ')}`);
+        alert(`Keyword: ${formData.keyword}, Location: ${formData.location}, category: ${formData.category.join(', ')}`);
 
         setFormData({
             location: '',
-            sector: [],
+            category: [],
             keyword: '',
         });
     };
@@ -44,7 +44,7 @@ const Search = () => {
         setIsDropdownOpen((prevState) => !prevState);
     };
 
-    const maxSelectionsReached = formData.sector.length >= 3;
+    const maxSelectionsReached = formData.category.length >= 3;
 
     // Close dropdown when clicking outside
     useEffect(() => {
@@ -89,7 +89,7 @@ const Search = () => {
                     </optgroup>
                 </select>
 
-                {/* Custom Multi-Select Dropdown for Sectors */}
+                {/* Custom Multi-Select Dropdown for categorys */}
                 <div
                     ref={dropdownRef}
                     className={`${style.dropdown} ${isDropdownOpen ? style.open : ''} mb-2 mb-md-0`}
@@ -119,7 +119,7 @@ const Search = () => {
                             transition: "border-color .15s ease-in-out, box-shadow .15s ease-in-out",
                         }}
                     >
-                        {formData.sector.length > 0 ? formData.sector.join(', ') : 'Select Sectors'}
+                        {formData.category.length > 0 ? formData.category.join(', ') : 'Select categorys'}
                         <span className={`${style['arrow-icon']} ${isDropdownOpen ? style['rotate'] : ''}`}>
                             ▼
                         </span>
@@ -127,18 +127,18 @@ const Search = () => {
                     {isDropdownOpen && (
                         <div className={style['dropdown-content']}>
                             {['software', 'hardware', 'telecommunications', 'banking', 'insurance', 'investment'].map(
-                                (sector) => (
-                                    <label key={sector}>
+                                (category) => (
+                                    <label key={category}>
                                         <input
                                             type="checkbox"
-                                            value={sector}
-                                            checked={formData.sector.includes(sector)}
-                                            onChange={handleSectorChange}
+                                            value={category}
+                                            checked={formData.category.includes(category)}
+                                            onChange={handlecategoryChange}
                                             disabled={
-                                                maxSelectionsReached && !formData.sector.includes(sector)
+                                                maxSelectionsReached && !formData.category.includes(category)
                                             }
                                         />
-                                        <span>{sector.charAt(0).toUpperCase() + sector.slice(1)}</span>
+                                        <span>{category.charAt(0).toUpperCase() + category.slice(1)}</span>
                                     </label>
                                 )
                             )}

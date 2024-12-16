@@ -12,7 +12,7 @@ export interface IEmployerProfile {
     company_role: string;
     email: string;
     phone: string;
-    sector: string;
+    category: string;
     active: boolean;
     created_at: Date;
     updated_at: Date;
@@ -54,7 +54,7 @@ const EmployerProfileSchema = new Schema<IEmployerProfile>({
     phone: {
         type: String,
     },
-    sector: {
+    category: {
         type: String,
         trim: true
     },

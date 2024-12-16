@@ -134,6 +134,10 @@ const ProfileAccount = () => {
                                     <td>{userById?.email}</td>
                                 </tr>
                                 <tr className="table-light">
+                                    <td className="fw-bold col-1">Name:</td>
+                                    <td>{userById?.full_name}</td>
+                                </tr>
+                                <tr className="table-light">
                                     <td className="fw-bold col-1">Avatar:</td>
                                     <td>
                                         <img

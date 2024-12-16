@@ -1,12 +1,15 @@
 import { Outlet } from "react-router";
 import Logo from "../../components/Logo";
-import styles from '../../styles/layouts/AuthenticationLayout.module.css'
 
 const AuthenticationLayout = () => {
     return (
-        <div className = {styles.wrapper}>
-            <Logo className = {styles.logo}/>
-            <div className = {styles.form}><Outlet/></div>
+        <div className="container mb-5">
+            <Logo />
+            <div className="row justify-content-center">
+                <div className="col-12 col-md-10 col-lg-8">
+                    <Outlet />
+                </div>
+            </div>
         </div>
     );
 }
