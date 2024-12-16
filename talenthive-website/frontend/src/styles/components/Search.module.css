@@ -22,7 +22,7 @@
   box-shadow: var(--box-shadow-button);
 }
 .search-form input[type="text"] {
-  width: 30%;
+  min-width: 300px;
 }
 
 .search-form input[type="text"]::placeholder {
@@ -75,7 +75,7 @@
   cursor: pointer;
   background-color: #f9f9f9;
   white-space: nowrap;
-  overflow-x: scroll;
+  overflow-x: auto;
   &::-webkit-scrollbar {
     display: none;
   }

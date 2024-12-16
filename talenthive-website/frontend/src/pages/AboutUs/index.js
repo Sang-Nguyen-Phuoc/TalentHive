@@ -14,7 +14,7 @@ function AboutUs() {
             index: 0,
             name: "Nguyen Phuoc Sang",
             mainRole: "Project Manager",
-            description: "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Excepturi repellendus, error quasi animi adipisci labore asperiores, recusandae architecto quae dolorum eius repudiandae. Ex quam ea soluta labore! Aspernatur, in praesentium!",
+            description: "Responsible for overseeing the entire project, ensuring that all team members work together effectively, and the project stays on track to meet deadlines and objectives. Manages planning, risk assessment, and team coordination to deliver successful outcomes.",
             img: "../../images/An.png",
             fb: "https://www.facebook.com/sang.nguuyen.56",
             github: "https://github.com/Sang-Nguyen-Phuoc",
@@ -25,7 +25,7 @@ function AboutUs() {
             index: 1,
             name: "Nguyen Ba An",
             mainRole: "Backend Leader",
-            description: "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Excepturi repellendus, error quasi animi adipisci labore asperiores, recusandae architecto quae dolorum eius repudiandae. Ex quam ea soluta labore! Aspernatur, in praesentium!",
+            description: "Leads the backend development team by designing robust database architectures, developing server-side functionality, and ensuring seamless integration with the frontend. Excels in creating efficient and scalable systems to handle complex data operations.",
             img: An,
             fb: "https://www.facebook.com/profile.php?id=100027486292554",
             github: "https://github.com/nban22",
@@ -36,19 +36,18 @@ function AboutUs() {
             index: 2,
             name: "Nguyen Xuan Thanh",
             mainRole: "Frontend Leader",
-            description: "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Excepturi repellendus, error quasi animi adipisci labore asperiores, recusandae architecto quae dolorum eius repudiandae. Ex quam ea soluta labore! Aspernatur, in praesentium!",
+            description: "Heads the frontend development, ensuring user interfaces are visually appealing, intuitive, and functional. Combines creativity with technical skills to deliver designs that enhance the user experience and align with project goals.",
             img: Thanh,
             fb: "https://www.facebook.com/profile.php?id=100038233366978",
             github: "https://github.com/nxt964",
             text1: "Frontend Leader",
             text2: "Design Frontend",
         },
-
         {
             index: 3,
             name: "Nguyen Phuc Loi",
             mainRole: "Business Analyst - Backend Developer",
-            description: "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Excepturi repellendus, error quasi animi adipisci labore asperiores, recusandae architecto quae dolorum eius repudiandae. Ex quam ea soluta labore! Aspernatur, in praesentium!",
+            description: "Analyzes business requirements and translates them into technical solutions. Plays a dual role by providing insights for system improvements while also contributing to backend development, ensuring seamless functionality and performance.",
             img: Loi,
             fb: "https://www.facebook.com/profile.php?id=100040830702269",
             github: "https://github.com/LoiNguyennn",
@@ -59,17 +58,18 @@ function AboutUs() {
             index: 4,
             name: "Truong Nguyen Hien Luong",
             mainRole: "Tester - UI/UX Designer",
-            description: "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Excepturi repellendus, error quasi animi adipisci labore asperiores, recusandae architecto quae dolorum eius repudiandae. Ex quam ea soluta labore! Aspernatur, in praesentium!",
+            description: "Ensures the quality of the product by conducting rigorous testing to identify and resolve issues. Designs user interfaces that are both aesthetically pleasing and user-friendly, focusing on creating seamless user experiences.",
             img: HLuong,
             fb: "https://www.facebook.com/hienluong.truongnguyen.38",
             github: "https://github.com/gnoulh",
             text1: "Tester",
             text2: "UI/UX Designer",
         },
+
     ];
 
     return (
-        <div>
+        <div className="overflow-hidden">
             <h1 style={{
                 marginTop: "46px",
                 textAlign: "center",

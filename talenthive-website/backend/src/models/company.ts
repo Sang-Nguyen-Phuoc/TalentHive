@@ -5,12 +5,12 @@ import Image from "./image";
 export interface ICompany {
     _id: Types.ObjectId;
     name: string;
-    avatar?: Types.ObjectId | undefined;
+    avatar?: Types.ObjectId;
     locations: string[];
     industry: string;
     address: string;
     website?: string;
-    employers?: [Types.ObjectId];
+    employers?: Types.ObjectId[];
     admin_approved: boolean;
     created_at: Date;
     updated_at: Date;
@@ -24,7 +24,7 @@ const CompanySchema = new Schema<ICompany>({
         trim: true
     },
     avatar: {
-        type: Schema.Types.ObjectId,
+        type: String,
         ref: 'Image'
     },
     locations: {
@@ -43,9 +43,12 @@ const CompanySchema = new Schema<ICompany>({
         type: String,
         validate: [validator.isURL, 'Invalid URL' ]
     },
-    employers: {
-        type: [Schema.Types.ObjectId]
-    },
+    employers: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'EmployerProfile'
+        }
+    ],
     admin_approved: {
         type: Boolean,
         default: false

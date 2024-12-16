@@ -1,15 +1,14 @@
-import React, { useEffect } from "react";
-import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import React from "react";
+import { Navigate, RouterProvider, createBrowserRouter } from "react-router-dom";
 import AuthenticationLayout from "./layouts/AuthenticationLayout";
 import DefaultLayout from "./layouts/DefaultLayout";
 import Home from "./pages/Home";
 import AboutUs from "./pages/AboutUs";
 import Search from "./pages/Search";
-import HireTalent from "./pages/HireTalent";
-import ProfileAccount from "./pages/ProfileAccount";
+import HireTalent, { HireTalentLoader } from "./pages/HireTalent";
+import ProfileAccount, { changePasswordAction, profileLoader } from "./pages/ProfileAccount";
 import ProfileDashboard from "./pages/ProfileDashboard";
-import EditProfile from "./pages/EditProfile";
-import JobDetail from "./pages/JobDetail";
+import JobDetail, {jobDetailLoader} from "./pages/JobDetail";
 import JobsApplied from "./pages/JobsApplied";
 import ManageWorkers from "./pages/ManageWorkers";
 import ManageEmployers from "./pages/ManageEmployers";
@@ -20,10 +19,11 @@ import ForgotPassword from "./pages/ForgotPassword";
 const router = createBrowserRouter([
   {
     element: <DefaultLayout />,
+    path: "/",
     children: [
       {
-        path: "/",
-        element: <Home />,
+        index: true,
+        element: <Home />
       },
       {
         path: "/about-us",
@@ -36,30 +36,36 @@ const router = createBrowserRouter([
       {
         path: "/hire-talent",
         element: <HireTalent />,
+        loader: HireTalentLoader,
+
       },
       {
-        path: "/profile",
+        path: "/profile/:id",
         children: [
-          {
-            path: "account",
-            element: <ProfileAccount />,
-          },
           {
             path: "dashboard",
             element: <ProfileDashboard />,
+            
           },
           {
-            path: "edit",
-            element: <EditProfile />,
+            index: true,
+            element: <ProfileAccount />,
+            loader: profileLoader,
           },
+          {
+            path: "change-password",
+            action: changePasswordAction,
+          }
         ],
       },
       {
         path: "/jobs",
         children: [
           {
-            path: "detail",
+            path: ":id",
             element: <JobDetail />,
+            loader: jobDetailLoader            
+            
           },
           {
             path: "apply",
@@ -68,7 +74,7 @@ const router = createBrowserRouter([
         ],
       },
       {
-        path: "admin",
+        path: "/admin",
         children: [
           {
             path: "workers",

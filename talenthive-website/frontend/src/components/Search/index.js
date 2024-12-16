@@ -61,8 +61,9 @@ const Search = () => {
     }, []);
 
     return (
-        <div>
-            <form onSubmit={handleSubmit} className={style['search-form']}>
+        <div className='container'>
+            <hr className='m-0'/>
+            <form onSubmit={handleSubmit} className="d-flex flex-wrap align-items-center justify-content-between justify-content-md-between gap-md-2 py-3">
                 <input
                     type="text"
                     name="keyword"
@@ -70,9 +71,11 @@ const Search = () => {
                     value={formData.keyword}
                     onChange={handleInputChange}
                     placeholder="Enter keyword..."
+                    className='form-control d-inline w-auto mb-2 mb-md-0'
+
                 />
 
-                <select name="location" id="location" value={formData.location} onChange={handleInputChange}>
+                <select className='form-select d-inline w-auto mb-2 mb-md-0' name="location" id="location" value={formData.location} onChange={handleInputChange}>
                     <option disabled value="">Location</option>
                     <optgroup label="Europe">
                         <option value="sweden">Sweden</option>
@@ -89,13 +92,32 @@ const Search = () => {
                 {/* Custom Multi-Select Dropdown for Sectors */}
                 <div
                     ref={dropdownRef}
-                    className={`${style.dropdown} ${isDropdownOpen ? style.open : ''}`}
+                    className={`${style.dropdown} ${isDropdownOpen ? style.open : ''} mb-2 mb-md-0`}
                     tabIndex="0"
+                    
+                
                 >
                     <button
                         type="button"
                         className={style['dropdown-button']}
                         onClick={toggleDropdown}
+                        style={{
+                            height: '100%',
+                            padding: ".375rem 2.25rem .375rem .75rem",
+                            fontSize: "1rem",
+                            fontWeight: 400,
+                            lineHeight: "1.5",
+                            color: "var(--bs-body-color)",
+                            appearance: "none",
+                            backgroundColor: "var(--bs-body-bg)",
+                            backgroundImage: "var(--bs-form-select-bg-img), var(--bs-form-select-bg-icon, none)",
+                            backgroundRepeat: "no-repeat",
+                            backgroundPosition: "right .75rem center",
+                            backgroundSize: "16px 12px",
+                            border: "var(--bs-border-width) solid var(--bs-border-color)",
+                            borderRadius: "var(--bs-border-radius)",
+                            transition: "border-color .15s ease-in-out, box-shadow .15s ease-in-out",
+                        }}
                     >
                         {formData.sector.length > 0 ? formData.sector.join(', ') : 'Select Sectors'}
                         <span className={`${style['arrow-icon']} ${isDropdownOpen ? style['rotate'] : ''}`}>
@@ -124,7 +146,7 @@ const Search = () => {
                     )}
                 </div>
 
-                <button className={style['search-btn']} type="submit">Search</button>
+                <button className="btn btn-primary px-4 py-2" type="submit">Search</button>
             </form>
         </div>
     );

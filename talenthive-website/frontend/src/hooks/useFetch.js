@@ -1,7 +1,8 @@
 import { useEffect } from "react";
 import useReducer from "./useReducer";
+import { getAccessToken } from "../utils/authToken";
 
-function fetchReducer (state, action) {
+function fetchReducer(state, action) {
     switch (action.type) {
         case 'fetchAPI/request':
             return { ...state, isLoading: action.isLoading };
@@ -18,7 +19,7 @@ function fetchReducer (state, action) {
     }
 }
 
-const useFetch = (url, req) => {
+export const useFetch = (url, req) => {
     const [state, dispatch] = useReducer(fetchReducer, {
         payload: [],
         isLoading: false,
@@ -29,7 +30,7 @@ const useFetch = (url, req) => {
             dispatch({
                 type: 'fetchAPI/request',
                 isLoading: true,
-            }); 
+            });
 
             try {
                 if (req.body !== null) {
@@ -52,7 +53,7 @@ const useFetch = (url, req) => {
                     }
                 }
             } catch (err) {
-                    dispatch({
+                dispatch({
                     type: 'fetchAPI/error',
                     payload: [],
                     isLoading: false,
@@ -62,7 +63,61 @@ const useFetch = (url, req) => {
         })()
     }, [url, req, req.body])
 
-    return {...state};
+    return { ...state };
 }
- 
-export default useFetch;
+
+export const useFetchDataWithToken = (url) => {
+    const token = getAccessToken();
+    const [state, dispatch] = useReducer(fetchReducer, {
+        payload: [],
+        isLoading: false,
+        status: 'fail',
+    });
+
+    useEffect(() => {
+        const fetchData = async () => {
+            dispatch({
+                type: 'fetchAPI/request',
+                isLoading: true,
+            });
+
+            try {
+                if (token !== null) {
+                    const response = await fetch(url, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            Authorization: `Bearer ${token}`,
+                        },
+                    });   
+                    const data = await response.json();
+                    if (data.status === 'success') {
+                        dispatch({
+                            type: 'fetchAPI/success',
+                            payload: data.data,
+                            isLoading: false,
+                            status: 'success',
+                        });
+                    } else {
+                        dispatch({
+                            type: 'fetchAPI/error',
+                            payload: [],
+                            isLoading: false,
+                            status: data.message,
+                        });
+                    }
+                }
+            } catch (err) {
+                dispatch({
+                    type: 'fetchAPI/error',
+                    payload: [],
+                    isLoading: false,
+                    status: 'fail',
+                });
+            }
+        }
+        fetchData();
+    }, [url, token]);
+
+    return { ...state };
+}; 

@@ -1,149 +1,206 @@
-import { useRef, useState } from 'react';
-import styles from '../../styles/pages/ProfileAccount.module.css';
+import { useState } from "react";
+import { toast } from "react-toastify";
+import { useUser } from "../../context/UserContext";
+import { getUserById } from "../../services/userServices";
+import { redirect, useLoaderData, useNavigation, useParams } from "react-router";
+import { postChangePassword } from "../../services/authServices";
+import { Form, useSubmit } from "react-router-dom";
+
+export const profileLoader = async ({ params }) => {
+    try {
+        const data = await getUserById(params.id);
+        return data;
+    } catch (error) {
+        console.error("Error while getting profile", error?.message || error);
+        toast.error("Error while getting profile");
+        throw error;
+    }
+};
+
+export const changePasswordAction = async ({ request, params }) => {
+    try {
+        const formData = await request.formData();
+        const { currentPassword, newPassword, confirmPassword } = Object.fromEntries(formData.entries());
+        const data = await postChangePassword(currentPassword, newPassword, confirmPassword);
+        toast.success("Password changed successfully");
+        return redirect(`/profile/${params.id}`);
+            } catch (error) {
+                console.error("Error while changing password", error?.message || error);
+        toast.error(`Error while changing password: ${error?.message || error}`);
+        return redirect(`/profile/${params.id}`);
+    }
+};
+
+const PasswordInput = ({ label, name, note }) => {
+    const [showPassword, setShowPassword] = useState(false);
+
+    const togglePasswordVisibility = () => {
+        setShowPassword((prevState) => !prevState);
+    };
+
+    return (
+        <>
+            <div className="mb-3 row d-flex align-items-center">
+                <label htmlFor="password" className="col-sm-2 col-form-label fw-bold">
+                    {label || "Password"}
+                </label>
+                <div className="col-sm-10">
+                    <div className="input-group">
+                        <input
+                            type={showPassword ? "text" : "password"}
+                            className="form-control"
+                            id={`input-${label.toLowerCase()}`}
+                            placeholder={`Enter your ${label.toLowerCase()}`}
+                            name={name}
+                            required
+                        />
+                        <button className="btn btn-outline-secondary" type="button" onClick={togglePasswordVisibility}>
+                            <i className={`bi ${showPassword ? "bi-eye-slash" : "bi-eye"}`} />
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {note && (
+                <div className="row">
+                    <div className="col-sm-2"></div>
+                    <div className="col-sm-10">
+                        <p className="text-muted" style={{ fontSize: "0.8rem" }}>
+                            {note}
+                        </p>
+                    </div>
+                </div>
+            )}
+        </>
+    );
+};
 
 const ProfileAccount = () => {
-    const rules = [
-        'At least 10 characters',
-        'At least 1 symbol (!, @, #, $, ...)',
-        'At least 1 number',
-        'At least 1 uppercase letter',
-        'At least 1 lowercase letter'
-    ];
+    const navigation = useNavigation();
+    const submit = useSubmit();
+    const { id } = useParams();
+    const data = useLoaderData();
+    const userById = data?.user || {};
+    const [isLoading, setIsLoading] = useState(false);
+    const { user } = useUser();
+    const isOwner = userById?._id === user?._id;
 
-    const [type, setType] = useState(Array(rules.length).fill('none'));
-    const [confirm, setConfirm] = useState(false);
-    const [isPasswordValid, setIsPasswordValid] = useState(false);
+    const validatePassword = (password) => {
+        const errors = [];
+        if (password.length < 10) errors.push("Password must be at least 10 characters.");
+        if (!/[A-Z]/.test(password)) errors.push("Password must contain at least 1 uppercase letter.");
+        if (!/[a-z]/.test(password)) errors.push("Password must contain at least 1 lowercase letter.");
+        if (!/[0-9]/.test(password)) errors.push("Password must contain at least 1 number.");
+        if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) errors.push("Password must contain at least 1 symbol.");
+        return errors;
+    };
 
-    const currentPasswordRef = useRef(null);
-    const passwordRef = useRef(null);
-    const repasswordRef = useRef(null);
-
-    const handleValidatePassword = (password) => {
-        if (password === '') {
-            setType(Array(rules.length).fill('none'));
-            setIsPasswordValid(false);
-        } else {
-            let state = Array(rules.length).fill('invalid');
-
-            if (password.length >= 10) state[0] = 'valid';
-            for (const c of password) {
-                if (c >= '0' && c <= '9') state[2] = 'valid';
-                else if (c >= 'A' && c <= 'Z') state[3] = 'valid';
-                else if (c >= 'a' && c <= 'z') state[4] = 'valid';
-                else state[1] = 'valid';
-            }
-
-            setType(state);
-            setIsPasswordValid(state.every((s) => s === 'valid'));
+    const handleChangePasswordSubmit = (e) => {
+        setIsLoading(true);
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const submitData = {
+            currentPassword: formData.get("currentPassword"),
+            newPassword: formData.get("newPassword"),
+            confirmPassword: formData.get("confirmPassword"),
+        };
+        const errors = validatePassword(submitData.newPassword);
+        if (errors.length) {
+            toast.error(errors.shift());
+            return;
         }
+        submit(submitData, { method: "post", action: `/profile/${id}/change-password` });
     };
 
-    const handleConfirmPassword = (repassword) => {
-        setConfirm(repassword === passwordRef.current.value);
-    };
-
-    const handleUpdatePassword = () => {
-        // Update password here
-        alert('Password updated: ' + passwordRef.current.value);
-        // Clear password fields
-        currentPasswordRef.current.value = '';
-        passwordRef.current.value = '';
-        repasswordRef.current.value = '';
-        // Reset states
-        setType(Array(rules.length).fill('none'));
-        setConfirm(false);
-        setIsPasswordValid(false);
-
-        // Focus on the first password field
-        currentPasswordRef.current.focus();
+    if (isLoading && navigation.state === "idle") {
+        setIsLoading(false);
     }
 
     return (
-        <div className={styles.container}>
-            <div className={styles.account}>
-                <div className={styles.title}>
-                    <h1>My Account</h1>
-                </div>
-                <div className={styles.info}>
-                    <table>
-                        <tr>
-                            <td>Username</td>
-                            <td>John Doe</td>
-                        </tr>
-                        <tr>
-                            <td>Email</td>
-                            <td>abc@sample.com</td>
-                        </tr>
-                    </table>
-                </div>
-            </div>
-
-            <div className={styles.account}>
-                <div className={styles.title}>
-                    <h1>Change Password</h1>
-                </div>
-                <div className={styles.info}>
-                    {/* Current Password Field */}
-                    <div className={styles.password}>
-                        <input
-                            ref={currentPasswordRef}
-                            className={styles['password-input']}
-                            id="currentPasswordInput"
-                            type="password"
-                            placeholder="Current Password"
-                            required
-                        />
+        <div>
+            <main className="container">
+                <div className="row my-4">
+                    <div className="col p-lg-4 shadow rounded">
+                        <h1 className="pb-4 fw-bold  pt-4 pt-lg-0 border-bottom">
+                            {isOwner ? "Your Profile" : `${userById?.name}'s profile`}
+                        </h1>
+                        <table className="table table-borderless">
+                            <tbody>
+                                <tr className="table-light">
+                                    <td className="fw-bold col-1">Role:</td>
+                                    <td>{userById?.role}</td>
+                                </tr>
+                                <tr className="table-light">
+                                    <td className="fw-bold col-1">Email:</td>
+                                    <td>{userById?.email}</td>
+                                </tr>
+                                <tr className="table-light">
+                                    <td className="fw-bold col-1">Avatar:</td>
+                                    <td>
+                                        <img
+                                            className="shadow border-2"
+                                            style={{
+                                                width: "200px",
+                                                objectFit: "cover",
+                                                aspectRatio: "1/1",
+                                            }}
+                                            src={userById?.avatar}
+                                            alt="avatar"
+                                        />
+                                    </td>
+                                </tr>
+                                <tr className="table-light">
+                                    <td className="fw-bold col-1">phone:</td>
+                                    <td>{userById?.phone}</td>
+                                </tr>
+                                <tr className="table-light">
+                                    <td className="fw-bold col-1">address:</td>
+                                    <td>{userById?.address}</td>
+                                </tr>
+                                <tr className="table-light">
+                                    <td className="fw-bold col-1">introduction:</td>
+                                    <td>{userById?.introduction}</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
-
-                    {/* New Password Field */}
-                    <div className={styles.password}>
-                        <input
-                            ref={passwordRef}
-                            className={styles['password-input']}
-                            id="passwordInput"
-                            type="password"
-                            placeholder="New Password"
-                            onChange={(e) => handleValidatePassword(e.target.value)}
-                            required
-                        />
-                        <ul>
-                            {rules.map((rule, index) => (
-                                <li key={index} className={`${styles[type[index]]} ${styles.convention}`}>
-                                    {rule}
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-
-                    {/* Confirm Password Field */}
-                    <div className={styles.password}>
-                        <input
-                            ref={repasswordRef}
-                            className={styles['password-input']}
-                            id="repasswordInput"
-                            type="password"
-                            placeholder="Confirm New Password"
-                            onChange={(e) => handleConfirmPassword(e.target.value)}
-                            required
-                        />
-                        {!confirm && (
-                            <p className={`${styles.invalid} ${styles.convention} ${styles.inform}`}>
-                                Password does not match
-                            </p>
-                        )}
-                    </div>
-
-                    {/* Update New Password Button */}
-                    <button
-                        className={`${styles.button} ${!isPasswordValid || !confirm ? styles['disabled-button'] : styles['enabled-button']}`}
-                        disabled={!isPasswordValid || !confirm}
-                        onClick={handleUpdatePassword}
-                    >
-                        Update New Password
-                    </button>
-
                 </div>
-            </div>
+                {isOwner && (
+                    <div className="row my-4">
+                        <div className="col p-lg-4 shadow rounded">
+                            <h1 className="pb-4 fw-bold pt-4 pt-lg-0 border-bottom">Change Password</h1>
+                            <Form className="container" onSubmit={handleChangePasswordSubmit}>
+                                <PasswordInput label="Current Password" name="currentPassword" />
+                                <PasswordInput
+                                    label="New Password"
+                                    name="newPassword"
+                                    note={`*Note: Password must have at least 10 characters, including 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special symbol (!, @, #, $, ...).`}
+                                />
+                                <PasswordInput label="Confirm Password" name="confirmPassword" />
+                                <hr className="m-0" />
+                                <div className="pt-4 pb-4 pb-lg-0 row d-flex justify-content-evenly">
+                                    <button
+                                        type="submit"
+                                        className="btn btn-primary d-flex align-items-center justify-content-center col-12 col-md-4 mb-2 mb-md-0"
+                                        disabled={isLoading}
+                                    >
+                                        {isLoading ? (
+                                            <div className="spinner-border spinner-border-sm me-2" role="status">
+                                                <span className="visually-hidden">Loading...</span>
+                                            </div>
+                                        ) : (
+                                            "Change Password"
+                                        )}
+                                    </button>
+
+                                    <button type="reset" className="btn btn-secondary col-12 col-md-4">
+                                        Cancel
+                                    </button>
+                                </div>
+                            </Form>
+                        </div>
+                    </div>
+                )}
+            </main>
         </div>
     );
 };
