@@ -11,8 +11,8 @@ export const postLogin = async (email, password) => {
     }
 };
 
-export const postSignup = async (email, password, name, role) => {
-    const bodyData = { email, password, name, role };
+export const postSignup = async (email, password, full_name, role) => {
+    const bodyData = { email, password, full_name, role };
     try {
         const data = await axiosCustom.post("/api/v1/auth/register", bodyData);
         return data;
@@ -39,6 +39,16 @@ export const postChangePassword = async (currentPassword, newPassword, newPasswo
         return data;
     } catch (error) {
         console.error("Error while changing password", error?.message || error);
+        throw error;
+    }
+}
+
+export const postUpdateEmployerProfile = async (formData) => {
+    try {
+        const data = await axiosCustom.post("/api/v1/auth/me", formData);
+        return data;
+    } catch (error) {
+        console.error("Error while updating employer profile", error?.message || error);
         throw error;
     }
 }

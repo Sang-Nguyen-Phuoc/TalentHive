@@ -14,11 +14,12 @@ import { userSeeder } from "../seeds/userSeeder";
 import { isRequired } from "../utils/validateServices";
 
 export const register = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const { email, password, role } = req.body;
+    const { email, password, full_name, role } = req.body;
     // Check if all required fields are filled
-    if (!email || !password || !role) {
-        return next(new AppError("Please provide email, password and role", StatusCodes.BAD_REQUEST));
-    }
+    isRequired(email, "email");
+    isRequired(password, "password");
+    isRequired(full_name, "full_name");
+    isRequired(role, "role");
 
     // Check email format
     if (!validator.isEmail(email)) {
@@ -37,21 +38,14 @@ export const register = catchAsync(async (req: Request, res: Response, next: Nex
     let profile = null;
 
     if (role === "candidate") {
-        profile = await CandidateProfile.create({ email: email });
+        profile = await CandidateProfile.create({ email: email, full_name: full_name });
     } else if (role === "employer") {
-        profile = await EmployerProfile.create({ email: email });
+        profile = await EmployerProfile.create({ email: email, full_name: full_name });
     }
 
     const newUser = await User.create({ email, password, role, profile_id: profile ? profile._id : undefined });
 
-    newUser.password = undefined;
-
-    res.status(StatusCodes.CREATED).json({
-        status: "success",
-        data: {
-            user: newUser,
-        },
-    });
+    createSendToken(newUser, StatusCodes.CREATED, res);
 });
 
 export const login = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
@@ -226,7 +220,7 @@ export const getMe = catchAsync(async (req: Request, res: Response, next: NextFu
         email: resultRecord?.email || null,
         role: resultRecord?.role || null,
         avatar: resultRecord?.profile_id?.avatar || null,
-        name: resultRecord?.profile_id?.full_name || null,
+        full_name: resultRecord?.profile_id?.full_name || null,
         phone: resultRecord?.profile_id?.phone || null,
         address: resultRecord?.profile_id?.address || null,
         introduction: resultRecord?.profile_id?.introduction || null,
@@ -239,4 +233,80 @@ export const getMe = catchAsync(async (req: Request, res: Response, next: NextFu
             user: userFiltered,
         },
     });
+});
+
+
+export const updateMe = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const currentUser = req.body.user;
+    if (!currentUser) {
+        return next(new AppError("attachUser middleware must be called before updateMe route", 500));
+    }
+    // both
+    const { email, full_name, address } = req.body;
+
+    // employer
+    const { phone, introduction,  company_id } = req.body;
+
+    // candidate
+    const { date_of_birth, gender, phone_number,  city, education, skills, certifications, experience, work_experience, resume, avatar, visibility } = req.body;
+
+    if (email && !validator.isEmail(email)) {
+        return next(new AppError("Email is not valid", StatusCodes.BAD_REQUEST));
+    }
+
+    const role = currentUser.role;
+
+    if (role === "candidate") {
+        const profile = await CandidateProfile.findById(currentUser.profile_id);
+        if (!profile) {
+            return next(new AppError("invalid profile_id", StatusCodes.INTERNAL_SERVER_ERROR));
+        }
+        profile.email = email || profile.email;
+        profile.full_name = full_name || profile.full_name;
+        profile.date_of_birth = date_of_birth || profile.date_of_birth;
+        profile.gender = gender || profile.gender;
+        profile.phone_number = phone_number || profile.phone_number; 
+        profile.address = address || profile.address;
+        profile.city = city || profile.city; 
+        profile.education = education || profile.education;
+        profile.skills = skills || profile.skills;
+        profile.certifications = certifications || profile.certifications;
+        profile.experience = experience || profile.experience;
+        profile.work_experience = work_experience || profile.work_experience;
+        profile.resume = resume || profile.resume;
+        profile.avatar = avatar || profile.avatar;
+        profile.visibility = visibility || profile.visibility;
+        await profile.save();
+
+        return res.status(StatusCodes.OK).json({
+            status: "success",
+            data: {
+                user: await User.findById(currentUser._id).populate("profile_id"),
+            },
+        })
+
+    } else if (role === "employer") {
+        const profile = await EmployerProfile.findById(currentUser.profile_id);
+        if (!profile) {
+            return next(new AppError("invalid profile_id", StatusCodes.INTERNAL_SERVER_ERROR));
+        }
+        profile.email = email || profile.email;
+        profile.full_name = full_name || profile.full_name;
+        profile.phone = phone || profile.phone;
+        profile.address = address || profile.address;
+        profile.introduction = introduction || profile.introduction;
+        profile.company_id = company_id || profile.company_id;
+
+        await profile.save();
+
+        return res.status(StatusCodes.OK).json({
+            status: "success",
+            data: {
+                user: await User.findById(currentUser._id).populate("profile_id"),
+            },
+        })
+    } else {
+        return next(new AppError("User role is not valid", StatusCodes.BAD_REQUEST));
+    }
+
 });

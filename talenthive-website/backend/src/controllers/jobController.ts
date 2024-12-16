@@ -78,7 +78,7 @@ export const getPublicJobList = catchAsync(async (req: Request, res: Response, n
             company: job?.company_id?.name || null,
             image: job?.company_id?.avatar || null,
             salary: job.salary_range.min + " - " + job.salary_range.max + " USD" || null,
-            sector: job?.job_category?.name || null,
+            category: job?.job_category?.name || null,
             location: job.location || null,
             posted_at: job.posted_at || null,
             expires_at: job.expires_at || null,

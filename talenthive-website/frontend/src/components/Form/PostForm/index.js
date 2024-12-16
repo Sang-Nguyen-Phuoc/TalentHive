@@ -8,7 +8,7 @@ const ApplicationForm = ({ show, setShow }) => {
         location: '',
         deadline: '',
         workingType: '',
-        sector: [],
+        category: [],
         salary: '',
         quantity: '',
         description: '',
@@ -17,7 +17,7 @@ const ApplicationForm = ({ show, setShow }) => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isSalaryDropdownOpen, setIsSalaryDropdownOpen] = useState(false);
     const [positionWarning, setPositionWarning] = useState('');
-    const sectorDropdownRef = useRef(null);
+    const categoryDropdownRef = useRef(null);
     const salaryDropdownRef = useRef(null);
 
 
@@ -31,13 +31,13 @@ const ApplicationForm = ({ show, setShow }) => {
         setFormData((prev) => ({ ...prev, [id]: value }));
     };
 
-    const handleSectorChange = (event) => {
+    const handlecategoryChange = (event) => {
         const { value, checked } = event.target;
         setFormData((prev) => {
             if (checked) {
-                return { ...prev, sector: [...prev.sector, value] };
+                return { ...prev, category: [...prev.category, value] };
             } else {
-                return { ...prev, sector: prev.sector.filter((sector) => sector !== value) };
+                return { ...prev, category: prev.category.filter((category) => category !== value) };
             }
         });
     };
@@ -50,14 +50,14 @@ const ApplicationForm = ({ show, setShow }) => {
         setIsSalaryDropdownOpen((prev) => !prev);
     };
 
-    const maxSelectionsReached = formData.sector.length >= 3;
+    const maxSelectionsReached = formData.category.length >= 3;
 
     // Close dropdown when clicking outside
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (
-                sectorDropdownRef.current &&
-                !sectorDropdownRef.current.contains(event.target)
+                categoryDropdownRef.current &&
+                !categoryDropdownRef.current.contains(event.target)
             ) {
                 setIsDropdownOpen(false);
             }
@@ -194,7 +194,7 @@ const ApplicationForm = ({ show, setShow }) => {
                         </div>
                     </div>
 
-                    {/* Salary and Sector */}
+                    {/* Salary and category */}
                     <div className={styles['field-pair']}>
 
                         {/* Salary Dropdown */}
@@ -231,11 +231,11 @@ const ApplicationForm = ({ show, setShow }) => {
                             </div>
                         </div>
 
-                        {/* Sector Dropdown */}
+                        {/* category Dropdown */}
                         <div className={styles.formGroup}>
-                            <label htmlFor="sector">Sector</label>
+                            <label htmlFor="category">category</label>
                             <div
-                                ref={sectorDropdownRef}
+                                ref={categoryDropdownRef}
                                 className={`${styles.dropdown} ${isDropdownOpen ? styles.open : ''}`}
                             >
                                 <button
@@ -243,9 +243,9 @@ const ApplicationForm = ({ show, setShow }) => {
                                     className={styles['dropdown-button']}
                                     onClick={toggleDropdown}
                                 >
-                                    {formData.sector.length > 0
-                                        ? formData.sector.join(', ')
-                                        : 'Select Sectors'}
+                                    {formData.category.length > 0
+                                        ? formData.category.join(', ')
+                                        : 'Select categorys'}
                                     <span
                                         className={`${styles['arrow-icon']} ${isDropdownOpen ? styles['rotate'] : ''}`}
                                     >
@@ -254,19 +254,19 @@ const ApplicationForm = ({ show, setShow }) => {
                                 </button>
                                 {isDropdownOpen && (
                                     <div className={styles['dropdown-content']}>
-                                        {['Banking', 'Fintech', 'React', 'Vue', 'Angular'].map((sector) => (
-                                            <label key={sector}>
+                                        {['Banking', 'Fintech', 'React', 'Vue', 'Angular'].map((category) => (
+                                            <label key={category}>
                                                 <input
                                                     type="checkbox"
-                                                    value={sector}
-                                                    checked={formData.sector.includes(sector)}
-                                                    onChange={handleSectorChange}
+                                                    value={category}
+                                                    checked={formData.category.includes(category)}
+                                                    onChange={handlecategoryChange}
                                                     disabled={
                                                         maxSelectionsReached &&
-                                                        !formData.sector.includes(sector)
+                                                        !formData.category.includes(category)
                                                     }
                                                 />
-                                                {sector}
+                                                {category}
                                             </label>
                                         ))}
                                     </div>

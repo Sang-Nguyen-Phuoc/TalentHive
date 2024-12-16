@@ -37,9 +37,9 @@ const JobItem = {
                         <FontAwesomeIcon icon={faLocationDot} className={styleHome.icon} />
                         <p>{job?.location}</p>
                     </div>
-                    <div className={styleHome.sector}>
+                    <div className={styleHome.category}>
                         <FontAwesomeIcon icon={faFilter} className={styleHome.icon} />
-                        <p>{job?.sector}</p>
+                        <p>{job?.category}</p>
                     </div>
                 </div>
                 <div className={styleHome.timeline}>
@@ -71,9 +71,9 @@ const JobItem = {
                         <FontAwesomeIcon icon={faLocationDot} className={styleSearch.icon} />
                         <p>{props.location}</p>
                     </div>
-                    <div className={styleSearch.sector}>
+                    <div className={styleSearch.category}>
                         <FontAwesomeIcon icon={faFilter} className={styleSearch.icon} />
-                        <p>{props.sector}</p>
+                        <p>{props.category}</p>
                     </div>
                 </div>
                 <div className={styleSearch.timeline}>

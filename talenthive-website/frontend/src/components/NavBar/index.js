@@ -73,7 +73,7 @@ const NavBar = () => {
                     </nav>
                 ) : (
                     <div className="text-end ms-3 d-flex align-items-center gap-3 flex-wrap-reverse justify-content-center">
-                        <p className="m-0 text-light fs-5 fw-bold">{user?.name || "No Name"}</p>
+                        <p className="m-0 text-light fs-5 fw-bold">{user?.full_name || "No Name"}</p>
                         <Dropdown>
                             <Dropdown.Toggle
                                 as="a"

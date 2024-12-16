@@ -27,7 +27,7 @@ export const updateEmployer = catchAsync(async (req: Request, res: Response, nex
         address,
         email,
         phone,
-        sector
+        category
     } = req.body;
 
     let employer: any;
@@ -43,7 +43,7 @@ export const updateEmployer = catchAsync(async (req: Request, res: Response, nex
     }
 
     // check if at least one field is provided
-    if (!full_name && !avatar && !introduction && !address && !email && !phone && !sector) {
+    if (!full_name && !avatar && !introduction && !address && !email && !phone && !category) {
         return next(new AppError("At least one field is required", 400));
     }
 
@@ -78,8 +78,8 @@ export const updateEmployer = catchAsync(async (req: Request, res: Response, nex
         return next(new AppError("Invalid phone number", 400));
     }
 
-    if (sector && typeof sector !== "string") {
-        return next(new AppError("Sector must be a string", 400));
+    if (category && typeof category !== "string") {
+        return next(new AppError("category must be a string", 400));
     }
 
 
@@ -93,7 +93,7 @@ export const updateEmployer = catchAsync(async (req: Request, res: Response, nex
             address: address || employer.address,
             email: email || employer.email,
             phone: phone || employer.phone,
-            sector: sector || employer.sector
+            category: category || employer.category
         },
         { new: true }
     );
