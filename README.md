@@ -1,6 +1,6 @@
 # Talent Hive
 
-Talent Hive is a modern recruitment platform built with Agile methodology, using React for the frontend and Express.js (TypeScript) for the backend, connected to MongoDB Atlas via Mongoose. The platform features responsive pages like home, login, signup, hire talent, and dashboards for admin, employers, and candidates, communicating through RESTful APIs with JSend responses. Developed over six Agile sprints with task tracking in Jira, this repository includes all necessary code, folder structure, and setup instructions for local deployment.
+Talent Hive is a collaborative recruitment platform that streamlines the hiring process for employers and job seekers. Built with modern technologies and following Agile methodologies, this project is structured into six sprints (PAs 1-6), each documented in the `pa/` folder within the repository.
 
 ## 🕐 Table of Contents
 
