@@ -8,15 +8,13 @@ const upload = multer({ storage: storage });
 
 const companyRouter = Router();
 
-// companyRouter.use(attachUserId);
 
-companyRouter.get("/", companyController.getAllCompanies);
-companyRouter.post(
-    "/",
-    authorizeRole(["employer"]),
-    upload.any(),
-    companyController.createCompany
-);
+companyRouter.get("/employer", authorizeRole(["employer"]), companyController.getMyCompanyAsEmployer);
+
+companyRouter.route("/")
+    .get(companyController.getAllCompanies)
+    .post(authorizeRole(["employer"]), upload.any(), companyController.createCompany);
+
 companyRouter.delete(
     "/:id",
     authorizeRole(["employer", "admin"]),
@@ -30,5 +28,4 @@ companyRouter.put(
 );
 companyRouter.get("/:companyId",authorizeRole(), companyController.getACompany);
 companyRouter.get("/employer/:employerId", companyController.getACompanyByEmployerId)
-companyRouter.get("/employer", authorizeRole(["employer"]), companyController.getMyCompanyAsEmployer);
 export default companyRouter;
