@@ -14,7 +14,7 @@ function SignUp() {
 
     const [passwordRules, setPasswordRules] = useState([]);
     const [passwordMatch, setPasswordMatch] = useState(true);
-    const [chkbox, setChkbox] = useState(false);
+    const [chkbox, setChkbox] = useState(true);
     const [isLoading, setIsLoading] = useState(false);
     const [showPass, setShowPass] = useState(false);
     const [showRePass, setShowRePass] = useState(false);
@@ -122,6 +122,7 @@ function SignUp() {
                             handleMatchPassword();
                         }}
                         required
+                        defaultValue="123456789@Aa"
                     />
                     <FontAwesomeIcon
                         className={styles.icon}
@@ -153,6 +154,7 @@ function SignUp() {
                             handleMatchPassword();
                         }}
                         required
+                        defaultValue="123456789@Aa"
                     />
                     <FontAwesomeIcon
                         className={styles.icon}
@@ -171,12 +173,12 @@ function SignUp() {
                     ref={roleRef}
                     className={styles.dropdown}
                     id="roleInput"
-                    defaultValue={"default"}
+                    // defaultValue={"default"}
                     onChange={(e) => (roleRef.current.value = e.target.value)}
                 >
-                    <option value="employer">Employer</option>
+                    <option defaultChecked value="employer">Employer</option>
                     <option value="candidate">Candidate</option>
-                    <option defaultChecked value="default" disabled>
+                    <option  value="default" disabled>
                         --Choose role--
                     </option>
                 </select>

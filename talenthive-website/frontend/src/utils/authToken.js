@@ -10,5 +10,3 @@ export const getAccessToken = () => {
 export const removeAccessToken = () => {
     window.localStorage.removeItem('access_token');
 };
-
-

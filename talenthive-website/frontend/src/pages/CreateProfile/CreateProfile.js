@@ -1,4 +1,4 @@
-import { Form } from "react-router-dom";
+import { Form, useNavigate } from "react-router-dom";
 import { useUser } from "../../context/UserContext";
 import { useState } from "react";
 import { postUpdateEmployerProfile } from "../../services/authServices";
@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 
 const CreateProfile = () => {
     const { user } = useUser();
+    const navigate = useNavigate();
     const [avatarPreview, setAvatarPreview] = useState(null);
     const [loading, setLoading] = useState(false);
 
@@ -25,7 +26,7 @@ const CreateProfile = () => {
             const dataResponse = await postUpdateEmployerProfile(bodyData);
             console.log(dataResponse);
             toast.success("Profile created successfully");
-
+            navigate("/profile/me");
         } catch (error) {
             console.error("Error while creating profile", error?.message || error);
             toast.error("Error while creating profile");
