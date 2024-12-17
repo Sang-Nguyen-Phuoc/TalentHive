@@ -28,8 +28,7 @@ const JobCategorySchema = new Schema<IJobCategory>({
         unique: true
     },
     description: {
-        type: String,
-        required: true
+        type: String
     }
 });
 

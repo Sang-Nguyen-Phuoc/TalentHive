@@ -1,4 +1,3 @@
-import PostForm from "../../components/Form/PostForm";
 import JobItem from "../../components/JobItem";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSquareArrowUpRight } from "@fortawesome/free-solid-svg-icons";
@@ -10,6 +9,7 @@ import { getCompanyAsEmployer } from "../../services/companyServices";
 import { useUser } from "../../context/UserContext";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import ModalPostJob from "../../components/Modal/ModalPostJob";
 
 export const HireTalentLoader = async () => {
     let companyData = null;
@@ -96,7 +96,7 @@ function HireTalent() {
 
     return (
         <div className="container mb-5">
-            <PostForm show={showForm} setShow={setShowForm} company={company} jobTypes={jobTypes} jobCategories={jobCategories} />
+            <ModalPostJob show={showForm} setShow={setShowForm} company={company} jobTypes={jobTypes} jobCategories={jobCategories} />
             <div className="row mt-2 g-3 g-md-4 g-xl-5 flex-column-reverse flex-md-row">
                 <div className="col-12 col-md-8">
                     <div className="container shadow rounded">

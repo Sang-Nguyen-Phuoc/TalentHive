@@ -15,7 +15,6 @@ const JobTypeSchema = new Schema<IJobType>({
     },
     description: {
         type: String,
-        required: true
     }
 });
 

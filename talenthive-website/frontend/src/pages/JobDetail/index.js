@@ -4,33 +4,57 @@ import styles from "../../styles/pages/JobDetail.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSquareArrowUpRight } from "@fortawesome/free-solid-svg-icons";
 import ApplicationForm from "../../components/Form/ApplicationForn";
-import { getJobDetail } from "../../services/jobsServices";
+import { getJobCategoryList, getJobDetail, getJobTypeList } from "../../services/jobsServices";
 import { toast } from "react-toastify";
+import { ROLES } from "../../utils/Constants";
+import { useUser } from "../../context/UserContext";
+import ModalRemoveJob from "../../components/Modal/ModalRemoveJob";
+import ModalUpdateJob from "../../components/Modal/ModalUpdateJob";
+import { useState } from "react";
 
 export const jobDetailLoader = async ({ params }) => {
+    let jobData = null;
+    let jobTypeListData = [];
+    let jobCategoryListData = [];
     try {
-        const data = await getJobDetail(params.id);
-        return data;
+        jobData = await getJobDetail(params.id);
     } catch (error) {
         console.error("Error while getting job detail", error?.message || error);
         toast.error("Error while getting job detail");
-        throw error;
     }
+    try {
+        jobTypeListData = await getJobTypeList();
+    } catch (error) {
+        console.error("Error while getting job type list", error?.message || error);
+        toast.error("Error while getting job type list");
+    }
+    try {
+        jobCategoryListData = await getJobCategoryList();
+    } catch (error) {
+        console.error("Error while getting job category list", error?.message || error);
+        toast.error("Error while getting job category list");
+    }
+    return { jobData, jobTypeListData, jobCategoryListData };
 };
 
 function JobDetail({ isSearch }) {
-    const data = useLoaderData();
-    const { job } = data;
+    const { role } = useUser();
+    const [showRemoveModal, setShowRemoveModal] = useState(false);
+    const [showUpdateModal, setShowUpdateModal] = useState(false);
+    const { jobData, jobTypeListData, jobCategoryListData } = useLoaderData();
+
+    const { job } = jobData;
+    console.log("xin chaof, job", job);
+    
+    const jobTypes = jobTypeListData.job_types;
+    const jobCategories = jobCategoryListData.job_categories;
 
     const Job = JobItem.Detail;
 
-    const role = "Employer";
     const handleUpdate = (e) => {
         alert("Modal Update post");
     };
-    const handleRemove = (e) => {
-        alert("Do you want to delete this post?");
-    };
+
     return (
         // <div className={`${styles.wrapper} ${isSearch && styles["is-search"]}`}>
         <div className="container mb-5">
@@ -68,23 +92,34 @@ function JobDetail({ isSearch }) {
                                         <li className="list-group-item">No benefits available</li>
                                     )}
                                 </ul>
-                                {role === "Employer" && (
-                                    
+                                {role === ROLES.EMPLOYER && (
                                     <>
-                                        <hr/>
+                                        <hr />
                                         <div className="row d-flex justify-content-evenly">
                                             <button
-                                                onClick={handleUpdate}
+                                                onClick={() => setShowUpdateModal(true)}
                                                 className="col-8 mb-2 mb-sm-0 col-md-4 col-sm-5 btn btn-primary"
                                             >
                                                 Update
                                             </button>
                                             <button
-                                                onClick={handleRemove}
+                                                onClick={() => setShowRemoveModal(true)}
                                                 className="col-8 col-md-4 col-sm-4 btn btn-danger"
                                             >
                                                 Remove
                                             </button>
+                                            <ModalUpdateJob
+                                                show={showUpdateModal}
+                                                setShow={setShowUpdateModal}
+                                                jobTypes={jobTypes}
+                                                jobCategories={jobCategories}
+                                                job={job}
+                                            />
+                                            <ModalRemoveJob
+                                                show={showRemoveModal}
+                                                setShow={setShowRemoveModal}
+                                                _id={job._id}
+                                            />
                                         </div>
                                     </>
                                 )}

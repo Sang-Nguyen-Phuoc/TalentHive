@@ -51,6 +51,26 @@ export const postCreateJob = async (bodyData) => {
     }
 }
 
+export const deleteJob = async (id) => {
+    try {
+        const data = await axiosCustom.delete(`/api/v1/jobs/${id}`);
+        return data;
+    } catch (error) {
+        console.error("Error while deleting job", error?.message || error);
+        throw error;
+    }
+}
+
+export const putUpdateJob = async (id, bodyData) => {
+    try {
+        const data = await axiosCustom.put(`/api/v1/jobs/${id}`, bodyData);
+        return data;
+    } catch (error) {
+        console.error("Error while updating job", error?.message || error);
+        throw error;
+    }
+}
+
 export const getJobTypeList = async () => {
     try {
         const data = await axiosCustom.get("/api/v1/jobs/types");
