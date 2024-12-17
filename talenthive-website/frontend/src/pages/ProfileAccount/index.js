@@ -24,8 +24,8 @@ export const changePasswordAction = async ({ request, params }) => {
         const data = await postChangePassword(currentPassword, newPassword, confirmPassword);
         toast.success("Password changed successfully");
         return redirect(`/profile/${params.id}`);
-            } catch (error) {
-                console.error("Error while changing password", error?.message || error);
+    } catch (error) {
+        console.error("Error while changing password", error?.message || error);
         toast.error(`Error while changing password: ${error?.message || error}`);
         return redirect(`/profile/${params.id}`);
     }
@@ -119,58 +119,67 @@ const ProfileAccount = () => {
         <div>
             <main className="container">
                 <div className="row my-4">
-                    <div className="col p-lg-4 shadow rounded">
-                        <h1 className="pb-4 fw-bold  pt-4 pt-lg-0 border-bottom">
-                            {isOwner ? "Your Profile" : `${userById?.name}'s profile`}
+                    <div className="col-lg-10 mx-auto p-lg-4 shadow rounded bg-white">
+                        <h1 className="pb-4 fw-bold pt-4 pt-lg-0 border-bottom text-center">
+                            {isOwner ? "Your Profile" : `${userById?.name || "User"}'s Profile`}
                         </h1>
                         <table className="table table-borderless">
                             <tbody>
                                 <tr className="table-light">
-                                    <td className="fw-bold col-1">Role:</td>
-                                    <td>{userById?.role}</td>
+                                    <td className="fw-bold col-4">Role:</td>
+                                    <td>{userById?.role || <span className="text-muted">Not provided</span>}</td>
                                 </tr>
                                 <tr className="table-light">
-                                    <td className="fw-bold col-1">Email:</td>
-                                    <td>{userById?.email}</td>
+                                    <td className="fw-bold col-4">Email:</td>
+                                    <td>{userById?.email || <span className="text-muted">Not provided</span>}</td>
                                 </tr>
                                 <tr className="table-light">
-                                    <td className="fw-bold col-1">Name:</td>
-                                    <td>{userById?.full_name}</td>
+                                    <td className="fw-bold col-4">Name:</td>
+                                    <td>{userById?.full_name || <span className="text-muted">Not provided</span>}</td>
                                 </tr>
                                 <tr className="table-light">
-                                    <td className="fw-bold col-1">Avatar:</td>
+                                    <td className="fw-bold col-4">Avatar:</td>
                                     <td>
-                                        <img
-                                            className="shadow border-2"
-                                            style={{
-                                                width: "200px",
-                                                objectFit: "cover",
-                                                aspectRatio: "1/1",
-                                            }}
-                                            src={userById?.avatar}
-                                            alt="avatar"
-                                        />
+                                        {userById?.avatar ? (
+                                            <img
+                                                className="shadow border-2 rounded-circle"
+                                                style={{
+                                                    width: "150px",
+                                                    height: "150px",
+                                                    objectFit: "cover",
+                                                }}
+                                                src={userById.avatar}
+                                                alt="avatar"
+                                            />
+                                        ) : (
+                                            <span className="text-muted">No avatar available</span>
+                                        )}
                                     </td>
                                 </tr>
                                 <tr className="table-light">
-                                    <td className="fw-bold col-1">phone:</td>
-                                    <td>{userById?.phone}</td>
+                                    <td className="fw-bold col-4">Phone:</td>
+                                    <td>{userById?.phone || <span className="text-muted">Not provided</span>}</td>
                                 </tr>
                                 <tr className="table-light">
-                                    <td className="fw-bold col-1">address:</td>
-                                    <td>{userById?.address}</td>
+                                    <td className="fw-bold col-4">Address:</td>
+                                    <td>{userById?.address || <span className="text-muted">Not provided</span>}</td>
                                 </tr>
                                 <tr className="table-light">
-                                    <td className="fw-bold col-1">introduction:</td>
-                                    <td>{userById?.introduction}</td>
+                                    <td className="fw-bold col-4">Introduction:</td>
+                                    <td>
+                                        {userById?.introduction || (
+                                            <span className="text-muted">No introduction available</span>
+                                        )}
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
+
                 {isOwner && (
                     <div className="row my-4">
-                        <div className="col p-lg-4 shadow rounded">
+                        <div className="col-lg-10 mx-auto p-lg-4 shadow rounded bg-white">
                             <h1 className="pb-4 fw-bold pt-4 pt-lg-0 border-bottom">Change Password</h1>
                             <Form className="container" onSubmit={handleChangePasswordSubmit}>
                                 <PasswordInput label="Current Password" name="currentPassword" />

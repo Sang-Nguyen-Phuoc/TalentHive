@@ -76,8 +76,7 @@ const NavBar = () => {
                         <p className="m-0 text-light fs-5 fw-bold">{user?.full_name || "No Name"}</p>
                         <Dropdown>
                             <Dropdown.Toggle
-                                as="a"
-                                href="#"
+                                as="div"
                                 className="d-block link-dark text-decoration-none"
                                 id="dropdownUser1"
                             >

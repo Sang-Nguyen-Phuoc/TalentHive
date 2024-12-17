@@ -9,6 +9,7 @@ import { toast } from "react-toastify";
 import { getJobListAsEmployer } from "../../services/jobsServices";
 import { getACompany, getCompanyAsEmployer } from "../../services/companyServices";
 import { useUser } from "../../context/UserContext";
+import { Link } from "react-router-dom";
 
 const items = [
     {
@@ -65,7 +66,7 @@ export const HireTalentLoader = async () => {
         companyData = await getCompanyAsEmployer();
     } catch (error) {
         console.error("Error while getting company", error?.message || error);
-        toast.error("Error while getting company");
+        toast.error("Error while getting company" + error?.message || error);
     }
     try {
         jobListData = await getJobListAsEmployer();
@@ -78,8 +79,7 @@ export const HireTalentLoader = async () => {
     return { companyData, jobListData };
 }
 
-function HireTalent({ props }) {
-    const navigate = useNavigate();
+function HireTalent() {
     const Job = JobItem.Detail;
     const { companyData, jobListData } = useLoaderData() || {};
     const { user } = useUser();
@@ -105,8 +105,34 @@ function HireTalent({ props }) {
     const [showForm, setShowForm] = useState(false);
     const [state, setState] = useState("all");
     // const [jobList, setJobList] = useState();
+
+    if (!companyData) {
+        return (
+            <div className="container text-center p-5">
+                <div className="alert alert-warning py-4 px-5 rounded-3 shadow-sm">
+                    <h2 className="fw-bold mb-3" style={{ color: "var(--primary-color)" }}>No Company Found</h2>
+                    <p className="mb-4 text-muted fs-5">
+                        It seems like you haven’t created a company yet. Please create a company to proceed.
+                    </p>
+                    <Link
+                        to="/create-company-access"
+                        className="btn btn-primary btn-lg px-4 py-2"
+                        style={{
+                            backgroundColor: "#007BFF",
+                            borderColor: "#007BFF",
+                            boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)"
+                        }}
+                    >
+                        Create Company Now
+                    </Link>
+                </div>
+            </div>
+        );
+    }
+    
+
     return (
-        <div className="container">
+        <div className="container mb-5">
             <PostForm show={showForm} setShow={setShowForm} />
             <div className="row mt-2 g-3 g-md-4 g-xl-5 flex-column-reverse flex-md-row">
                 <div className="col-12 col-md-8">

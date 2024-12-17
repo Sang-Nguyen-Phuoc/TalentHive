@@ -20,3 +20,13 @@ export const getCompanyAsEmployer = async () => {
         throw error;
     }
 }
+
+export const postCreateCompany = async (bodyData) => {
+    try {
+        const data = await axiosCustom.post("/api/v1/companies", bodyData);
+        return data;
+    } catch (error) {
+        console.error("Error while creating company", error?.message || error);
+        throw error;
+    }
+}
