@@ -86,12 +86,15 @@ const JobItem = {
 
     ////// HIRE TALENT PAGE //////
     Detail: ({ job, isEmployer, ApplicationForm }) => {
-        const navigate = useNavigate();
-        const [show, setShow] = useState(false);
+        // const navigate = useNavigate();
+        // const [show, setShow] = useState(false);
 
-        const handleNavigate = () => {
-            navigate("/jobs/detail");
-        };
+        // const handleNavigate = () => {
+        //     navigate("/jobs/detail");
+        // };
+
+        console.log(job);
+        
 
         return (
             <div className="container shadow rounded-3 px-4 mb-4 border-5">
@@ -105,15 +108,15 @@ const JobItem = {
                 <div className="row d-flex justify-content-between align-content-center flex-wrap py-3">
                     <div className="col-md-4 d-flex align-items-center gap-2 mb-4 mb-md-0">
                         <FontAwesomeIcon icon={faCircleDollarToSlot} className={styleDetail.icon} />
-                        <span>{job?.salary}</span>
+                        <span>{job?.salary_range}</span>
                     </div>
                     <div className="col-md-4 d-flex align-items-center gap-2 mb-4 mb-md-0">
                         <FontAwesomeIcon icon={faLocationDot} className={styleDetail.icon} />
-                        <span>{job?.location}</span>
+                        <span>{job?.address?.split(',')[0]}</span>
                     </div>
                     <div className="col-md-4 d-flex align-items-center gap-2 mb-4 mb-md-0">
                         <FontAwesomeIcon icon={faFilter} className={styleDetail.icon} />
-                        <span>{job?.category}</span>
+                        <span>{job?.job_category}</span>
                     </div>
                 </div>
                 <div className="d-flex justify-content-between align-content-center flex-wrap py-2 pb-3">

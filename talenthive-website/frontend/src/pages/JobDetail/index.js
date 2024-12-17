@@ -33,7 +33,7 @@ function JobDetail({ isSearch }) {
     };
     return (
         // <div className={`${styles.wrapper} ${isSearch && styles["is-search"]}`}>
-        <div className="container">
+        <div className="container mb-5">
             <main className="row g-3 g-md-4 g-lg-5 mt-5 mt-lg-0">
                 <div className="col-md-8">
                     <Job job={job} isEmployer={role === "Employer"} ApplicationForm={ApplicationForm} />

@@ -8,7 +8,6 @@ import { ROLES } from "../../utils/Constants";
 const NavBar = () => {
     const { user, role, logout } = useUser();
     const navigate = useNavigate();
-    console.log("User in NavBar", user, role);
 
     const handleLogout = () => {
         const confirmLogout = window.confirm("Are you sure you want to log out?");

@@ -68,6 +68,7 @@ function Signin() {
                         type={show ? "input" : "password"}
                         placeholder="Password"
                         required
+                        defaultValue={"123456789@Aa"}
                     />
                     <FontAwesomeIcon
                         className={styles.icon}
