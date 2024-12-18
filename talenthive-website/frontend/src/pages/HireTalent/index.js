@@ -96,80 +96,80 @@ function HireTalent() {
 
     return (
         <div className="container mb-5">
-            <ModalPostJob show={showForm} setShow={setShowForm} company={company} jobTypes={jobTypes} jobCategories={jobCategories} />
+            <ModalPostJob
+                show={showForm}
+                setShow={setShowForm}
+                company={company}
+                jobTypes={jobTypes}
+                jobCategories={jobCategories}
+            />
             <div className="row mt-2 g-3 g-md-4 g-xl-5 flex-column-reverse flex-md-row">
                 <div className="col-12 col-md-8">
-                    <div className="container shadow rounded">
-                        <div className="row py-3">
-                            <div className="col-12 d-flex">
-                                <button className="btn btn-primary flex-fill" onClick={() => setShowForm(!showForm)}>   
-                                    Create new post
-                                </button>
-                            </div>
+                    <div className="row py-3">
+                        <div className="col-12 d-flex">
+                            <button className="btn btn-primary flex-fill" onClick={() => setShowForm(!showForm)}>
+                                Create new post
+                            </button>
                         </div>
-                        <div className="row justify-content-end">
-                            <div className="col-12 col-md-5 ps-md-4 mb-3 mb-md-0">
-                                <select
-                                    className="form-select"
-                                    aria-label="Select status of job"
-                                    value={state}
-                                    onChange={(e) => setState(e.target.value)}
-                                    defaultValue="all"
-                                >
-                                    <option value="all">
-                                        All
-                                    </option>
-                                    <option value="pending">Pending</option>
-                                    <option value="accepted">Accepted</option>
-                                    <option value="rejected">Rejected</option>
-                                </select>
-                            </div>
-                            <div className="col-12 col-md-5 ps-md-4">
-                                <select
-                                    className="form-select"
-                                    aria-label="Select status of job"
-                                    value={state}
-                                    onChange={(e) => setState(e.target.value)}
-                                    defaultValue="asc"
-                                >
-                                    <option disabled value="asc">
-                                        Time sorting
-                                    </option>
-                                    <option value="asc">
-                                        Ascending
-                                    </option>
-                                    <option value="des">Descending</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div className="row my-3">
-                            <span className="fw-bold">{renderTotalJobs(total_jobs)}</span>
-                        </div>
-                        <ul className="row my-3 g-3 list-unstyled">
-                            {jobList ? (
-                                Array.isArray(jobList) &&
-                                jobList?.map((job, index) => {
-                                    return (
-                                        <li className="col-12" key={index}>
-                                            <Link to={`/jobs/${job._id}`} className="text-decoration-none text-dark">
-                                                <motion.div
-                                                    whileHover={{ scale: 1.04 }}
-                                                    whileTap={{ scale: 0.95 }}
-                                                    transition={{ type: "spring", stiffness: 200, damping: 10 }}
-                                                >
-                                                    <Job job={job} isEmployer={false} />
-                                                </motion.div>
-                                            </Link>
-                                        </li>
-                                    );
-                                })
-                            ) : (
-                                <div className="text-center p-5">
-                                    <h2 className="fw-bold">No job post</h2>
-                                </div>
-                            )}
-                        </ul>
                     </div>
+                    <div className="row justify-content-end">
+                        <div className="col-12 col-md-5 ps-md-4 mb-3 mb-md-0">
+                            <select
+                                className="form-select"
+                                aria-label="Select status of job"
+                                value={state}
+                                onChange={(e) => setState(e.target.value)}
+                                defaultValue="all"
+                            >
+                                <option value="all">All</option>
+                                <option value="pending">Pending</option>
+                                <option value="accepted">Accepted</option>
+                                <option value="rejected">Rejected</option>
+                            </select>
+                        </div>
+                        <div className="col-12 col-md-5 ps-md-4">
+                            <select
+                                className="form-select"
+                                aria-label="Select status of job"
+                                value={state}
+                                onChange={(e) => setState(e.target.value)}
+                                defaultValue="asc"
+                            >
+                                <option disabled value="asc">
+                                    Time sorting
+                                </option>
+                                <option value="asc">Ascending</option>
+                                <option value="des">Descending</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div className="row my-3">
+                        <span className="fw-bold">{renderTotalJobs(total_jobs)}</span>
+                    </div>
+                    <ul className="row my-3 g-3 list-unstyled">
+                        {jobList ? (
+                            Array.isArray(jobList) &&
+                            jobList?.map((job, index) => {
+                                return (
+                                    <li className="col-12" key={index}>
+                                        <Link to={`/jobs/${job._id}`} className="text-decoration-none text-dark">
+                                            <motion.div
+                                                whileHover={{ scale: 1.04 }}
+                                                whileTap={{ scale: 0.95 }}
+                                                transition={{ type: "spring", stiffness: 200, damping: 10 }}
+                                            >
+                                                <Job job={job} isEmployer={false} />
+                                            </motion.div>
+                                        </Link>
+                                    </li>
+                                );
+                            })
+                        ) : (
+                            <div className="text-center p-5">
+                                <h2 className="fw-bold">No job post</h2>
+                            </div>
+                        )}
+                    </ul>
                 </div>
                 <div className="col-12 col-md-4">
                     <div className="container shadow rounded">

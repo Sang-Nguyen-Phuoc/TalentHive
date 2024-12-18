@@ -10,8 +10,6 @@ import { motion } from "framer-motion";
 import { saveAccessToken } from "../../utils/authToken";
 
 function Signin() {
-    const emailRef = useRef(null);
-    const passwordRef = useRef(null);
     const [show, setShow] = useState(false);
     const navigate = useNavigate();
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -20,11 +18,9 @@ function Signin() {
     const handleSignIn = async (e) => {
         e.preventDefault();
         setIsSubmitting(true);
+        const formData = new FormData(e.target);
+        const dataSignIn = Object.fromEntries(formData.entries());
 
-        const dataSignIn = {
-            email: emailRef.current.value,
-            password: passwordRef.current.value,
-        };
         try {
             const data = await postLogin(dataSignIn.email, dataSignIn.password);
             saveAccessToken(data.accessToken);
@@ -34,7 +30,7 @@ function Signin() {
         } catch (error) {
             toast.error(error?.message || error);
         }
-        emailRef.current.focus();
+        // emailRef.current.focus();
         setShow(false);
         setIsSubmitting(false);
     };
@@ -47,28 +43,28 @@ function Signin() {
                     <span>*</span>
                 </label>
                 <input
-                    className={styles["email-input"]}
-                    ref={emailRef}
+                    className="form-control"
                     id="emailInput"
                     type="email"
                     placeholder="Email"
+                    name="email"
                     required
                 />
             </div>
             <div className={styles.password}>
-                <label htmlFor="passwordInput">
+                <label htmlFor="password">
                     Password
                     <span>*</span>
                 </label>
                 <div className={styles["input-icon-container"]}>
                     <input
-                        className={styles["password-input"]}
-                        ref={passwordRef}
-                        id="passwordInput"
-                        type={show ? "input" : "password"}
-                        placeholder="Password"
+                        className="form-control"
+                        id="password"
+                        type={show ? "text" : "password"}
+                        placeholder="enter your password"
                         required
-                        defaultValue={"123456789@Aa"}
+                        name="password"
+                        defaultValue="123456789@Aa"
                     />
                     <FontAwesomeIcon
                         className={styles.icon}
