@@ -70,7 +70,6 @@
     }
 }
 
-
 .icon {
     opacity: 0.5;
 }
@@ -82,7 +81,7 @@
 .candidate {
     color: var(--primary-color);
     font-weight: 500;
-    align-self: flex-end;
+    align-self: flex-en d;
     &:hover {
         position: relative;
         top: -2px;

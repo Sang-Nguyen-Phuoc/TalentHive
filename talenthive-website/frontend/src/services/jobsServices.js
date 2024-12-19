@@ -90,3 +90,13 @@ export const getJobCategoryList = async () => {
         throw error;
     }
 }
+
+export const postApplyJob = async (jobId, bodyData) => {
+    try {
+        const data = await axiosCustom.post(`/api/v1/jobs/${jobId}/apply`, bodyData);
+        return data;
+    } catch (error) {
+        console.error("Error while applying job", error?.message || error);
+        throw error;
+    }
+}

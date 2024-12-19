@@ -200,23 +200,32 @@ export const getAJobApplication = catchAsync(async (req: Request, res: Response,
 
 export const createApplication = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const jobId = req.params.jobId;
-    const candidateId = req.body.userId;
+    const candidate = req.body.user;
+    const candidateId = candidate._id;
 
-    const { full_name, resume, email, cover_letter, phone } = req.body;
+    const { full_name, email, phone, skills, worker_experience, certification, cover_letter, cv } = req.body;
 
+    isRequired(full_name, "full_name");
+    isRequired(email, "email");
+    isRequired(phone, "phone");
+    isRequired(skills, "skills");
+    isRequired(worker_experience, "worker_experience");
+    isRequired(certification, "certification");
+      
     const application = await Application.create({
         job_id: jobId,
         candidate_id: candidateId,
         full_name: full_name,
-        resume: resume,
         email: email,
-        cover_letter: cover_letter,
         phone: phone,
+        skills: skills,
+        worker_experience: worker_experience,
+        certification: certification,
+        cover_letter: cover_letter,
+        cv: cv || null,
         status: "pending",
         applied_at: new Date(),
     });
-
-    await application.save();
 
     res.status(StatusCodes.CREATED).json({
         status: "success",

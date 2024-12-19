@@ -10,7 +10,16 @@ function ProfileDashboard({ isReused }) {
     const Job = JobItem.Detail;
     const [statePost, setStatePost] = useState('')
     const [show, setShow] = useState(false);
-    const { currentUser } = useContext(CurrentUserContext);
+    const currentUser = { role: 'employer', 
+        profile: { 
+            username: 'Chos Lowij' ,
+            image: 'https://itviec.com/rails/active_storage/representations/proxy/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBN0tmSGc9PSIsImV4cCI6bnVsbCwicHVyIjoiYmxvYl9pZCJ9fQ==--c0fe0ff712a458d81ebedefb0b36172418e2834d/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdCem9MWm05eWJXRjBTU0lJY0c1bkJqb0dSVlE2RW5KbGMybDZaVjkwYjE5bWFYUmJCMmxwYVdrPSIsImV4cCI6bnVsbCwicHVyIjoidmFyaWF0aW9uIn19--c8c20c63b868249effdba9ba4f05aa0c5b77cab3/Black%20(3).png',
+
+            company: 'Chos Lowij'
+        } 
+    }
+
+    // currentUser.r
 
     const { profile } = currentUser
 

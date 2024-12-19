@@ -9,7 +9,6 @@ import HireTalent, { HireTalentLoader } from "./pages/HireTalent";
 import ProfileAccount, { changePasswordAction, profileLoader } from "./pages/ProfileAccount";
 import ProfileDashboard from "./pages/ProfileDashboard";
 import JobDetail, {jobDetailLoader} from "./pages/JobDetail";
-import JobsApplied from "./pages/JobsApplied";
 import ManageWorkers from "./pages/ManageWorkers";
 import ManageEmployers from "./pages/ManageEmployers";
 import Signin from "./pages/Signin";
@@ -21,6 +20,7 @@ import CompanyAccess from "./pages/CompanyAccess/CompanyAccess";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "./context/UserContext";
+import JobsApplied from "./pages/JobsApplied/AppliedJobsPage";
 
 const RedirectToProfile = () => {
     const { user } = useUser(); // Lấy id từ context
@@ -59,6 +59,10 @@ const router = createBrowserRouter([
         element: <HireTalent />,
         loader: HireTalentLoader,
 
+      },
+      {
+        path: "/jobs-applied",
+        element: <JobsApplied />,
       },
       {
         path: "/profile/me",

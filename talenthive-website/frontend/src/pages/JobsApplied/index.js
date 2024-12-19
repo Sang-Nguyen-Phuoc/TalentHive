@@ -279,7 +279,6 @@ const items = [
 ]
 
 function JobsApplied({props}) {
-    
     const Job = JobItem.HomePage;
     const navigate = useNavigate();
     const [state, setState] = useState('all');
@@ -297,23 +296,23 @@ function JobsApplied({props}) {
                     </select>
                 </div>
                 <div className={styles.quantity}>
-                    <span>{state === 'all' ? items.length : items.filter(item => item.state === state).length}</span>
+                    <span>{state === 'all' ? items?.length : items.filter(item => item?.state === state)?.length}</span>
                     posts
                 </div>
                 <div className={styles['jobs-list']}>
                     {items.map((item, index) => {
-                        if (state === 'all' || state === item.state)
-                            return <Job key={index} props={item} state={item.state}/>
+                        if (state === 'all' || state === item?.state)
+                            return <Job key={index} props={item} state={item?.state}/>
                     })}
                 </div>
             </div>
             <div className={styles['candidate-container']}>
                 <div className={styles.candidate}>
                     <div className={styles.avatar}>
-                        <img src={props.image} alt="Avatar" />
-                        <p className={styles.name}>{props.company}</p>
+                        <img src={props?.image} alt="Avatar" />
+                        <p className={styles.name}>{props?.company}</p>
                     </div>
-                    <div className={styles.information}>
+                    <div className={styles?.information}>
                         Introduction....
                     </div>
                     <div className={styles.link} onClick={() => navigate('/profile/dashboard', { state: {
