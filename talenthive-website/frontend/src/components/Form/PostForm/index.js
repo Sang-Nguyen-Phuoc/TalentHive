@@ -1,91 +1,68 @@
-import Modal from 'react-bootstrap/Modal';
-import { useState, useRef, useEffect } from 'react';
-import styles from '../../../styles/components/Application.module.css';
+import Modal from "react-bootstrap/Modal";
+import { useState } from "react";
+import { postCreateJob } from "../../../services/jobsServices";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router";
 
-const ApplicationForm = ({ show, setShow }) => {
+const ApplicationForm = ({ show, setShow, company, jobTypes, jobCategories }) => {
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
-        position: '',
-        location: '',
-        deadline: '',
-        workingType: '',
-        sector: [],
-        salary: '',
-        quantity: '',
-        description: '',
+        title: "",
+        image: "",
+        job_type: "",
+        job_category: "",
+        min_salary: "",
+        max_salary: "",
+        salary_unit: "USD",
+        address: "",
+        description: "",
+        skills: [""],
+        requirements: [""],
+        benefits: [""],
+        expires_at: "",
+        job_type: "",
+        job_category: "",
+        is_public: false,
     });
 
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    const [isSalaryDropdownOpen, setIsSalaryDropdownOpen] = useState(false);
-    const [positionWarning, setPositionWarning] = useState('');
-    const sectorDropdownRef = useRef(null);
-    const salaryDropdownRef = useRef(null);
+    const [loading, setLoading] = useState(false);
 
-
-    const handleInputChange = (event) => {
-        const { id, value } = event.target;
-        if (id === 'position' && value.length > 20) {
-            setPositionWarning('Position must be less than 20 characters.');
-        } else {
-            setPositionWarning('');
-        }
-        setFormData((prev) => ({ ...prev, [id]: value }));
-    };
-
-    const handleSectorChange = (event) => {
-        const { value, checked } = event.target;
-        setFormData((prev) => {
-            if (checked) {
-                return { ...prev, sector: [...prev.sector, value] };
-            } else {
-                return { ...prev, sector: prev.sector.filter((sector) => sector !== value) };
-            }
+    const handleChange = (e) => {
+        const { name, value, type, checked } = e.target;
+        setFormData({
+            ...formData,
+            [name]: type === "checkbox" ? checked : value,
         });
     };
 
-    const toggleDropdown = () => {
-        setIsDropdownOpen((prev) => !prev);
+    const handleArrayChange = (index, field, value) => {
+        const updatedArray = [...formData[field]];
+        updatedArray[index] = value;
+        setFormData({ ...formData, [field]: updatedArray });
     };
 
-    const toggleSalaryDropdown = () => {
-        setIsSalaryDropdownOpen((prev) => !prev);
+    const addArrayField = (field) => {
+        setFormData({ ...formData, [field]: [...formData[field], ""] });
     };
 
-    const maxSelectionsReached = formData.sector.length >= 3;
+    const removeArrayField = (index, field) => {
+        const updatedArray = formData[field].filter((_, i) => i !== index);
+        setFormData({ ...formData, [field]: updatedArray });
+    };
 
-    // Close dropdown when clicking outside
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (
-                sectorDropdownRef.current &&
-                !sectorDropdownRef.current.contains(event.target)
-            ) {
-                setIsDropdownOpen(false);
-            }
-            if (
-                salaryDropdownRef.current &&
-                !salaryDropdownRef.current.contains(event.target)
-            ) {
-                setIsSalaryDropdownOpen(false);
-            }
-        };
-
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, []);
-
-    const handleSubmit = (event) => {
-        event.preventDefault();
-
-        // Perform additional validation before submission
-        if (!formData.position || positionWarning) {
-            alert('Please fix the Position field before submitting.');
-            return;
+    const handleSubmit = async (e) => {
+        setLoading(true);
+        e.preventDefault();
+        console.log(formData); // Replace this with backend submit logic
+        try {
+            const data = await postCreateJob(formData);
+            console.log(data);
+            navigate(`/jobs/${data.job._id}`);
+        } catch (error) {
+            console.error("Error while creating job", error?.message || error);
+            toast("Error while creating job");
         }
-
-        console.log('Form Data:', formData);
-        setShow(false);
+        setLoading(false);
     };
 
     return (
@@ -93,203 +70,302 @@ const ApplicationForm = ({ show, setShow }) => {
             size="lg"
             show={show}
             onHide={() => setShow(false)}
+            backdrop="static"
             aria-labelledby="example-modal-sizes-title-lg"
         >
             <Modal.Header closeButton>
-                <Modal.Title id="example-modal-sizes-title-lg">
-                    Create Post Form
-                </Modal.Title>
+                <Modal.Title id="example-modal-sizes-title-lg">Post a New Job</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <form
-                    className={styles.applicationForm}
-                    onSubmit={handleSubmit}
-                >
-                    {/* Position Field */}
-                    <div className={`${styles.formGroup} ${styles.position}`}>
-                        <label htmlFor="position">Position</label>
-                        <div className={`${styles.position}`}>
+                <form onSubmit={handleSubmit}>
+                    {/* Job Information */}
+                    <h5 className="mb-3 fw-bold">Job Information</h5>
+                    <div className="row mb-3">
+                        <div className="col-md-6">
+                            <label htmlFor="title" className="form-label">
+                                Title *
+                            </label>
                             <input
                                 type="text"
                                 className="form-control"
-                                id="position"
-                                value={formData.position}
-                                onChange={handleInputChange}
+                                id="title"
+                                name="title"
+                                placeholder="Enter job title"
+                                value={formData.title}
+                                onChange={handleChange}
+                                required
                             />
-                            {positionWarning && (
-                                <small className={styles.warningText}>{positionWarning}</small>
-                            )}
                         </div>
-                    </div>
-
-                    {/* Location and Deadline */}
-                    <div className={styles['field-pair']}>
-                        <div className={styles.formGroup}>
-                            <label htmlFor="location">Location</label>
-                            <select
-                                id="location"
-                                className="form-control"
-                                value={formData.location}
-                                onChange={handleInputChange}
-                            >
-                                <option value="" disabled>Select Location</option>
-                                <optgroup label="Asia">
-                                    <option value="Vietnam">Vietnam</option>
-                                    <option value="Japan">Japan</option>
-                                    <option value="India">India</option>
-                                </optgroup>
-                                <optgroup label="Europe">
-                                    <option value="Germany">Germany</option>
-                                    <option value="France">France</option>
-                                    <option value="UK">United Kingdom</option>
-                                </optgroup>
-                                <optgroup label="America">
-                                    <option value="USA">USA</option>
-                                    <option value="Canada">Canada</option>
-                                    <option value="Brazil">Brazil</option>
-                                </optgroup>
-                            </select>
-                        </div>
-
-                        <div className={styles.formGroup}>
-                            <label htmlFor="deadline">Deadline</label>
+                        <div className="col-md-6">
+                            <label htmlFor="company_name" className="form-label">
+                                Company Name
+                            </label>
                             <input
-                                type="date"
+                                type="text"
                                 className="form-control"
-                                id="deadline"
-                                value={formData.deadline}
-                                onChange={handleInputChange}
+                                id="company_name"
+                                name="company_name"
+                                placeholder="company name"
+                                value={company.name}
+                                readOnly
+                                disabled
                             />
                         </div>
                     </div>
 
-                    {/* Working Type and Quantity */}
-                    <div className={styles['field-pair']}>
-                        <div className={styles.formGroup}>
-                            <label htmlFor="workingType">Working Type</label>
-                            <select
-                                id="workingType"
+                    {/* Job Type & Category */}
+                    <div className="row mb-3">
+                        <div className="col-md-6">
+                            <label htmlFor="job_type" className="form-label">
+                                Job Type
+                            </label>
+                            <input
+                                type="text"
                                 className="form-control"
-                                value={formData.workingType}
-                                onChange={handleInputChange}
-                            >
-                                <option value="" disabled>Select Working Type</option>
-                                <option value="Fulltime">Fulltime</option>
-                                <option value="Part-time">Part-time</option>
-                                <option value="Remote">Remote</option>
-                                <option value="Freelancer">Freelancer</option>
-                            </select>
+                                id="job_type"
+                                name="job_type"
+                                placeholder="e.g., Full-time"
+                                value={formData.job_type}
+                                onChange={handleChange}
+                                list="jobTypesList"
+                            />
+                            <datalist id="jobTypesList">
+                                {jobTypes.map((type, index) => (
+                                    <option key={index} value={type.name} />
+                                ))}
+                            </datalist>
                         </div>
+                        <div className="col-md-6">
+                            <label htmlFor="job_category" className="form-label">
+                                Job Category
+                            </label>
+                            <input
+                                type="text"
+                                className="form-control"
+                                id="job_category"
+                                name="job_category"
+                                placeholder="e.g., IT, Marketing"
+                                value={formData.job_category}
+                                onChange={handleChange}
+                                list="jobCategoriesList"
+                            />
+                            <datalist id="jobCategoriesList">
+                                {jobCategories.map((category, index) => (
+                                    <option key={index} value={category.name} />
+                                ))}
+                            </datalist>
+                        </div>
+                    </div>
 
-                        <div className={styles.formGroup}>
-                            <label htmlFor="quantity">Quantity</label>
+                    {/* Salary and address */}
+                    <h5 className="mb-3 fw-bold">Salary & address</h5>
+                    <div className="row mb-3">
+                        <div className="col-md-4">
+                            <label htmlFor="min_salary" className="form-label">
+                                Min Salary *
+                            </label>
                             <input
                                 type="number"
                                 className="form-control"
-                                id="quantity"
-                                min="1"
-                                value={formData.quantity}
-                                onChange={handleInputChange}
+                                id="min_salary"
+                                name="min_salary"
+                                placeholder="e.g., 1000"
+                                value={formData.min_salary}
+                                onChange={handleChange}
+                                required
                             />
                         </div>
-                    </div>
-
-                    {/* Salary and Sector */}
-                    <div className={styles['field-pair']}>
-
-                        {/* Salary Dropdown */}
-                        <div className={styles.formGroup}>
-                            <label htmlFor="salary">Salary</label>
-                            <div
-                                className={`${styles.dropdown} ${isSalaryDropdownOpen ? styles.open : ''}`}
-                                ref={salaryDropdownRef}
-                            >
-                                <button
-                                    type="button"
-                                    className={styles['dropdown-button']}
-                                    onClick={toggleSalaryDropdown}
-                                >
-                                    {formData.salary || 'Select Salary'}
-                                    <span className={styles['arrow-icon']}>▼</span>
-                                </button>
-                                {isSalaryDropdownOpen && (
-                                    <div className={styles['dropdown-content']}>
-                                        {['Negotiation', 'Up to $1000', 'Up to $1500', 'Up to $2000', 'More than $2500'].map((option) => (
-                                            <div
-                                                key={option}
-                                                onClick={() => {
-                                                    setFormData((prev) => ({ ...prev, salary: option }));
-                                                    setIsSalaryDropdownOpen(false);
-                                                }}
-                                                className={styles['dropdown-item']}
-                                            >
-                                                {option}
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
+                        <div className="col-md-4">
+                            <label htmlFor="max_salary" className="form-label">
+                                Max Salary *
+                            </label>
+                            <input
+                                type="number"
+                                className="form-control"
+                                id="max_salary"
+                                name="max_salary"
+                                placeholder="e.g., 2000"
+                                value={formData.max_salary}
+                                onChange={handleChange}
+                                required
+                            />
                         </div>
-
-                        {/* Sector Dropdown */}
-                        <div className={styles.formGroup}>
-                            <label htmlFor="sector">Sector</label>
-                            <div
-                                ref={sectorDropdownRef}
-                                className={`${styles.dropdown} ${isDropdownOpen ? styles.open : ''}`}
+                        <div className="col-md-4">
+                            <label htmlFor="salary_unit" className="form-label">
+                                Salary Unit
+                            </label>
+                            <select
+                                className="form-select"
+                                id="salary_unit"
+                                name="salary_unit"
+                                value={formData.salary_unit}
+                                onChange={handleChange}
                             >
-                                <button
-                                    type="button"
-                                    className={styles['dropdown-button']}
-                                    onClick={toggleDropdown}
-                                >
-                                    {formData.sector.length > 0
-                                        ? formData.sector.join(', ')
-                                        : 'Select Sectors'}
-                                    <span
-                                        className={`${styles['arrow-icon']} ${isDropdownOpen ? styles['rotate'] : ''}`}
-                                    >
-                                        ▼
-                                    </span>
-                                </button>
-                                {isDropdownOpen && (
-                                    <div className={styles['dropdown-content']}>
-                                        {['Banking', 'Fintech', 'React', 'Vue', 'Angular'].map((sector) => (
-                                            <label key={sector}>
-                                                <input
-                                                    type="checkbox"
-                                                    value={sector}
-                                                    checked={formData.sector.includes(sector)}
-                                                    onChange={handleSectorChange}
-                                                    disabled={
-                                                        maxSelectionsReached &&
-                                                        !formData.sector.includes(sector)
-                                                    }
-                                                />
-                                                {sector}
-                                            </label>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
+                                <option value="USD">USD</option>
+                                <option value="VND">VND</option>
+                                <option value="EUR">EUR</option>
+                            </select>
                         </div>
                     </div>
 
-                    {/* Description */}
-                    <div className={styles.formGroup}>
-                        <label htmlFor="description">Description</label>
+                    <div className="mb-3">
+                        <label htmlFor="address" className="form-label">
+                            address *
+                        </label>
+                        <input
+                            type="text"
+                            className="form-control"
+                            id="address"
+                            name="address"
+                            placeholder="Enter address"
+                            value={formData.address}
+                            onChange={handleChange}
+                            required
+                        />
+                    </div>
+
+                    {/* Job Description */}
+                    <h5 className="mb-3 fw-bold">Job Description</h5>
+                    <div className="mb-3">
+                        <label htmlFor="description" className="form-label">
+                            Description *
+                        </label>
                         <textarea
                             className="form-control"
                             id="description"
-                            rows="4"
+                            rows="3"
+                            name="description"
+                            placeholder="Write a detailed job description"
                             value={formData.description}
-                            onChange={handleInputChange}
+                            onChange={handleChange}
+                            required
                         ></textarea>
                     </div>
 
-                    <button type="submit" className={styles.submitButton}>
-                        Post
+                    {/* Skills Input */}
+                    <h5 className="mb-3 fw-bold">Skills</h5>
+                    {formData.skills.map((skill, index) => (
+                        <div key={index} className="input-group mb-2">
+                            <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Skill"
+                                value={skill}
+                                onChange={(e) => handleArrayChange(index, "skills", e.target.value)}
+                            />
+                            <button
+                                type="button"
+                                className="btn btn-danger"
+                                onClick={() => removeArrayField(index, "skills")}
+                            >
+                                x
+                            </button>
+                        </div>
+                    ))}
+                    <button
+                        type="button"
+                        className="btn btn-primary mb-3"
+                        onClick={() => addArrayField("skills")}
+                    >
+                        + Add Skill
                     </button>
+
+                    {/* Requirements Input */}
+                    <h5 className="mb-3 fw-bold">Requirements</h5>
+                    {formData.requirements.map((requirement, index) => (
+                        <div key={index} className="input-group mb-2">
+                            <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Requirement"
+                                value={requirement}
+                                onChange={(e) => handleArrayChange(index, "requirements", e.target.value)}
+                            />
+                            <button
+                                type="button"
+                                className="btn btn-danger"
+                                onClick={() => removeArrayField(index, "requirements")}
+                            >
+                                x
+                            </button>
+                        </div>
+                    ))}
+                    <button
+                        type="button"
+                        className="btn btn-primary mb-3"
+                        onClick={() => addArrayField("requirements")}
+                    >
+                        + Add Requirement
+                    </button>
+
+                    {/* Benefits Input */}
+                    <h5 className="mb-3 fw-bold">Benefits</h5>
+                    {formData.benefits.map((benefit, index) => (
+                        <div key={index} className="input-group mb-2">
+                            <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Benefit"
+                                value={benefit}
+                                onChange={(e) => handleArrayChange(index, "benefits", e.target.value)}
+                            />
+                            <button
+                                type="button"
+                                className="btn btn-danger"
+                                onClick={() => removeArrayField(index, "benefits")}
+                            >
+                                x
+                            </button>
+                        </div>
+                    ))}
+                    <button
+                        type="button"
+                        className="btn btn-primary mb-3"
+                        onClick={() => addArrayField("benefits")}
+                    >
+                        + Add Benefit
+                    </button>
+
+                    {/* Expiration Date */}
+                    <div className="mb-3">
+                        <label htmlFor="expires_at" className="form-label">
+                            Expiration Date *
+                        </label>
+                        <input
+                            type="date"
+                            className="form-control"
+                            id="expires_at"
+                            name="expires_at"
+                            value={formData.expires_at}
+                            onChange={handleChange}
+                            required
+                        />
+                    </div>
+
+                    {/* Is Public */}
+                    <div className="form-check mb-3">
+                        <input
+                            type="checkbox"
+                            className="form-check-input"
+                            id="is_public"
+                            name="is_public"
+                            checked={formData.is_public}
+                            onChange={handleChange}
+                        />
+                        <label className="form-check-label" htmlFor="is_public">
+                            Make this job post public
+                        </label>
+                    </div>
+
+                    {/* Submit Button */}
+                    <div className="modal-footer">
+                        <button type="button" className="btn btn-secondary" onClick={() => setShow(false)}>
+                            Cancel
+                        </button>
+                        <button type="submit" className="btn btn-primary">
+                            {loading ? <span className="spinner-border spinner-border-sm" role="status"></span> : "Post Job"}
+                        </button>
+                    </div>
                 </form>
             </Modal.Body>
         </Modal>

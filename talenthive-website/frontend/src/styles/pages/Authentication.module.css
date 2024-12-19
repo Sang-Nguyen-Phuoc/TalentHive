@@ -1,5 +1,6 @@
 .wrapper {
     display: flex;
+    box-sizing: border-box;
 
     & > Toast {
         position: absolute;
@@ -23,8 +24,6 @@
     border: 1px solid var(--primary-color);
     border-radius: var(--border-radius-form);
     height: auto;
-    min-width: 700px;
-    padding: 40px 100px;
     box-shadow: var(--box-shadow-item);
     display: flex;
     flex-direction: column;

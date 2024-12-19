@@ -1,20 +1,20 @@
 import { model, Schema, Types } from "mongoose";
 import validator from "validator";
-import Image from "./image";
 
 export interface ICompany {
-    _id: Types.ObjectId;
-    name: string;
+    _id?: Types.ObjectId;
+    name?: string;
     avatar?: Types.ObjectId;
-    locations: string[];
-    industry: string;
-    address: string;
+    introduction?: string;
+    // locations: string[];
+    industry?: string;
+    addresses?: string[];
     website?: string;
     employers?: Types.ObjectId[];
-    admin_approved: boolean;
-    created_at: Date;
-    updated_at: Date;
-    company_manager: Types.ObjectId;
+    admin_approved?: boolean;
+    created_at?: Date;
+    updated_at?: Date;
+    company_manager?: Types.ObjectId;
 }
 
 const CompanySchema = new Schema<ICompany>({
@@ -27,26 +27,29 @@ const CompanySchema = new Schema<ICompany>({
         type: String,
         ref: 'Image'
     },
-    locations: {
-        type: [String],
-        required: true
+    introduction: {
+        type: String,
+        trim: true
     },
+    // locations: {
+    //     type: [String],
+    //     required: true
+    // },
     industry: {
         type: String,
         required: true
     },
-    address: {
-        type: String,
+    addresses: {
+        type: [String],
         required: true
     },
     website: {
         type: String,
-        validate: [validator.isURL, 'Invalid URL' ]
     },
     employers: [
         {
             type: Schema.Types.ObjectId,
-            ref: 'EmployerProfile'
+            ref: 'User'
         }
     ],
     admin_approved: {
@@ -64,7 +67,7 @@ const CompanySchema = new Schema<ICompany>({
     company_manager: {
         type: Schema.Types.ObjectId,
         required: true,
-        ref: 'EmployerProfile'
+        ref: 'User'
     }
 })
 

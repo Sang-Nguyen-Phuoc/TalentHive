@@ -5,7 +5,9 @@ import styleDetail from "../../styles/components/JobItemDetail.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleDollarToSlot, faFilter, faLocationDot } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
-import { formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNow } from "date-fns";
+import ModalApplyJob from "../Modal/ModalApplyJob";
+import { ROLES } from "../../utils/Constants";
 
 const JobItem = {
     ////// HOME PAGE //////
@@ -13,14 +15,10 @@ const JobItem = {
         const navigate = useNavigate();
 
         return (
-            <div
-                className={styleHome.wrapper}
-                onClick={() => navigate(`/jobs/${job?._id}`)}
-            >
+            <div className={styleHome.wrapper} onClick={() => navigate(`/jobs/${job?._id}`)}>
                 <div className={styleHome.header}>
                     <div className={styleHome["left-header"]}>
-                        <img src={job?.image || "https://via.placeholder.com/150"} 
-                        alt="logo"></img>
+                        <img src={job?.image || "https://via.placeholder.com/150"} alt="logo"></img>
                     </div>
                     <div className={styleHome["right-header"]}>
                         <p className={styleHome.position}>{job?.position}</p>
@@ -37,9 +35,9 @@ const JobItem = {
                         <FontAwesomeIcon icon={faLocationDot} className={styleHome.icon} />
                         <p>{job?.location}</p>
                     </div>
-                    <div className={styleHome.sector}>
+                    <div className={styleHome.category}>
                         <FontAwesomeIcon icon={faFilter} className={styleHome.icon} />
-                        <p>{job?.sector}</p>
+                        <p>{job?.category}</p>
                     </div>
                 </div>
                 <div className={styleHome.timeline}>
@@ -71,9 +69,9 @@ const JobItem = {
                         <FontAwesomeIcon icon={faLocationDot} className={styleSearch.icon} />
                         <p>{props.location}</p>
                     </div>
-                    <div className={styleSearch.sector}>
+                    <div className={styleSearch.category}>
                         <FontAwesomeIcon icon={faFilter} className={styleSearch.icon} />
-                        <p>{props.sector}</p>
+                        <p>{props.category}</p>
                     </div>
                 </div>
                 <div className={styleSearch.timeline}>
@@ -85,69 +83,64 @@ const JobItem = {
     },
 
     ////// HIRE TALENT PAGE //////
-    Detail: ({ job, isEmployer, ApplicationForm }) => {
-        const navigate = useNavigate();
-        const [show, setShow] = useState(false);
-
-        const handleNavigate = () => {
-            navigate("/jobs/detail");
-        };
+    Detail: ({ job, show, setShow, role }) => {
+        
 
         return (
             <div className="container shadow rounded-3 px-4 mb-4 border-5">
                 <div className="row py-3">
                     <h2 className="col-sm-8 fw-bold fs-4 m-0">{job?.title}</h2>
-                    <p className="col-sm-4 fw-bold m-0 d-flex align-items-center justify-content-end" style={{color: "green"}}>{job?.status}</p>
+                    <p
+                        className="col-sm-4 fw-bold m-0 d-flex align-items-center justify-content-end"
+                        style={{ color: "green" }}
+                    >
+                        {job?.status}
+                    </p>
                 </div>
 
-                <hr className="m-0"/>
+                <hr className="m-0" />
 
                 <div className="row d-flex justify-content-between align-content-center flex-wrap py-3">
                     <div className="col-md-4 d-flex align-items-center gap-2 mb-4 mb-md-0">
                         <FontAwesomeIcon icon={faCircleDollarToSlot} className={styleDetail.icon} />
-                        <span>{job?.salary}</span>
+                        <span>{job?.salary_range}</span>
                     </div>
                     <div className="col-md-4 d-flex align-items-center gap-2 mb-4 mb-md-0">
                         <FontAwesomeIcon icon={faLocationDot} className={styleDetail.icon} />
-                        <span>{job?.location}</span>
+                        <span>{job?.address?.split(",")[0]}</span>
                     </div>
                     <div className="col-md-4 d-flex align-items-center gap-2 mb-4 mb-md-0">
                         <FontAwesomeIcon icon={faFilter} className={styleDetail.icon} />
-                        <span>{job?.category}</span>
+                        <span>{job?.job_category}</span>
                     </div>
                 </div>
                 <div className="d-flex justify-content-between align-content-center flex-wrap py-2 pb-3">
-                    <span className="text-muted" style={{fontSize: '0.8rem'}}>Post {formatDistanceToNow(new Date(job?.posted_at || 0), { addSuffix: true })}</span>
-                    <span className="text-muted" style={{fontSize: '0.8rem'}}>{formatDistanceToNow(new Date(job?.expires_at || 0), { addSuffix: true })}</span>
+                    <span className="text-muted" style={{ fontSize: "0.8rem" }}>
+                        Post {formatDistanceToNow(new Date(job?.posted_at || 0), { addSuffix: true })}
+                    </span>
+                    <span className="text-muted" style={{ fontSize: "0.8rem" }}>
+                        {formatDistanceToNow(new Date(job?.expires_at || 0), { addSuffix: true })}
+                    </span>
                 </div>
                 <div className={styleDetail.footer}>
-                    {isEmployer && job?.status === "accepted" && (
-                        <p
-                            className={styleDetail.candidate}
-                        >{`Candidate list (${job?.applications_count})`}</p>
+                    {job?.status === "accepted" && (
+                        <p className={styleDetail.candidate}>{`Candidate list (${job?.applications_count})`}</p>
                     )}
                 </div>
+                {role === ROLES.CANDIDATE && (
+                    <div>
+                        <hr className="m-0" />
+                        <div className="d-flex justify-content-center py-3">
+                            <button className="col col-sm-8 btn btn-primary " onClick={() => setShow(true)}>
+                                Apply now
+                            </button>
+                            <ModalApplyJob show={show} setShow={setShow} job={job} />
+                        </div>
+                    </div>
+                )}
             </div>
         );
     },
 };
 
 export default JobItem;
-// {0 && (
-//     <div>
-//         <hr className="m-0"/>
-//         <div className="d-flex justify-content-center py-3">
-//             <button
-//                 className="col col-sm-8 btn btn-primary "
-//                 onClick={(e) => {
-//                     e.stopPropagation(); // Prevent navigation
-//                     setShow(true); // Show modal
-//                 }}
-//             >
-//                 Apply now
-//             </button>
-//             {/* Render ApplicationForm */}
-//             <ApplicationForm show={show} setShow={setShow} />
-//         </div>
-//     </div>
-// )}

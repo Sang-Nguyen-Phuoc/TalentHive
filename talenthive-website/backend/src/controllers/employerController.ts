@@ -6,6 +6,7 @@ import validator from "validator";
 import { StatusCodes } from "http-status-codes";
 import mongoose from "mongoose";
 import User from "../models/user";
+import { isObjectIdOfMongoDB } from "../utils/validateServices";
 
 export const getAllEmployers = catchAsync(
     async (req: Request, res: Response, next: NextFunction) => {
@@ -27,7 +28,7 @@ export const updateEmployer = catchAsync(async (req: Request, res: Response, nex
         address,
         email,
         phone,
-        sector
+        category
     } = req.body;
 
     let employer: any;
@@ -43,7 +44,7 @@ export const updateEmployer = catchAsync(async (req: Request, res: Response, nex
     }
 
     // check if at least one field is provided
-    if (!full_name && !avatar && !introduction && !address && !email && !phone && !sector) {
+    if (!full_name && !avatar && !introduction && !address && !email && !phone && !category) {
         return next(new AppError("At least one field is required", 400));
     }
 
@@ -78,8 +79,8 @@ export const updateEmployer = catchAsync(async (req: Request, res: Response, nex
         return next(new AppError("Invalid phone number", 400));
     }
 
-    if (sector && typeof sector !== "string") {
-        return next(new AppError("Sector must be a string", 400));
+    if (category && typeof category !== "string") {
+        return next(new AppError("category must be a string", 400));
     }
 
 
@@ -93,7 +94,7 @@ export const updateEmployer = catchAsync(async (req: Request, res: Response, nex
             address: address || employer.address,
             email: email || employer.email,
             phone: phone || employer.phone,
-            sector: sector || employer.sector
+            category: category || employer.category
         },
         { new: true }
     );
@@ -108,20 +109,21 @@ export const updateEmployer = catchAsync(async (req: Request, res: Response, nex
 
 export const deleteEmployerById = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const {employerId} = req.params;
-    if (!mongoose.Types.ObjectId.isValid(employerId)) {
-        return next(new AppError("Invalid ID", StatusCodes.BAD_REQUEST));
-    }
+    isObjectIdOfMongoDB(employerId, "employerId", "employerId in params is not a valid MongoDB ObjectId");
 
-    const employerProfile = await EmployerProfile.findOne({ _id: employerId });
+    const employer = await User.findById(employerId);
+    if (!employer)
+        return next(new AppError(`Employer with id: ${employerId} not found`, StatusCodes.NOT_FOUND));
+
+    if (employer.role !== "employer")
+        return next(new AppError("The user is not an employer", StatusCodes.BAD_REQUEST));
+
+    const employerProfile = await EmployerProfile.findById(employer.profile_id);
     if (!employerProfile)
-        return next(new AppError(`Employer profile with id: ${employerId} not found`, StatusCodes.NOT_FOUND));
+        return next(new AppError(`Employer profile with id: ${employer.profile_id} not found`, StatusCodes.NOT_FOUND));
 
-    const user = await User.findOne({ _id: employerProfile.user_id });
-    if (!user)
-        return next(new AppError(`User with id: ${employerProfile.user_id} not found`, StatusCodes.NOT_FOUND));
-
+    await employer.updateOne({ active: false });
     await employerProfile.updateOne({ active: false });
-    await user.updateOne({ active: false });
 
     res.status(StatusCodes.OK).json({
         status: "success",

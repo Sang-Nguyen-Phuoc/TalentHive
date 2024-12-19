@@ -8,7 +8,6 @@ import { ROLES } from "../../utils/Constants";
 const NavBar = () => {
     const { user, role, logout } = useUser();
     const navigate = useNavigate();
-    console.log("User in NavBar", user, role);
 
     const handleLogout = () => {
         const confirmLogout = window.confirm("Are you sure you want to log out?");
@@ -73,11 +72,10 @@ const NavBar = () => {
                     </nav>
                 ) : (
                     <div className="text-end ms-3 d-flex align-items-center gap-3 flex-wrap-reverse justify-content-center">
-                        <p className="m-0 text-light fs-5 fw-bold">{user?.name || "No Name"}</p>
+                        <p className="m-0 text-light fs-5 fw-bold">{user?.full_name || "No Name"}</p>
                         <Dropdown>
                             <Dropdown.Toggle
-                                as="a"
-                                href="#"
+                                as="div"
                                 className="d-block link-dark text-decoration-none"
                                 id="dropdownUser1"
                             >

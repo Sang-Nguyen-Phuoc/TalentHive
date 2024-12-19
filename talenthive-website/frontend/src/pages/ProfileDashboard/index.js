@@ -10,7 +10,16 @@ function ProfileDashboard({ isReused }) {
     const Job = JobItem.Detail;
     const [statePost, setStatePost] = useState('')
     const [show, setShow] = useState(false);
-    const { currentUser } = useContext(CurrentUserContext);
+    const currentUser = { role: 'employer', 
+        profile: { 
+            username: 'Chos Lowij' ,
+            image: 'https://itviec.com/rails/active_storage/representations/proxy/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBN0tmSGc9PSIsImV4cCI6bnVsbCwicHVyIjoiYmxvYl9pZCJ9fQ==--c0fe0ff712a458d81ebedefb0b36172418e2834d/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdCem9MWm05eWJXRjBTU0lJY0c1bkJqb0dSVlE2RW5KbGMybDZaVjkwYjE5bWFYUmJCMmxwYVdrPSIsImV4cCI6bnVsbCwicHVyIjoidmFyaWF0aW9uIn19--c8c20c63b868249effdba9ba4f05aa0c5b77cab3/Black%20(3).png',
+
+            company: 'Chos Lowij'
+        } 
+    }
+
+    // currentUser.r
 
     const { profile } = currentUser
 
@@ -57,7 +66,7 @@ function ProfileDashboard({ isReused }) {
                 company: 'Sài Gòn Technology',
                 image: 'https://itviec.com/rails/active_storage/representations/proxy/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBN0tmSGc9PSIsImV4cCI6bnVsbCwicHVyIjoiYmxvYl9pZCJ9fQ==--c0fe0ff712a458d81ebedefb0b36172418e2834d/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdCem9MWm05eWJXRjBTU0lJY0c1bkJqb0dSVlE2RW5KbGMybDZaVjkwYjE5bWFYUmJCMmxwYVdrPSIsImV4cCI6bnVsbCwicHVyIjoidmFyaWF0aW9uIn19--c8c20c63b868249effdba9ba4f05aa0c5b77cab3/Black%20(3).png',
                 salary: '2000 USD',
-                sector: 'Software engineer',
+                category: 'Software engineer',
                 candidate: 40,
                 location: 'Đà Nẵng',
                 createAt: '10',
@@ -69,7 +78,7 @@ function ProfileDashboard({ isReused }) {
                 company: 'MONEY FORWARD VIETNAM CO.,LTD',
                 image: 'https://itviec.com/rails/active_storage/representations/proxy/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBOVVIRFE9PSIsImV4cCI6bnVsbCwicHVyIjoiYmxvYl9pZCJ9fQ==--1ae7acc317bfb2f261c8b580725af2d56ae34b7e/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdCem9MWm05eWJXRjBTU0lJY0c1bkJqb0dSVlE2RW5KbGMybDZaVjkwYjE5bWFYUmJCMmxwYVdrPSIsImV4cCI6bnVsbCwicHVyIjoidmFyaWF0aW9uIn19--c8c20c63b868249effdba9ba4f05aa0c5b77cab3/money-forward-vi-t-nam-logo.png',
                 salary: '10 - 20 triệu VND',
-                sector: 'Hardware',
+                category: 'Hardware',
                 candidate: 19,
                 location: 'Hồ Chí Minh',
                 createAt: '9',
@@ -81,7 +90,7 @@ function ProfileDashboard({ isReused }) {
                 company: 'NAVER VIETNAM',
                 image: 'https://itviec.com/rails/active_storage/representations/proxy/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBODF1SkE9PSIsImV4cCI6bnVsbCwicHVyIjoiYmxvYl9pZCJ9fQ==--da4ae1908c127c677e6c706e25596035b231b592/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdCem9MWm05eWJXRjBTU0lJY0c1bkJqb0dSVlE2RW5KbGMybDZaVjkwYjE5bWFYUmJCMmxwYVdrPSIsImV4cCI6bnVsbCwicHVyIjoidmFyaWF0aW9uIn19--c8c20c63b868249effdba9ba4f05aa0c5b77cab3/Naver_Logo(2)-white.png',
                 salary: '$1500',
-                sector: 'Banking',
+                category: 'Banking',
                 candidate: 38,
                 location: 'Hà Nội',
                 createAt: '5',
@@ -93,7 +102,7 @@ function ProfileDashboard({ isReused }) {
                 company: 'Sài Gòn Technology',
                 image: 'https://itviec.com/rails/active_storage/representations/proxy/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBN0tmSGc9PSIsImV4cCI6bnVsbCwicHVyIjoiYmxvYl9pZCJ9fQ==--c0fe0ff712a458d81ebedefb0b36172418e2834d/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdCem9MWm05eWJXRjBTU0lJY0c1bkJqb0dSVlE2RW5KbGMybDZaVjkwYjE5bWFYUmJCMmxwYVdrPSIsImV4cCI6bnVsbCwicHVyIjoidmFyaWF0aW9uIn19--c8c20c63b868249effdba9ba4f05aa0c5b77cab3/Black%20(3).png',
                 salary: '2000 USD',
-                sector: 'Software engineer',
+                category: 'Software engineer',
                 candidate: 30,
                 location: 'Đà Nẵng',
                 createAt: '10',
@@ -105,7 +114,7 @@ function ProfileDashboard({ isReused }) {
                 company: 'MONEY FORWARD VIETNAM CO.,LTD',
                 image: 'https://itviec.com/rails/active_storage/representations/proxy/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBOVVIRFE9PSIsImV4cCI6bnVsbCwicHVyIjoiYmxvYl9pZCJ9fQ==--1ae7acc317bfb2f261c8b580725af2d56ae34b7e/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdCem9MWm05eWJXRjBTU0lJY0c1bkJqb0dSVlE2RW5KbGMybDZaVjkwYjE5bWFYUmJCMmxwYVdrPSIsImV4cCI6bnVsbCwicHVyIjoidmFyaWF0aW9uIn19--c8c20c63b868249effdba9ba4f05aa0c5b77cab3/money-forward-vi-t-nam-logo.png',
                 salary: '10 - 20 triệu VND',
-                sector: 'Hardware',
+                category: 'Hardware',
                 candidate: 19,
                 location: 'Hồ Chí Minh',
                 createAt: '9',
@@ -117,7 +126,7 @@ function ProfileDashboard({ isReused }) {
                 company: 'NAVER VIETNAM',
                 image: 'https://itviec.com/rails/active_storage/representations/proxy/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBODF1SkE9PSIsImV4cCI6bnVsbCwicHVyIjoiYmxvYl9pZCJ9fQ==--da4ae1908c127c677e6c706e25596035b231b592/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdCem9MWm05eWJXRjBTU0lJY0c1bkJqb0dSVlE2RW5KbGMybDZaVjkwYjE5bWFYUmJCMmxwYVdrPSIsImV4cCI6bnVsbCwicHVyIjoidmFyaWF0aW9uIn19--c8c20c63b868249effdba9ba4f05aa0c5b77cab3/Naver_Logo(2)-white.png',
                 salary: '$1500',
-                sector: 'Banking',
+                category: 'Banking',
                 candidate: 38,
                 location: 'Hà Nội',
                 createAt: '5',

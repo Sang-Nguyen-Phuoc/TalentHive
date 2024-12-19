@@ -18,7 +18,7 @@ const userList = [
             introduction: "Founder and CEO of TechCorp.",
             address: "456 Silicon Valley, California, USA",
             phone: "+14151234567", // USA (valid phone number)
-            sector: "Technology",
+            category: "Technology",
         }
     },
     {
@@ -31,7 +31,7 @@ const userList = [
             introduction: "Leading expert in healthcare innovation.",
             address: "789 Medical Lane, New York, USA",
             phone: "+12129876543", // USA (valid phone number)
-            sector: "Healthcare",
+            category: "Healthcare",
         }
     },
     {
@@ -44,7 +44,7 @@ const userList = [
             introduction: "Freelance content writer and editor.",
             address: "23 Broadway, New York, USA",
             phone: "+19175556789", // USA (valid phone number)
-            sector: "Writing",
+            category: "Writing",
         }
     },
     {
@@ -57,7 +57,7 @@ const userList = [
             introduction: "Creative graphic designer with 5 years of experience.",
             address: "67 Orchard Road, Singapore",
             phone: "+6587654321", // Singapore (valid phone number)
-            sector: "Design",
+            category: "Design",
         }
     },
     {
@@ -70,7 +70,7 @@ const userList = [
             introduction: "Owner of GreenThumb Landscaping Services.",
             address: "102 Elm Street, Sydney, Australia",
             phone: "+61298765432", // Australia (valid phone number)
-            sector: "Agriculture",
+            category: "Agriculture",
         }
     },
     {
@@ -83,7 +83,7 @@ const userList = [
             introduction: "Junior software developer passionate about AI.",
             address: "12 Maple Street, Toronto, Canada",
             phone: "+16471234567", // Canada (valid phone number)
-            sector: "Technology",
+            category: "Technology",
         }
     },
     {
@@ -96,7 +96,7 @@ const userList = [
             introduction: "Owner of FoodieLife, a chain of healthy restaurants.",
             address: "56 Queen Street, London, UK",
             phone: "+442076543210", // UK (valid phone number)
-            sector: "Hospitality",
+            category: "Hospitality",
         }
     },
     {
@@ -109,7 +109,7 @@ const userList = [
             introduction: "Experienced chef specializing in Italian cuisine.",
             address: "32 Pasta Lane, Rome, Italy",
             phone: "+390698765432", // Italy (valid phone number)
-            sector: "Hospitality",
+            category: "Hospitality",
         }
     },
     {
@@ -122,7 +122,7 @@ const userList = [
             introduction: "High school teacher passionate about education.",
             address: "99 Education Avenue, Johannesburg, South Africa",
             phone: "+27112345678", // South Africa (valid phone number)
-            sector: "Education",
+            category: "Education",
         }
     },
     {
@@ -135,7 +135,7 @@ const userList = [
             introduction: "Director of FinanceMax Investment Group.",
             address: "55 Wall Street, New York, USA",
             phone: "+12127654321", // USA (valid phone number)
-            sector: "Finance",
+            category: "Finance",
         }
     },
     {
@@ -148,7 +148,7 @@ const userList = [
             introduction: "Mechanical engineer specializing in renewable energy.",
             address: "10 Windmill Lane, Berlin, Germany",
             phone: "+493012345678", // Germany (valid phone number)
-            sector: "Engineering",
+            category: "Engineering",
         }
     },
 ];
@@ -177,7 +177,7 @@ export const userSeeder = async () => {
                     address: user?.profile?.address,
                     email: user.email,
                     phone: user?.profile?.phone,
-                    sector: user?.profile?.sector,
+                    category: user?.profile?.category,
                 })
                 console.log("Employer created with email: ", profile.email);
             } else if (user.role === "candidate") {
@@ -188,7 +188,7 @@ export const userSeeder = async () => {
                     address: user?.profile?.address,
                     email: user.email,
                     phone: user?.profile?.phone,
-                    sector: user?.profile?.sector,
+                    category: user?.profile?.category,
                 })
                 console.log("Candidate created with email: ", profile.email);
             }

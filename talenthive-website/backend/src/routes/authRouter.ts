@@ -13,5 +13,6 @@ authRouter.post("/logout", authorizeRole(), authController.logout);
 authRouter.post("/change-password",authorizeRole(), authController.changePassword);
 authRouter.delete("/me",authorizeRole(), authController.deleteMe);
 authRouter.get("/me",authorizeRole(), authController.getMe);
+authRouter.post("/me",authorizeRole(), authController.updateMe);
 
 export default authRouter;

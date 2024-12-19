@@ -5,11 +5,17 @@ export interface IApplication {
     _id: Types.ObjectId;
     job_id: Types.ObjectId;
     candidate_id: Types.ObjectId;
+
     full_name: string;
-    resume: object;
     email: string;
-    cover_letter: string;
     phone: string;
+    skills: [string];
+    worker_experience: string;
+    certification: [string];
+    cover_letter: string;
+    cv: object;
+
+    resume: object;
     status?: string;
     applied_at?: Date;
 }
@@ -18,11 +24,10 @@ const ApplicationSchema = new Schema<IApplication>({
     job_id: {
         type: Schema.Types.ObjectId,
         ref: 'Job',
-        required: true
     },
     candidate_id: {
         type: Schema.Types.ObjectId,
-        ref: 'CandidateProfile',
+        ref: 'User',
         required: true
     },
     full_name: {
@@ -32,32 +37,25 @@ const ApplicationSchema = new Schema<IApplication>({
     },
     resume: {
         type: Object,
-        required: true
     },
     email: {
         type: String,
         required: true,
-        validate: [validator.isEmail, 'Invalid email address']
     },
     cover_letter: {
         type: String,
-        required: true,
         trim: true
     },
     phone: {
         type: String,
-        required: true,
-        validate: [validator.isMobilePhone, 'Invalid phone number']
     },
     status: {
         type: String,
         enum: ['pending', 'accepted', 'rejected'],
-        required: true,
         default: 'pending'
     },
     applied_at: {
         type: Date,
-        required: true,
         default: Date.now()
     }
 });

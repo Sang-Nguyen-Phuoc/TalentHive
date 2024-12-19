@@ -198,7 +198,7 @@ export const getUser = catchAsync(async (req: Request, res: Response, next: Next
         email: resultRecord?.email || null,
         role: resultRecord?.role || null,
         avatar: resultRecord?.profile_id?.avatar || null,
-        name: resultRecord?.profile_id?.full_name || null,
+        full_name: resultRecord?.profile_id?.full_name || null,
         phone: resultRecord?.profile_id?.phone || null,
         address: resultRecord?.profile_id?.address || null,
         introduction: resultRecord?.profile_id?.introduction || null,

@@ -2,27 +2,22 @@ import { model, Schema, Types } from "mongoose";
 import validator from "validator";
 
 export interface IEmployerProfile {
-    _id: Types.ObjectId;
-    user_id: Types.ObjectId;
-    full_name: string;
-    avatar: object;
-    introduction: string;
-    address: string;
-    company_id: Types.ObjectId;
-    company_role: string;
-    email: string;
-    phone: string;
-    sector: string;
-    active: boolean;
-    created_at: Date;
-    updated_at: Date;
+    _id?: Types.ObjectId;
+    full_name?: string;
+    avatar?: object;
+    introduction?: string;
+    address?: string;
+    company_id?: Types.ObjectId;
+    company_role?: string;
+    email?: string;
+    phone?: string;
+    category?: string;
+    active?: boolean;
+    created_at?: Date;
+    updated_at?: Date;
 }
 
 const EmployerProfileSchema = new Schema<IEmployerProfile>({
-    user_id: {
-        type: Schema.Types.ObjectId,
-        ref: 'User',
-    },
     full_name: {
         type: String,
         trim: true
@@ -54,7 +49,7 @@ const EmployerProfileSchema = new Schema<IEmployerProfile>({
     phone: {
         type: String,
     },
-    sector: {
+    category: {
         type: String,
         trim: true
     },

@@ -1,5 +1,5 @@
 import React from "react";
-import { Navigate, RouterProvider, createBrowserRouter } from "react-router-dom";
+import { Navigate, RouterProvider, createBrowserRouter, redirect } from "react-router-dom";
 import AuthenticationLayout from "./layouts/AuthenticationLayout";
 import DefaultLayout from "./layouts/DefaultLayout";
 import Home from "./pages/Home";
@@ -9,12 +9,33 @@ import HireTalent, { HireTalentLoader } from "./pages/HireTalent";
 import ProfileAccount, { changePasswordAction, profileLoader } from "./pages/ProfileAccount";
 import ProfileDashboard from "./pages/ProfileDashboard";
 import JobDetail, {jobDetailLoader} from "./pages/JobDetail";
-import JobsApplied from "./pages/JobsApplied";
 import ManageWorkers from "./pages/ManageWorkers";
 import ManageEmployers from "./pages/ManageEmployers";
 import Signin from "./pages/Signin";
 import SignUp from "./pages/SignUp";
 import ForgotPassword from "./pages/ForgotPassword";
+import CreateProfile from "./pages/CreateProfile/CreateProfile";
+import CompanyAccess from "./pages/CompanyAccess/CompanyAccess";
+
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useUser } from "./context/UserContext";
+import JobsApplied from "./pages/JobsApplied/AppliedJobsPage";
+
+const RedirectToProfile = () => {
+    const { user } = useUser(); // Lấy id từ context
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (user?._id) {
+            navigate(`/profile/${user._id}`); // Điều hướng đến profile với id của user
+        }
+    }, [user, navigate]);
+
+    return null; // Không cần render UI
+};
+
+
 
 const router = createBrowserRouter([
   {
@@ -38,6 +59,14 @@ const router = createBrowserRouter([
         element: <HireTalent />,
         loader: HireTalentLoader,
 
+      },
+      {
+        path: "/jobs-applied",
+        element: <JobsApplied />,
+      },
+      {
+        path: "/profile/me",
+        element: <RedirectToProfile />
       },
       {
         path: "/profile/:id",
@@ -100,15 +129,25 @@ const router = createBrowserRouter([
         element: <SignUp />,
       },
       {
+        path: "/create-employer-profile",
+        element: <CreateProfile />,
+      },
+      {
         path: "/forgot-password",
         element: <ForgotPassword />,
       },
+      {
+        path: "/create-company-access",
+        element: <CompanyAccess />
+      }
     ],
   },
 ]);
 
 const App = () => {
-  return <RouterProvider router={router} />;
+  return <>
+  <RouterProvider router={router} />
+  </>;
 };
 
 export default App;
