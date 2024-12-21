@@ -242,13 +242,13 @@ export const updateMe = catchAsync(async (req: Request, res: Response, next: Nex
         return next(new AppError("attachUser middleware must be called before updateMe route", 500));
     }
     // both
-    const { email, full_name, address } = req.body;
+    const { email, full_name, address, phone } = req.body;
 
     // employer
-    const { phone, introduction,  company_id } = req.body;
+    const {  introduction,  company_id } = req.body;
 
     // candidate
-    const { date_of_birth, gender, phone_number,  city, education, skills, certifications, experience, work_experience, resume, avatar, visibility } = req.body;
+    const { date_of_birth, gender,  city, education, skills, certification, experience, work_experience, resume, avatar, visibility } = req.body;
 
     if (email && !validator.isEmail(email)) {
         return next(new AppError("Email is not valid", StatusCodes.BAD_REQUEST));
@@ -265,15 +265,12 @@ export const updateMe = catchAsync(async (req: Request, res: Response, next: Nex
         profile.full_name = full_name || profile.full_name;
         profile.date_of_birth = date_of_birth || profile.date_of_birth;
         profile.gender = gender || profile.gender;
-        profile.phone_number = phone_number || profile.phone_number; 
+        profile.phone = phone || profile.phone; 
         profile.address = address || profile.address;
         profile.city = city || profile.city; 
-        profile.education = education || profile.education;
         profile.skills = skills || profile.skills;
-        profile.certifications = certifications || profile.certifications;
-        profile.experience = experience || profile.experience;
+        profile.certification = certification || profile.certification;
         profile.work_experience = work_experience || profile.work_experience;
-        profile.resume = resume || profile.resume;
         profile.avatar = avatar || profile.avatar;
         profile.visibility = visibility || profile.visibility;
         await profile.save();

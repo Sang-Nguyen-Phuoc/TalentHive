@@ -1,5 +1,4 @@
 import { model, Schema, Types } from "mongoose";
-import validator from "validator";
 
 export interface IApplication {
     _id: Types.ObjectId;

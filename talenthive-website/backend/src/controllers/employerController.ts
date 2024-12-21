@@ -4,9 +4,9 @@ import catchAsync from "../utils/catchAsync";
 import AppError from "../utils/appError";
 import validator from "validator";
 import { StatusCodes } from "http-status-codes";
-import mongoose from "mongoose";
 import User from "../models/user";
-import { isObjectIdOfMongoDB } from "../utils/validateServices";
+import { isNotFound, isObjectIdOfMongoDB } from "../utils/validateServices";
+import Company from "../models/company";
 
 export const getAllEmployers = catchAsync(
     async (req: Request, res: Response, next: NextFunction) => {
@@ -19,6 +19,37 @@ export const getAllEmployers = catchAsync(
         });
     }
 );
+
+
+export const getEmployer = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const id = req.params.id;
+    isObjectIdOfMongoDB(id, "id", `Invalid id: ${id} in params`);
+    const resultRecord = (await User.findById(id).populate("profile_id")) as any;
+    isNotFound(resultRecord, "", `User not found with the provided id: ${id}`);
+
+    const company = await Company.findById(resultRecord?.profile_id?.company_id);
+
+    const userFiltered = {
+        _id: resultRecord?._id,
+        email: resultRecord?.email || null,
+        contact_email: resultRecord?.profile_id?.email || null,
+        role: resultRecord?.role || null,
+        avatar: resultRecord?.profile_id?.avatar || null,
+        full_name: resultRecord?.profile_id?.full_name || null,
+        phone: resultRecord?.profile_id?.phone || null,
+        address: resultRecord?.profile_id?.address || null,
+        introduction: resultRecord?.profile_id?.introduction || null,
+        company: company || null,
+    };
+    res.status(StatusCodes.OK).json({
+        status: "success",
+        data: {
+            user: userFiltered,
+        },
+    });
+});
+
+
 
 export const updateEmployer = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const {

@@ -10,6 +10,7 @@ const companyRouter = Router();
 
 
 companyRouter.get("/employer", authorizeRole(["employer"]), companyController.getMyCompanyAsEmployer);
+companyRouter.post("/update", authorizeRole(["employer"]), companyController.updateCompanyByEmployer);
 
 companyRouter.route("/")
     .get(companyController.getAllCompanies)

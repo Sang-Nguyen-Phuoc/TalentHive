@@ -100,3 +100,13 @@ export const postApplyJob = async (jobId, bodyData) => {
         throw error;
     }
 }
+
+export const getJobsByCompany = async (companyId) => {
+    try {
+        const data = await axiosCustom.get(`/api/v1/jobs/companies/${companyId}`);
+        return data;
+    } catch (error) {
+        console.error("Error while getting job list by company", error?.message || error);
+        throw error;
+    }
+}

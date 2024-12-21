@@ -30,3 +30,13 @@ export const postCreateCompany = async (bodyData) => {
         throw error;
     }
 }
+
+export const postUpdateCompany = async (bodyData) => {
+    try {
+        const data = await axiosCustom.post("/api/v1/companies/update", bodyData);
+        return data;
+    } catch (error) {
+        console.error("Error while updating company", error?.message || error);
+        throw error;
+    }
+}

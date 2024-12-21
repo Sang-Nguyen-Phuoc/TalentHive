@@ -87,7 +87,7 @@ const JobItem = {
         
 
         return (
-            <div className="container shadow rounded-3 px-4 mb-4 border-5">
+            <div className="container shadow rounded-3 px-4 mb-4 border border-1 border-secondary bg-white">
                 <div className="row py-3">
                     <h2 className="col-sm-8 fw-bold fs-4 m-0">{job?.title}</h2>
                     <p

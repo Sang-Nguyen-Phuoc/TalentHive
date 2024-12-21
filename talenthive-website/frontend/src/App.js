@@ -7,7 +7,7 @@ import AboutUs from "./pages/AboutUs";
 import Search from "./pages/Search";
 import HireTalent, { HireTalentLoader } from "./pages/HireTalent";
 import ProfileAccount, { changePasswordAction, profileLoader } from "./pages/ProfileAccount";
-import ProfileDashboard from "./pages/ProfileDashboard";
+import ProfileDashboard, { profileDashboardLoader } from "./pages/ProfileDashboard";
 import JobDetail, {jobDetailLoader} from "./pages/JobDetail";
 import ManageWorkers from "./pages/ManageWorkers";
 import ManageEmployers from "./pages/ManageEmployers";
@@ -21,6 +21,8 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "./context/UserContext";
 import JobsApplied from "./pages/JobsApplied/AppliedJobsPage";
+import EmployerDashboard, { employerDashboardLoader } from "./pages/ProfileDashboard/EmployerDashboard";
+import CandidateDashboard, { candidateDashboardLoader } from "./pages/ProfileDashboard/CandidateDashboard";
 
 const RedirectToProfile = () => {
     const { user } = useUser(); // Lấy id từ context
@@ -65,6 +67,16 @@ const router = createBrowserRouter([
         element: <JobsApplied />,
       },
       {
+        path: "/employer/:id/dashboard",
+        element: <EmployerDashboard />,
+        loader: employerDashboardLoader
+      },
+      {
+        path: "/candidate/:id/dashboard",
+        element: <CandidateDashboard />,
+        loader: candidateDashboardLoader,
+      },
+      {
         path: "/profile/me",
         element: <RedirectToProfile />
       },
@@ -74,7 +86,7 @@ const router = createBrowserRouter([
           {
             path: "dashboard",
             element: <ProfileDashboard />,
-            
+            loader: profileDashboardLoader,            
           },
           {
             index: true,
