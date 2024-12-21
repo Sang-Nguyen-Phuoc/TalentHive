@@ -8,7 +8,7 @@ import catchAsync from "../utils/catchAsync";
 import Company from "../models/company";
 import Image from "../models/image";
 import EmployerProfile, { IEmployerProfile } from "../models/employerProfile";
-import { isObjectIdOfMongoDB, isRequired, isString } from "../utils/validateServices";
+import { isNotFound, isObjectIdOfMongoDB, isRequired, isString } from "../utils/validateServices";
 import User from "../models/user";
 import { isURL } from "../utils/validateServices";
 
@@ -97,6 +97,35 @@ export const createCompany = catchAsync(async (req: Request, res: Response, next
         status: "success",
         data: {
             company,
+        },
+    });
+});
+
+export const updateCompanyByEmployer = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const { user } = req.body;
+
+    const employerProfile = await EmployerProfile.findById(user.profile_id);
+    isNotFound(employerProfile, "", `Employer profile with id: ${user.profile_id} not found`);
+
+    const company = await Company.findById(employerProfile!.company_id);
+    isNotFound(company, "", `Company with id: ${employerProfile!.company_id} not found`);
+
+    const { name, industry, addresses, website, introduction } = req.body;
+
+    await company!.updateOne({
+        name: name || company!.name || null,
+        industry: industry || company!.industry || null,
+        addresses: addresses || company!.addresses || null,
+        website: website || company!.website || null,
+        introduction: introduction || company!.introduction || null, 
+    })
+
+    const updatedCompany = await Company.findById(employerProfile!.company_id);
+    
+    res.status(StatusCodes.OK).json({
+        status: "success",
+        data: {
+            company: updatedCompany,
         },
     });
 });

@@ -5,13 +5,12 @@ import { authorizeRole } from "../middlewares/authMiddleware";
 
 const candidateRouter = Router();
 
+candidateRouter.route("/:id")
+    .get(candidateController.getCandidate)
 
-candidateRouter.delete(
-    "/:id",
-    authorizeRole(["admin"]),
-    candidateController.deleteUserByCandidateId
-);
-candidateRouter.put("/", candidateController.updateCandidateInfo);
+candidateRouter.post("/update",authorizeRole(["candidate"]), candidateController.updateCandidateInfo);
 candidateRouter.route("/").get(candidateController.getAllCandidates);
+
+
 
 export default candidateRouter;

@@ -13,6 +13,8 @@ jobRouter.get("/employer", authorizeRole(["employer"]), jobController.getJobList
 jobRouter.get("/types", jobController.getJobTypeList); // used
 jobRouter.get("/categories", jobController.getJobCategoryList); // used
 
+jobRouter.get("/companies/:companyId", jobController.getJobsByCompany); // used
+
 jobRouter.post("/:jobId/apply", authorizeRole(["candidate"]), jobController.createApplication); // used
 
 jobRouter

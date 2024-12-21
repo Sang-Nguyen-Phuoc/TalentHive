@@ -198,6 +198,45 @@ export const getAJobApplication = catchAsync(async (req: Request, res: Response,
     });
 });
 
+export const getJobsByCompany = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const companyId = req.params.companyId;
+    isObjectIdOfMongoDB(companyId, "companyId", `Company Id ${companyId} in params is not a valid MongoDB ObjectId`);
+
+    const jobs = await Job.find({ company_id: companyId });
+
+    const jobsFilter = jobs.map((job: any) => {
+        return {
+            _id: job._id,
+            title: job.title,
+            salary_range: job.salary_range.min + " - " + job.salary_range.max + " " + job.salary_unit || null,
+            job_category: job?.job_category?.name || null,
+            job_type: job?.job_type?.name || null,
+            address: job.address || null,
+            description: job.description || null,
+            benefits: job.benefits || null,
+            skills: job.skills || null,
+            requirements: job.requirements || null,
+            views: job.views || null,
+            applications_count: job.applications_count || null,
+            posted_at: job.posted_at || null,
+            expires_at: job.expires_at || null,
+            employer_id: job.employer_id || null,
+            company: job?.company_id?.name || null,
+            image: job?.image || null,
+            status: job?.status || null,
+            is_public: job.is_public || null,
+        };
+    })
+
+    res.status(StatusCodes.OK).json({
+        status: "success",
+        data: {
+            total_jobs: jobs.length,
+            jobs: jobsFilter,
+        },
+    });    
+});
+
 export const createApplication = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const jobId = req.params.jobId;
     const candidate = req.body.user;

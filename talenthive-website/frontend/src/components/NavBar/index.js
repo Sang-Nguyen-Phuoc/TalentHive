@@ -40,11 +40,13 @@ const NavBar = () => {
                                 About Us
                             </Link>
                         </li>
-                        <li className="nav-item">
-                            <Link className="nav-link link-light fs-5 link-opacity-75-hover" to="/">
+                        { role === ROLES.EMPLOYER || role ===  ROLES.CANDIDATE ? (
+                            <li className="nav-item">
+                            <Link className="nav-link link-light fs-5 link-opacity-75-hover" to={`/${role}/${user?._id}/dashboard`}>
                                 Dashboard
                             </Link>
                         </li>
+                        ) : ""}
                         {role === ROLES.EMPLOYER ? (
                             <li className="nav-item">
                                 <Link className="nav-link link-light fs-5 link-opacity-75-hover" to="/hire-talent">

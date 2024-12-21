@@ -3,14 +3,14 @@ import validator from "validator";
 
 export interface IEmployerProfile {
     _id?: Types.ObjectId;
+    email?: string;
     full_name?: string;
-    avatar?: object;
     introduction?: string;
+    avatar?: object;
+    phone?: string;
     address?: string;
     company_id?: Types.ObjectId;
     company_role?: string;
-    email?: string;
-    phone?: string;
     category?: string;
     active?: boolean;
     created_at?: Date;

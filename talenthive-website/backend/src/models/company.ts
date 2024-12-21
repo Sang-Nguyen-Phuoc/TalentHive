@@ -6,7 +6,6 @@ export interface ICompany {
     name?: string;
     avatar?: Types.ObjectId;
     introduction?: string;
-    // locations: string[];
     industry?: string;
     addresses?: string[];
     website?: string;
@@ -31,10 +30,6 @@ const CompanySchema = new Schema<ICompany>({
         type: String,
         trim: true
     },
-    // locations: {
-    //     type: [String],
-    //     required: true
-    // },
     industry: {
         type: String,
         required: true
