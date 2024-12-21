@@ -40,20 +40,36 @@ const NavBar = () => {
                                 About Us
                             </Link>
                         </li>
-                        { role === ROLES.EMPLOYER || role ===  ROLES.CANDIDATE ? (
+                        {/* {role === ROLES.EMPLOYER || role === ROLES.CANDIDATE ? (
                             <li className="nav-item">
-                            <Link className="nav-link link-light fs-5 link-opacity-75-hover" to={`/${role}/${user?._id}/dashboard`}>
-                                Dashboard
-                            </Link>
-                        </li>
-                        ) : ""}
+                                <Link
+                                    className="nav-link link-light fs-5 link-opacity-75-hover"
+                                    to={`/${role}/${user?._id}/dashboard`}
+                                >
+                                    Dashboard
+                                </Link>
+                            </li>
+                        ) : (
+                            ""
+                        )} */}
                         {role === ROLES.EMPLOYER ? (
                             <li className="nav-item">
                                 <Link className="nav-link link-light fs-5 link-opacity-75-hover" to="/hire-talent">
                                     Hire Talent
                                 </Link>
                             </li>
-                        ) : "" }
+                        ) : (
+                            ""
+                        )}
+                        {role === ROLES.CANDIDATE ? (
+                            <li className="nav-item">
+                                <Link className="nav-link link-light fs-5 link-opacity-75-hover" to="/applied-jobs">
+                                    Applied Jobs
+                                </Link>
+                            </li>
+                        ) : (
+                            ""
+                        )}
                     </ul>
                 </nav>
 
@@ -92,13 +108,13 @@ const NavBar = () => {
 
                             <Dropdown.Menu align="end" className="text-small">
                                 <Dropdown.Item>
-                                    <Link className="text-decoration-none text-dark" to={`/profile/${user?._id}`}>
-                                        Settings
+                                    <Link className="text-decoration-none text-dark" to={`${role}/${user?._id}/dashboard`}>
+                                        Dashboard
                                     </Link>
                                 </Dropdown.Item>
                                 <Dropdown.Item>
                                     <Link className="text-decoration-none text-dark" to={`/profile/${user?._id}`}>
-                                        Profile
+                                        Account
                                     </Link>
                                 </Dropdown.Item>
                                 <Dropdown.Divider />

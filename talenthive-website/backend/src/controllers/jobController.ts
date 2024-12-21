@@ -226,7 +226,7 @@ export const getJobsByCompany = catchAsync(async (req: Request, res: Response, n
             status: job?.status || null,
             is_public: job.is_public || null,
         };
-    })
+    });
 
     res.status(StatusCodes.OK).json({
         status: "success",
@@ -234,7 +234,7 @@ export const getJobsByCompany = catchAsync(async (req: Request, res: Response, n
             total_jobs: jobs.length,
             jobs: jobsFilter,
         },
-    });    
+    });
 });
 
 export const createApplication = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
@@ -250,28 +250,51 @@ export const createApplication = catchAsync(async (req: Request, res: Response, 
     isRequired(skills, "skills");
     isRequired(worker_experience, "worker_experience");
     isRequired(certification, "certification");
-      
-    const application = await Application.create({
-        job_id: jobId,
-        candidate_id: candidateId,
-        full_name: full_name,
-        email: email,
-        phone: phone,
-        skills: skills,
-        worker_experience: worker_experience,
-        certification: certification,
-        cover_letter: cover_letter,
-        cv: cv || null,
-        status: "pending",
-        applied_at: new Date(),
-    });
 
-    res.status(StatusCodes.CREATED).json({
-        status: "success",
-        data: {
-            application: application,
-        },
-    });
+    const existingApplication = await Application.findOne({ job_id: jobId, candidate_id: candidateId });
+    if (existingApplication) {
+        const updatedApplication = await existingApplication.updateOne({
+            full_name: full_name,
+            email: email,
+            phone: phone,
+            skills: skills,
+            worker_experience: worker_experience,
+            certification: certification,
+            cover_letter: cover_letter,
+            cv: cv || null,
+            status: "pending",
+            applied_at: new Date(),
+        });
+
+        res.status(StatusCodes.OK).json({
+            status: "success",
+            data: {
+                application: updatedApplication,
+            },
+        });
+    } else {
+        const application = await Application.create({
+            job_id: jobId,
+            candidate_id: candidateId,
+            full_name: full_name,
+            email: email,
+            phone: phone,
+            skills: skills,
+            worker_experience: worker_experience,
+            certification: certification,
+            cover_letter: cover_letter,
+            cv: cv || null,
+            status: "pending",
+            applied_at: new Date(),
+        });
+
+        res.status(StatusCodes.CREATED).json({
+            status: "success",
+            data: {
+                application: application,
+            },
+        });
+    }
 });
 
 export const updateApplication = catchAsync(async (req: Request, res: Response, next: NextFunction) => {

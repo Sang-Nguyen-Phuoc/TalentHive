@@ -3,17 +3,17 @@ import { Modal, Button } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { postApplyJob } from "../../services/jobsServices";
 
-const ModalApplyJob = ({ show, setShow, job }) => {
+const ModalApplyJob = ({ show, setShow, job, application }) => {
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
-        full_name: "",
-        email: "",
-        phone: "",
-        skills: "",
-        worker_experience: "",
-        certification: "",
-    cover_letter: "",
-        cv: null,
+        full_name: application?.full_name || "",
+        email: application?.email || "",
+        phone: application?.phone || "",
+        skills: application?.skills || "",
+        worker_experience: application?.worker_experience || "",
+        certification: application?.certification || "",
+        cover_letter: application?.cover_letter || "",
+        cv: application?.cv || null,
     });
 
     console.log("formData", formData);

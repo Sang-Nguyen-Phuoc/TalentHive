@@ -83,7 +83,9 @@ const JobItem = {
     },
 
     ////// HIRE TALENT PAGE //////
-    Detail: ({ job, show, setShow, role }) => {
+    Detail: ({ job, show, setShow, role, application }) => {
+        
+        console.log(" application", application);
         
 
         return (
@@ -132,9 +134,9 @@ const JobItem = {
                         <hr className="m-0" />
                         <div className="d-flex justify-content-center py-3">
                             <button className="col col-sm-8 btn btn-primary " onClick={() => setShow(true)}>
-                                Apply now
+                                { application ? "Update application" : "Apply now" }
                             </button>
-                            <ModalApplyJob show={show} setShow={setShow} job={job} />
+                            <ModalApplyJob show={show} setShow={setShow} job={job} application={application} />
                         </div>
                     </div>
                 )}
