@@ -4,7 +4,7 @@ import styles from "../../styles/pages/JobDetail.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSquareArrowUpRight } from "@fortawesome/free-solid-svg-icons";
 import ApplicationForm from "../../components/Form/ApplicationForn";
-import { getJobCategoryList, getJobDetail, getJobTypeList } from "../../services/jobsServices";
+import { getApplicationForJob, getJobCategoryList, getJobDetail, getJobTypeList } from "../../services/jobsServices";
 import { toast } from "react-toastify";
 import { ROLES } from "../../utils/Constants";
 import { useUser } from "../../context/UserContext";
@@ -16,6 +16,7 @@ export const jobDetailLoader = async ({ params }) => {
     let jobData = null;
     let jobTypeListData = [];
     let jobCategoryListData = [];
+    let applicationData = null;
     try {
         jobData = await getJobDetail(params.id);
     } catch (error) {
@@ -34,7 +35,12 @@ export const jobDetailLoader = async ({ params }) => {
         console.error("Error while getting job category list", error?.message || error);
         toast.error("Error while getting job category list");
     }
-    return { jobData, jobTypeListData, jobCategoryListData };
+    try {
+        applicationData = await getApplicationForJob(params.id);
+    } catch (error) {    
+        console.error("Error while getting application for job", error?.message || error);
+    }
+    return { jobData, jobTypeListData, jobCategoryListData, applicationData };
 };
 
 function JobDetail({ isSearch }) {
@@ -44,13 +50,15 @@ function JobDetail({ isSearch }) {
 
     const [showApplyModal, setShowApplyModal] = useState(false);
     
-    const { jobData, jobTypeListData, jobCategoryListData } = useLoaderData();
+    const { jobData, jobTypeListData, jobCategoryListData, applicationData } = useLoaderData();
 
     const { job } = jobData;
-    console.log("xin chaof, job", job);
     
     const jobTypes = jobTypeListData.job_types;
     const jobCategories = jobCategoryListData.job_categories;
+    const application = applicationData?.application;
+    console.log( "application data", applicationData);
+    
 
     const Job = JobItem.Detail;
 
@@ -59,7 +67,7 @@ function JobDetail({ isSearch }) {
         <div className="container mb-5">
             <main className="row g-3 g-md-4 g-lg-5 mt-5 mt-lg-0">
                 <div className="col-md-8">
-                    <Job job={job} show={showApplyModal} setShow={setShowApplyModal} role={role}/>
+                    <Job job={job} show={showApplyModal} setShow={setShowApplyModal} role={role} application={application}/>
                     <div className="container">
                         <div className="row">
                             <div className="col shadow rounded-3 p-4">

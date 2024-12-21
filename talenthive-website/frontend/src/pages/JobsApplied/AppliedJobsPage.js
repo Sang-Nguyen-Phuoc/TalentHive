@@ -1,55 +1,43 @@
 import { useState } from "react";
 import JobItem from "../../components/JobItem";
 import AppliedJobItem from "../../components/JobItem/AppliedJobItem";
+import { Outlet, useLoaderData, useParams } from "react-router";
+import { getMyAppliedJobs } from "../../services/jobsServices";
+import { toast } from "react-toastify";
+import { Link, NavLink } from "react-router-dom";
+import ApplicationDetail from "./ApplicationDetail";
 
-const jobList = [
-    {
-        id: 1,
-        position: "Frontend Developer",
-        company: "Facebook",
-        salary: "$4000 - $5000",
-        location: "Remote",
-        category: "IT",
-        posted_at: "2021-10-10",
-        expires_at: "2021-10-20",
-        image: "https://via.placeholder.com/150",
-        state: "pending",
-    },
-    {
-        id: 2,
-        position: "Backend Developer",
-        company: "Google",
-        salary: "$5000 - $6000",
-        location: "Remote",
-        category: "IT",
-        posted_at: "2021-10-10",
-        expires_at: "2021-10-20",
-        image: "https://via.placeholder.com/150",
-        state: "accepted",
-    },
-    {
-        id: 3,
-        position: "Fullstack Developer",
-        company: "Amazon",
-        salary: "$6000 - $7000",
-        location: "Remote",
-        category: "IT",
-        posted_at: "2021-10-10",
-        expires_at: "2021-10-20",
-        image: "https://via.placeholder.com/150",
-        state: "rejected",
+export const appliedJobsLoader = async () => {
+    let appliedJobsData = null;
+
+    try {
+        appliedJobsData = await getMyAppliedJobs();
+    } catch (error) {
+        console.error("Error while getting applied jobs", error?.message || error);
+        toast.error("Error while getting applied jobs");
     }
-]
+
+    return { appliedJobsData };
+};
 
 const AppliedJobsPage = () => {
+    const isfullpage = !useParams().id;
+    
+    
+    const { appliedJobsData } = useLoaderData();
     const [state, setState] = useState("all");
     const [sortType, setSortType] = useState("asc");
-    const Job = JobItem.Detail;
+
+    const jobs = appliedJobsData?.jobs || [];
+
+    const [selectedJob, setSelectedJob] = useState(null);
+
+    console.log("applications in applied jobs", jobs);
 
     return (
         <main className="container my-5">
-            <div className="row">
-                <div className="col-md-8">
+            <div className="row flex-column-reverse flex-md-row">
+                <div className={`${isfullpage ? "col-md-12" : "col-md-8"}`}>
                     <div className="row justify-content-end mb-3">
                         <div className="col-12 col-md-5 ps-md-4 mb-3 mb-md-0">
                             <select
@@ -84,33 +72,26 @@ const AppliedJobsPage = () => {
                     <div className="row justify-content-start mb-3 fw-bold fs-5">
                         <div className="col-12">10 applied jobs</div>
                     </div>
-                    <ul className="list-unstyled">
-                        {jobList.map((job) => (
-                            <li key={job._id}>
-                                <AppliedJobItem job={job} />
-                            </li>
-                        ))}
+                    <ul className="list-unstyled" style={{ overflowY: "auto", height: "70vh" }}>
+                        {jobs?.length > 0 ? (
+                            jobs.map((job) => (
+                                <li key={job._id}>
+                                    <NavLink
+                                        to={`/applied-jobs/application/${job?.application?._id}`}
+                                        className={({ isActive }) =>
+                                            `text-decoration-none ${isActive ? "fw-bold text-primary" : "text-dark"}`
+                                        }
+                                    >
+                                        <AppliedJobItem job={job} />
+                                    </NavLink>
+                                </li>
+                            ))
+                        ) : (
+                            <p>No jobs applied yet.</p>
+                        )}
                     </ul>
                 </div>
-                <div className="col-md-4">
-                    <div className="card shadow rounded">
-                        <div className="card-body">
-                            <div className="d-flex justify-content-between align-items-start gap-3">
-                                <img
-                                    src="https://via.placeholder.com/150x150"
-                                    className="img-fluid rounded"
-                                    width="150"
-                                    height="150"
-                                    alt="company logo"
-                                />
-                                <h2 className="text-break text-wrap">Company name</h2>
-                            </div>
-                            <hr />
-                            <h5 className="card-title">Profile</h5>
-                            <p className="card-text">Full Name: John Doe</p>
-                        </div>
-                    </div>
-                </div>
+                <Outlet />
             </div>
         </main>
     );

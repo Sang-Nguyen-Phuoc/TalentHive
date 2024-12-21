@@ -110,3 +110,34 @@ export const getJobsByCompany = async (companyId) => {
         throw error;
     }
 }
+
+
+export const getMyAppliedJobs = async () => {
+    try {
+        const data = await axiosCustom.get("/api/v1/applications/applied-jobs");
+        return data;
+    } catch (error) {
+        console.error("Error while getting applied job list", error?.message || error);
+        throw error;
+    }
+}
+
+export const getApplicationDetail = async (id) => {
+    try {
+        const data = await axiosCustom.get(`/api/v1/applications/${id}`);
+        return data;
+    } catch (error) {
+        console.error("Error while getting applied job detail", error?.message || error);
+        throw error;
+    }
+}
+
+export const getApplicationForJob = async (jobId) => {
+    try {
+        const data = await axiosCustom.get(`/api/v1/applications/jobs/${jobId}`);
+        return data;
+    } catch (error) {
+        console.error("Error while getting applications for job", error?.message || error);
+        throw error;
+    }
+}
