@@ -39,3 +39,14 @@ export const postUpdateCandidate = async (data) => {
         throw error;
     }
 }
+
+export const getCandidateListByAdmin = async () => {
+    try {
+        const data = await axiosCustom.get(`/api/v1/users/candidates`);
+        return data;
+    } catch (error) {
+        console.error("Error while getting candidate list by admin", error?.message || error);
+        console.log("lỗi rồi cu");
+        throw error;
+    }
+}

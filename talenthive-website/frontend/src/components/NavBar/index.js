@@ -40,18 +40,6 @@ const NavBar = () => {
                                 About Us
                             </Link>
                         </li>
-                        {/* {role === ROLES.EMPLOYER || role === ROLES.CANDIDATE ? (
-                            <li className="nav-item">
-                                <Link
-                                    className="nav-link link-light fs-5 link-opacity-75-hover"
-                                    to={`/${role}/${user?._id}/dashboard`}
-                                >
-                                    Dashboard
-                                </Link>
-                            </li>
-                        ) : (
-                            ""
-                        )} */}
                         {role === ROLES.EMPLOYER ? (
                             <li className="nav-item">
                                 <Link className="nav-link link-light fs-5 link-opacity-75-hover" to="/hire-talent">
@@ -108,7 +96,10 @@ const NavBar = () => {
 
                             <Dropdown.Menu align="end" className="text-small">
                                 <Dropdown.Item>
-                                    <Link className="text-decoration-none text-dark" to={`${role}/${user?._id}/dashboard`}>
+                                    <Link
+                                        className="text-decoration-none text-dark"
+                                        to={`${role}/${user?._id}/dashboard`}
+                                    >
                                         Dashboard
                                     </Link>
                                 </Dropdown.Item>
@@ -117,6 +108,24 @@ const NavBar = () => {
                                         Account
                                     </Link>
                                 </Dropdown.Item>
+                                {role === ROLES.ADMIN && (
+                                    <>
+                                        <Dropdown.Divider />
+                                        <Dropdown.Item>
+                                            <Link className="text-decoration-none text-dark" to="/admin/manage-candidates">
+                                                Candidates Management
+                                            </Link>
+                                        </Dropdown.Item>
+                                        <Dropdown.Item>
+                                            <Link
+                                                className="text-decoration-none text-dark"
+                                                to="/admin/manage-employers"
+                                            >
+                                                Employers Management
+                                            </Link>
+                                        </Dropdown.Item>
+                                    </>
+                                )}
                                 <Dropdown.Divider />
                                 <Dropdown.Item href="#" onClick={handleLogout}>
                                     Sign out

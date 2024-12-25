@@ -8,6 +8,7 @@ userRouter.route("/").delete(authorizeRole(["admin"]), userController.deleteUser
 userRouter.post("/lock", authorizeRole(["admin"]), userController.lockUser);
 userRouter.post("/unlock", authorizeRole(["admin"]), userController.unlockUser);
 userRouter.post("/admin", userController.createAdmin);
+userRouter.get("/candidates", authorizeRole(["admin"]), userController.getCandidates);
 userRouter.post("/follow/:companyId", userController.followCompany);
 userRouter.delete("/unfollow/:companyId", userController.unfollowCompany);
 userRouter.get("/followed", userController.getFollowedCompanies);

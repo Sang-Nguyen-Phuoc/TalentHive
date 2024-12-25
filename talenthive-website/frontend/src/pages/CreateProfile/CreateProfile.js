@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 const CreateProfile = () => {
     const { user } = useUser();
     const navigate = useNavigate();
-    const [avatarPreview, setAvatarPreview] = useState(null);
+    const [avatarPreview, setAvatarPreview] = useState(`https://robohash.org/set_set5/bgset_bg1/${user._id}?size=300x300`);
     const [loading, setLoading] = useState(false);
 
     const handleCreateProfileSubmit = async (e) => {
@@ -32,7 +32,6 @@ const CreateProfile = () => {
             toast.error("Error while creating profile");
         }
         setLoading(false);
-
     };
 
     const handleAvatarChange = (e) => {

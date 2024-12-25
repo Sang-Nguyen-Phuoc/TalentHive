@@ -24,15 +24,16 @@ const ApplicationDetail = () => {
         <div className="col-md-4 mb-md-0 mb-4">
             <div className="card shadow rounded">
                 <div className="card-body">
-                    <div className="d-flex justify-content-between align-items-start gap-1">
+                    <div className="d-flex justify-content-between align-items-start gap-1 flex-wrap">  
                         <img
                             src={`https://robohash.org/1?set=set2/${application?.company?.name}`}
                             className="img-fluid rounded"
                             width="150"
                             height="150"
                             alt="company logo"
+                            style={{ flex: "1 1 150px", maxWidth: "150px" }}
                         />
-                        <div>
+                        <div style={{ flex: "1 1 150px"}}>
                             <h2 className="text-break text-wrap">{application?.company?.name}</h2>
                             { application?.company?.description && <p>{application?.company?.description}</p> }
                             { application?.company?.industry && <p>Industry: {application?.company?.industry}</p> }

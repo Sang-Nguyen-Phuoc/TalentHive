@@ -216,3 +216,28 @@ export const getUser = catchAsync(async (req: Request, res: Response, next: Next
 
 
 
+export const getCandidates = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const candidates = await User.find({ role: "candidate" }).populate("profile_id");
+
+    const filteredCandidates = candidates.map((candidate: any) => {
+        return {
+            _id: candidate._id,
+            email: candidate.email || null,
+            role: candidate.role || null,
+            full_name: candidate.profile_id?.full_name || null,
+            phone: candidate.profile_id?.phone || null,
+            address: candidate.profile_id?.address || null,
+            introduction: candidate.profile_id?.introduction || null,
+            avatar: candidate.profile_id?.avatar || null,
+            status: candidate.status || null,
+            statusReason: candidate.statusReason || null,
+        };
+    });
+    res.status(StatusCodes.OK).json({
+        status: "success",
+        data: {
+            total_candidates: filteredCandidates.length,
+            candidates: filteredCandidates,
+        },
+    });
+});

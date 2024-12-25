@@ -9,7 +9,7 @@ import HireTalent, { HireTalentLoader } from "./pages/HireTalent";
 import ProfileAccount, { changePasswordAction, profileLoader } from "./pages/ProfileAccount";
 import ProfileDashboard, { profileDashboardLoader } from "./pages/ProfileDashboard";
 import JobDetail, { jobDetailLoader } from "./pages/JobDetail";
-import ManageWorkers from "./pages/ManageWorkers";
+import ManageWorkers, { candidateListLoader } from "./pages/ManageWorkers/ManageWorkers";
 import ManageEmployers from "./pages/ManageEmployers";
 import Signin from "./pages/Signin";
 import SignUp from "./pages/SignUp";
@@ -24,6 +24,7 @@ import JobsApplied, { appliedJobsLoader } from "./pages/JobsApplied/AppliedJobsP
 import EmployerDashboard, { employerDashboardLoader } from "./pages/ProfileDashboard/EmployerDashboard";
 import CandidateDashboard, { candidateDashboardLoader } from "./pages/ProfileDashboard/CandidateDashboard";
 import ApplicationDetail, { applicationDetailLoader, appliedJobDetailLoader } from "./pages/JobsApplied/ApplicationDetail";
+import AdminLayout from "./layouts/AdminLayout/AdminLayout";
 
 const RedirectToProfile = () => {
     const { user } = useUser(); // Lấy id từ context
@@ -119,18 +120,27 @@ const router = createBrowserRouter([
                     },
                 ],
             },
+        ],
+    },
+    {
+        path: "/admin",
+        element:   <AdminLayout />,
+        children: [
             {
-                path: "/admin",
+                path: "manage-candidates",
+                element: <ManageWorkers />,
+                loader: candidateListLoader,
                 children: [
                     {
-                        path: "workers",
-                        element: <ManageWorkers />,
-                    },
-                    {
-                        path: "employers",
-                        element: <ManageEmployers />,
-                    },
-                ],
+                        path: ":id",
+                        element: <CandidateDashboard />,
+                        loader: candidateDashboardLoader,
+                    }
+                ]
+            },
+            {
+                path: "manage-employers",
+                element: <ManageEmployers />,
             },
         ],
     },
