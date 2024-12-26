@@ -13,8 +13,6 @@ function ForgotPassword() {
         const data = {
             'email': emailRef.current.value,
         }
-
-        console.log(data)
     }
     return (
         <div className={styles.wrapper}>

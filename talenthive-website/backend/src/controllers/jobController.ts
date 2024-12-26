@@ -116,6 +116,7 @@ export const getPublicJobList = catchAsync(async (req: Request, res: Response, n
 
 export const getJobList = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const totalJobs = await Job.countDocuments();
+    
     res.status(StatusCodes.OK).json({
         status: "success",
         data: {
@@ -400,14 +401,16 @@ export const responseToJobApplication = catchAsync(async (req: Request, res: Res
 });
 
 export const getJobListingsByEmployer = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const { role, id } = req.body.user;
+    const { user } = req.body;
     const { status, page, limit } = req.query;
 
-    if (role !== "employer") {
-        return next(new AppError("You are not authorized to view this page", StatusCodes.UNAUTHORIZED));
-    }
+    const employerProfile = await EmployerProfile.findById(user.profile_id);
+    isNotFound(employerProfile, "Employer", `Employer with id ${user.profile_id} not found`);
 
-    const filter: any = { employer_id: id };
+    const company = await Company.findById(employerProfile?.company_id);
+    isNotFound(company, "Company", `Company with id ${employerProfile?.company_id} not found`);
+
+    const filter: any = { employer_id: user._id };
     const validStatus = ["pending", "approved", "rejected"];
     if (status && validStatus.includes(status as string)) filter.status = status;
 
@@ -427,31 +430,29 @@ export const getJobListingsByEmployer = catchAsync(async (req: Request, res: Res
 
     const jobs = await jobsQuery;
 
-    console.log({ jobs });
-
     const totalJobs = page && limit ? await Job.countDocuments(filter) : jobs.length;
 
     const jobsFilter = jobs.map((job: any) => {
         return {
-            _id: job._id,
-            title: job.title,
-            salary_range: job.salary_range.min + " - " + job.salary_range.max + " " + job.salary_unit || null,
+            _id: job?._id,
+            title: job?.title,
+            salary_range: job?.salary_range.min + " - " + job?.salary_range.max + " " + job?.salary_unit || null,
             job_category: job?.job_category?.name || null,
             job_type: job?.job_type?.name || null,
-            address: job.address || null,
-            description: job.description || null,
-            benefits: job.benefits || null,
-            skills: job.skills || null,
-            requirements: job.requirements || null,
-            views: job.views || null,
-            applications_count: job.applications_count || null,
-            posted_at: job.posted_at || null,
-            expires_at: job.expires_at || null,
-            employer_id: job.employer_id || null,
+            address: job?.address || null,
+            description: job?.description || null,
+            benefits: job?.benefits || null,
+            skills: job?.skills || null,
+            requirements: job?.requirements || null,
+            views: job?.views || null,
+            applications_count: job?.applications_count || null,
+            posted_at: job?.posted_at || null,
+            expires_at: job?.expires_at || null,
+            employer_id: job?.employer_id || null,
             company: job?.company_id?.name || null,
             image: job?.image || null,
             status: job?.status || null,
-            is_public: job.is_public || null,
+            is_public: job?.is_public || null,
         };
     });
 
@@ -534,6 +535,7 @@ export const createJob = catchAsync(async (req: Request, res: Response, next: Ne
         job_type: existing_job_type?._id,
         job_category: existing_job_category?._id,
         is_public: is_public,
+        posted_at: new Date(),
     };
 
     const job = await Job.create(job_fields);
@@ -593,9 +595,17 @@ export const getAllJobs = catchAsync(async (req: Request, res: Response, next: N
 
 export const updateJob = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const { user } = req.body;
-    // check if company's employer not exists
+
+    const jobId = req.params.jobId;
+    isObjectIdOfMongoDB(jobId, "JobId", `Job Id ${jobId} is not a valid MongoDB ObjectId`);
+
     const employer = await EmployerProfile.findById(user.profile_id);
     isNotFound(employer, "Employer", `Employer with id ${user.profile_id} not found`);
+
+    const existingJob = await Job.findOne({ _id: jobId, employer_id: user._id, company_id: employer?.company_id });
+    isNotFound(existingJob, "Job", `Job with id ${jobId} not found`);
+
+
     const company = await Company.findById(employer?.company_id);
     isNotFound(company, "Company", `Company with id ${employer?.company_id} not found`);
 
@@ -655,12 +665,14 @@ export const updateJob = catchAsync(async (req: Request, res: Response, next: Ne
         is_public: is_public,
     };
 
-    const job = await Job.create(job_fields);
+    await existingJob?.updateOne(job_fields);
 
-    res.status(StatusCodes.CREATED).json({
+    const updatedJob = await Job.findById(jobId);
+
+    res.status(StatusCodes.OK).json({
         status: "success",
         data: {
-            job: job,
+            job: updatedJob,
         },
     });
 });
@@ -697,21 +709,22 @@ export const getAJobById = catchAsync(async (req: Request, res: Response, next: 
     }
 
     const jobFilter = {
-        _id: job._id,
-        title: job.title,
-        salary_range: job.salary_range.min + " - " + job.salary_range.max + " " + job.salary_unit || null,
+        _id: job?._id,
+        title: job?.title,
+        salary_range: job?.salary_range.min + " - " + job?.salary_range.max + " " + job?.salary_unit || null,
         job_category: job?.job_category?.name || null,
         job_type: job?.job_type?.name || null,
-        address: job.address || null,
-        description: job.description || null,
-        benefits: job.benefits || null,
-        skills: job.skills || null,
-        requirements: job.requirements || null,
-        views: job.views || null,
-        applications_count: job.applications_count || null,
-        posted_at: job.posted_at || null,
-        expires_at: job.expires_at || null,
-        employer_id: job.employer_id || null,
+        address: job?.address || null,
+        description: job?.description || null,
+        benefits: job?.benefits || null,
+        skills: job?.skills || null,
+        requirements: job?.requirements || null,
+        is_public: job?.is_public || null,
+        views: job?.views || null,
+        applications_count: job?.applications_count || null,
+        posted_at: job?.posted_at || null,
+        expires_at: job?.expires_at || null,
+        employer_id: job?.employer_id || null,
         company: {
             name: job?.company_id?.name || null,
             logo: job?.company_id?.avatar || null,

@@ -32,7 +32,11 @@ export const getCandidateById = async (id) => {
 
 export const postUpdateCandidate = async (data) => {
     try {
-        const response = await axiosCustom.post(`/api/v1/candidates/update`, data);
+        const response = await axiosCustom.post(`/api/v1/candidates/update`, data, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        });
         return response;
     } catch (error) {
         console.error("Error while updating candidate", error?.message || error);
@@ -46,7 +50,20 @@ export const getCandidateListByAdmin = async () => {
         return data;
     } catch (error) {
         console.error("Error while getting candidate list by admin", error?.message || error);
-        console.log("lỗi rồi cu");
+        throw error;
+    }
+}
+
+export const postUpdateEmployerInfo = async (data) => {
+    try {
+        const response = await axiosCustom.post(`/api/v1/employers/update`, data, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        });
+        return response;
+    } catch (error) {
+        console.error("Error while updating employer info", error?.message || error);
         throw error;
     }
 }

@@ -85,7 +85,6 @@ const ApplicationForm = ({ show, setShow }) => {
             return;
         }
 
-        console.log('Form Data:', formData);
         setShow(false);
         // reset form
         setFormData({

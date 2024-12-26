@@ -50,17 +50,15 @@ export const getCandidate = catchAsync(async (req: Request, res: Response, next:
     });
 });
 
-
-
 export const updateCandidateInfo = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const { user } = req.body;
 
-    if (!user.profile_id) {
+    if (!user?.profile_id) {
         return next(new AppError("User profile not found", statusCodes.NOT_FOUND));
     }
 
-    const candidateProfile = await CandidateProfile.findById(user.profile_id);
-    isNotFound(candidateProfile, "", `Profile with id: ${user.profile_id} not found`);
+    const candidateProfile = await CandidateProfile.findById(user?.profile_id);
+    isNotFound(candidateProfile, "", `Profile with id: ${user?.profile_id} not found`);
 
     const {
         full_name,
@@ -76,7 +74,7 @@ export const updateCandidateInfo = catchAsync(async (req: Request, res: Response
         introduction,
         avatar,
     } = req.body;
-    
+
     const updatedCandidateProfile = await candidateProfile?.updateOne({
         full_name: full_name || candidateProfile?.full_name || null,
         contact_email: contact_email || candidateProfile?.contact_email || null,
@@ -93,7 +91,6 @@ export const updateCandidateInfo = catchAsync(async (req: Request, res: Response
     });
 
     const updatedUser = await CandidateProfile.findById(candidateProfile!._id);
-    
 
     res.status(statusCodes.OK).json({
         status: "success",

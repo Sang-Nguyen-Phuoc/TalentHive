@@ -69,9 +69,9 @@ function HireTalent() {
 
     if (!companyData) {
         return (
-            <motion.div 
-                initial={{ opacity: 0, y: -20 }} 
-                animate={{ opacity: 1, y: 0 }} 
+            <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
                 className="container text-center p-5"
             >
                 <div className="alert alert-warning py-4 px-5 rounded-3 shadow-sm">
@@ -85,7 +85,7 @@ function HireTalent() {
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.95 }}
                         className="btn btn-primary btn-lg px-4 py-2"
-                        onClick={() => window.location.href = "/create-company-access"}
+                        onClick={() => (window.location.href = "/create-company-access")}
                     >
                         Create Company Now
                     </motion.button>
@@ -95,11 +95,7 @@ function HireTalent() {
     }
 
     return (
-        <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="container mb-5"
-        >
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="container mb-5">
             <ModalPostJob
                 show={showForm}
                 setShow={setShowForm}
@@ -108,10 +104,10 @@ function HireTalent() {
                 jobCategories={jobCategories}
             />
             <div className="row mt-2 g-3 g-md-4 g-xl-5 flex-column-reverse flex-md-row">
-                <motion.div 
-                    initial={{ x: -50, opacity: 0 }} 
-                    animate={{ x: 0, opacity: 1 }} 
-                    transition={{ type: "spring", stiffness: 100 }} 
+                <motion.div
+                    initial={{ x: -50, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ type: "spring", stiffness: 100 }}
                     className="col-12 col-md-8"
                 >
                     <div className="row py-3">
@@ -158,10 +154,7 @@ function HireTalent() {
                         </div>
                     </div>
                     <div className="d-flex my-3 ">
-                        <motion.span 
-                            whileHover={{ scale: 1.3 }} 
-                            className="fw-bold flex-grow-0"
-                        >
+                        <motion.span whileHover={{ scale: 1.3 }} className="fw-bold flex-grow-0">
                             {renderTotalJobs(total_jobs)}
                         </motion.span>
                     </div>
@@ -195,44 +188,44 @@ function HireTalent() {
                         )}
                     </ul>
                 </motion.div>
-                <motion.div 
-                    initial={{ x: 50, opacity: 0 }} 
-                    animate={{ x: 0, opacity: 1 }} 
-                    transition={{ type: "spring", stiffness: 100 }} 
+                <motion.div
+                    initial={{ x: 50, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ type: "spring", stiffness: 100 }}
                     className="col-12 col-md-4"
                 >
                     <div className="container shadow rounded">
                         {companyData ? (
                             <>
                                 <div className="row justify-content-center">
-                                    <motion.img
-                                        whileHover={{ scale: 1.1 }}
-                                        src={company?.avatar}
-                                        className="img-thumbnail m-3"
-                                        style={{ width: 200, aspectRatio: 1, objectFit: "cover" }}
-                                        alt="Avatar"
-                                    />
+                                    <div className="mb-3">
+                                        <motion.img
+                                            whileHover={{ scale: 1.1 }}
+                                            src={company?.avatar || "https://placehold.co/400"}
+                                            className="img-fluid shadow rounded p-0"
+                                            style={{ objectFit: "cover" }}
+                                            alt="Avatar"
+                                        />
+                                    </div>
                                     <h2 className="col-auto text-wrap fw-bold fs-4 mt-3 mt-md-0">{company?.name}</h2>
                                 </div>
                                 <hr className="m-2" />
-                                <div className="p-3">
-                                    <span className="fw-bold">Description: </span>
-                                    {company?.description || "Nothing more"}
-                                </div>
-                                <div className="p-3">
-                                    <span className="fw-bold">Industry: </span>
-                                    {company?.industry?.name || "Not defined"}
-                                </div>
-                                <div className="p-3">
-                                    <span className="fw-bold">Contact: </span>
-                                    {company?.contact_email || user?.email}
-                                </div>
+                                {[
+                                    { key: "manager", value: company?.company_manager },
+                                    { key: "introduction", value: company?.introduction },
+                                    { key: "industry", value: company?.industry },
+                                    { key: "location", value: company?.addresses?.[0] },
+                                    { key: "contact email", value: company?.company_manager_email },
+                                    { key: "website", value: company?.website },
+                                ].map((item, index) => (
+                                    <div key={index} className="p-3">
+                                        <span className="fw-bold">{item.key}: </span>
+                                        {item.value ? item.value : <span className="text-muted">Not defined</span>}
+                                    </div>
+                                ))}
                                 <hr className="m-2" />
-                                <motion.div 
-                                    whileHover={{ scale: 1.05 }} 
-                                    whileTap={{ scale: 0.95 }} 
-                                    className="p-3"
-                                >
+                                { company?.website && (
+                                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="p-3">
                                     <a
                                         href={company?.website}
                                         target="_blank"
@@ -243,6 +236,7 @@ function HireTalent() {
                                         <FontAwesomeIcon icon={faSquareArrowUpRight} /> Visit website
                                     </a>
                                 </motion.div>
+                                )}
                             </>
                         ) : (
                             <div className="row">

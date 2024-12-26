@@ -52,7 +52,6 @@ export const lockUser = catchAsync(async (req: Request, res: Response, next: Nex
     if (userAccountId) {
         isObjectIdOfMongoDB(userAccountId, "userId");
         user = await User.findByIdAndUpdate(userAccountId, { active: false });
-        console.log({ user });
 
         isNotFound(user, "", "User not found with the provided userAccountId");
     } else if (email) {
@@ -60,7 +59,6 @@ export const lockUser = catchAsync(async (req: Request, res: Response, next: Nex
             return next(new AppError("Please provide a valid email", StatusCodes.BAD_REQUEST));
         }
         user = await User.findOneAndUpdate({ email: email }, { active: false });
-        console.log({ user });
 
         isNotFound(user, "", "User not found with the provided email");
     } else {
@@ -96,7 +94,6 @@ export const unlockUser = catchAsync(async (req: Request, res: Response, next: N
     if (userAccountId) {
         isObjectIdOfMongoDB(userAccountId, "userId");
         user = await User.findByIdAndUpdate(userAccountId, { active: true });
-        console.log({ user });
 
         isNotFound(user, "", "User not found with the provided userAccountId");
     } else if (email) {
@@ -104,7 +101,6 @@ export const unlockUser = catchAsync(async (req: Request, res: Response, next: N
             return next(new AppError("Please provide a valid email", StatusCodes.BAD_REQUEST));
         }
         user = await User.findOneAndUpdate({ email: email }, { active: true });
-        console.log({ user });
 
         isNotFound(user, "", "User not found with the provided email");
     } else {

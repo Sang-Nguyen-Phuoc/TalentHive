@@ -53,10 +53,8 @@ const ApplicationForm = ({ show, setShow, company, jobTypes, jobCategories }) =>
     const handleSubmit = async (e) => {
         setLoading(true);
         e.preventDefault();
-        console.log(formData); // Replace this with backend submit logic
         try {
             const data = await postCreateJob(formData);
-            console.log(data);
             navigate(`/jobs/${data.job._id}`);
         } catch (error) {
             console.error("Error while creating job", error?.message || error);

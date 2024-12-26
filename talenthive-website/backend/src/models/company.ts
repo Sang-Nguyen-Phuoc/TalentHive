@@ -4,7 +4,7 @@ import validator from "validator";
 export interface ICompany {
     _id?: Types.ObjectId;
     name?: string;
-    avatar?: Types.ObjectId;
+    avatar?: string;
     introduction?: string;
     industry?: string;
     addresses?: string[];
@@ -22,10 +22,7 @@ const CompanySchema = new Schema<ICompany>({
         required: true,
         trim: true
     },
-    avatar: {
-        type: String,
-        ref: 'Image'
-    },
+    avatar: String,
     introduction: {
         type: String,
         trim: true

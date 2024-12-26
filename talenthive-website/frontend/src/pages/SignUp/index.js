@@ -63,12 +63,11 @@ function SignUp() {
 
         try {
             const data = await postSignup(bodyData.email, bodyData.password, bodyData.name , bodyData.role);
-            console.log({data});
             
             saveAccessToken(data?.accessToken);
             login();
             toast.success("Register successfully!");
-            navigate("/create-employer-profile");
+            navigate("/profile/me");
         } catch (error) {
             toast.error(error?.message || error);
         }

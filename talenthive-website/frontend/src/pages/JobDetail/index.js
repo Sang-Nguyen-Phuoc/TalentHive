@@ -37,28 +37,28 @@ export const jobDetailLoader = async ({ params }) => {
     }
     try {
         applicationData = await getApplicationForJob(params.id);
-    } catch (error) {    
+    } catch (error) {
         console.error("Error while getting application for job", error?.message || error);
     }
     return { jobData, jobTypeListData, jobCategoryListData, applicationData };
 };
 
 function JobDetail({ isSearch }) {
-    const { role } = useUser();
+    const { role, user } = useUser();
     const [showRemoveModal, setShowRemoveModal] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
 
     const [showApplyModal, setShowApplyModal] = useState(false);
-    
+
     const { jobData, jobTypeListData, jobCategoryListData, applicationData } = useLoaderData();
 
     const { job } = jobData;
-    
+
     const jobTypes = jobTypeListData.job_types;
     const jobCategories = jobCategoryListData.job_categories;
     const application = applicationData?.application;
-    console.log( "application data", applicationData);
-    
+
+    const isOwner = job?.employer_id?._id === user?._id;
 
     const Job = JobItem.Detail;
 
@@ -67,7 +67,13 @@ function JobDetail({ isSearch }) {
         <div className="container mb-5">
             <main className="row g-3 g-md-4 g-lg-5 mt-5 mt-lg-0">
                 <div className="col-md-8">
-                    <Job job={job} show={showApplyModal} setShow={setShowApplyModal} role={role} application={application}/>
+                    <Job
+                        job={job}
+                        show={showApplyModal}
+                        setShow={setShowApplyModal}
+                        role={role}
+                        application={application}
+                    />
                     <div className="container">
                         <div className="row">
                             <div className="col shadow rounded-3 p-4">
@@ -99,7 +105,7 @@ function JobDetail({ isSearch }) {
                                         <li className="list-group-item">No benefits available</li>
                                     )}
                                 </ul>
-                                {role === ROLES.EMPLOYER && (
+                                {role === ROLES.EMPLOYER && isOwner && (
                                     <>
                                         <hr />
                                         <div className="row d-flex justify-content-evenly">

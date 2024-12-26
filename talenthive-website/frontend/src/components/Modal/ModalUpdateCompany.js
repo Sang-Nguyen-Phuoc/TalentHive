@@ -8,14 +8,17 @@ import { useUser } from "../../context/UserContext";
 const ModalUpdateCompany = ({ show, onClose, company }) => {
     const navigate = useNavigate();
     const { user } = useUser();
-    console.log("company", company);
-    
+    const [previewAvatar, setPreviewAvatar] = useState(
+        company?.avatar || `https://robohash.org/${Math.random()}?size=300x300`
+    );
+
     const [formData, setFormData] = useState({
         name: company?.name || "",
-        avatar: company?.avatar || "",
+        avatar: undefined,
+        avatarUrl: previewAvatar,
         introduction: company?.introduction || "",
         industry: company?.industry || "",
-        addresses: company?.addresses || [],
+        addresses: company?.addresses || [""],
         website: company?.website || "",
         company_manager: company?.company_manager || "",
         employers: company?.employers || [],
@@ -29,10 +32,6 @@ const ModalUpdateCompany = ({ show, onClose, company }) => {
                 [name]: files[0],
             });
         } else if (name === "addresses") {
-            setFormData({
-                ...formData,
-                [name]: value.split(",").map(item => item.trim()), // Convert to an array of addresses
-            });
         } else {
             setFormData({
                 ...formData,
@@ -45,14 +44,93 @@ const ModalUpdateCompany = ({ show, onClose, company }) => {
         e.preventDefault();
         try {
             const bodyData = formData;
-            const data = await postUpdateCompany(bodyData); // Assume the API service to update company
+            bodyData.avatar = formData.avatar || formData.avatarUrl;
+            await postUpdateCompany(bodyData);
             toast.success("Company information updated successfully");
             onClose();
-            navigate(`/employer/${user._id}/dashboard`); // Assuming companyId is in the user object
+            navigate(`/employer/${user._id}/dashboard`);
         } catch (error) {
             console.error("Error while updating company", error?.message || error);
             toast.error("Error while updating company");
         }
+    };
+
+    const handleAvatarChange = (e) => {
+        const file = e.target.files[0];
+        if (previewAvatar) {
+            URL.revokeObjectURL(previewAvatar);
+        }
+        if (file) {
+            const previewURL = URL.createObjectURL(file);
+            setPreviewAvatar(previewURL);
+            setFormData({
+                ...formData,
+                avatar: file,
+            });
+        }
+    };
+
+    const isValidImageUrl = (url, callback) => {
+        try {
+            const parsedUrl = new URL(url);
+            if (!["http:", "https:"].includes(parsedUrl.protocol)) {
+                callback(false);
+                return;
+            }
+
+            const img = new Image();
+            img.onload = () => callback(true);
+            img.onerror = () => callback(false);
+            img.src = url;
+        } catch (error) {
+            callback(false);
+        }
+    };
+
+    const handleAvatarUrlChange = (e) => {
+        const url = e.target.value;
+
+        isValidImageUrl(url, (isValid) => {
+            if (isValid) {
+                setPreviewAvatar(url);
+                setFormData({
+                    ...formData,
+                    avatar: undefined,
+                    avatarUrl: url,
+                });
+            } else {
+                toast.error("Invalid image URL");
+            }
+        });
+    };
+
+    const handleAddressChange = (index, event) => {
+        const updatedAddresses = [...formData.addresses];
+        updatedAddresses[index] = event.target.value;
+        setFormData({
+            ...formData,
+            addresses: updatedAddresses,
+        });
+    };
+
+    const handleRemoveAddress = (index) => {
+        if (formData.addresses.length === 1) {
+            return;
+        }
+        const updatedAddresses = [...formData.addresses];
+        updatedAddresses.splice(index, 1);
+        setFormData({
+            ...formData,
+            addresses: updatedAddresses,
+        })
+    };
+
+    // Hàm thêm ô nhập địa chỉ mới
+    const addAddressField = () => {
+        setFormData({
+            ...formData,
+            addresses: [...formData.addresses, ""],
+        })
     };
 
     return (
@@ -141,8 +219,22 @@ const ModalUpdateCompany = ({ show, onClose, company }) => {
                                     id="avatar"
                                     name="avatar"
                                     accept=".jpg,.png,.jpeg"
-                                    onChange={handleInputChange}
+                                    onChange={handleAvatarChange}
                                 />
+                                <input
+                                    type="text"
+                                    className="form-control mt-2"
+                                    placeholder="Enter URL for avatar image"
+                                    value={formData.avatarUrl}
+                                    onChange={handleAvatarUrlChange}
+                                />
+                                {previewAvatar && (
+                                    <img
+                                        src={previewAvatar}
+                                        alt="avatar preview"
+                                        className="img-fluid shadow rounded border border-dark mt-4"
+                                    />
+                                )}
                             </div>
                         </div>
                     </div>
@@ -151,16 +243,32 @@ const ModalUpdateCompany = ({ show, onClose, company }) => {
                     <div className="mt-4">
                         <h6 className="text-primary">Addresses</h6>
                         <div className="form-group">
-                            <label htmlFor="addresses">Addresses (comma-separated)</label>
-                            <input
-                                type="text"
-                                className="form-control"
-                                id="addresses"
-                                name="addresses"
-                                placeholder="Enter addresses"
-                                value={formData.addresses.join(", ")}
-                                onChange={handleInputChange}
-                            />
+                            {formData.addresses.map((address, index) => (
+                                <div key={index} className="input-group mb-2">
+                                    <input
+                                        type="text"
+                                        className={`form-control ${index === 0 ? "rounded" : ""}`}
+                                        id={`address-${index}`}
+                                        name={`address-${index}`}
+                                        placeholder="Enter your company address"
+                                        value={address}
+                                        required
+                                        onChange={(event) => handleAddressChange(index, event)}
+                                    />
+                                    <button
+                                        type="button"
+                                        className="btn btn-secondary"
+                                        onClick={() => handleRemoveAddress(index)}
+                                        style={{ display: index === 0 ? "none" : "block" }}
+                                    >
+                                        {" "}
+                                        Remove{" "}
+                                    </button>
+                                </div>
+                            ))}
+                            <button type="button" className="btn btn-info" onClick={addAddressField}>
+                                + Add Address
+                            </button>
                         </div>
                     </div>
 
