@@ -41,7 +41,7 @@ const CandidateDashboard = () => {
                 transition={{ duration: 0.5 }}
             >
                 <motion.img
-                    src={"https://robohash.org/1" || "https://robohash.org/1"}
+                    src={userById?.avatar || "https://robohash.org/1?set=set2"}
                     alt="Avatar"
                     className="img-fluid shadow-lg rounded border border-1"
                     style={{ maxHeight: 200, objectFit: "contain" }}

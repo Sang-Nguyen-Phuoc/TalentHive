@@ -23,8 +23,6 @@ export const UserProvider = ({ children }) => {
             setLoading(true);
             const data = await getMe();
             if (data?.user) {
-                console.log("Tôi fetch user thành công");
-
                 setUser(data.user);
                 setRole(data.user.role);
                 localStorage.setItem("user", JSON.stringify(data.user));
@@ -41,7 +39,6 @@ export const UserProvider = ({ children }) => {
     };
 
     useEffect(() => {
-        console.log("tôi ở trong useEffect của UserProvider");
         const token = getAccessToken();
         if (token && token.length > 6) {
             fetchUser();

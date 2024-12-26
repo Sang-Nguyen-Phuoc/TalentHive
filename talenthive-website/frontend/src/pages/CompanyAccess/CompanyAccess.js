@@ -8,27 +8,34 @@ const CompanyAccess = () => {
     const { user } = useUser();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
-    const [avatarPreview, setAvatarPreview] = useState(null);
-    const [addresses, setAddresses] = useState([""]);
+    const [avatarPreview, setAvatarPreview] = useState(
+        `https://robohash.org/set_set3/bgset_bg1/${Math.random()}?size=300x300`
+    );
+
+    const [formData, setFormData] = useState({
+        company_name: "",
+        avatar: undefined,
+        avatarUrl: avatarPreview || "",
+        introduction: "",
+        industry: "",
+        addresses: [""],
+        website: "",
+    })
+
     const handleJoinCompanySubmit = async (e) => {
         setLoading(true);
         e.preventDefault();
-        const formData = new FormData(e.target);
-        const data = Object.fromEntries(formData.entries());
-        console.log("data in handleJoinCompanySubmit", data);
+        
         try {
             const companyData = {
-                name: data.company_name,
-                avatar: data.avatar,
-                introduction: data.introduction,
-                industry: data.industry,
-                addresses: addresses,
-                website: data.website ? data.website : undefined,
+                name: formData.company_name || "",
+                avatar: formData.avatar || formData.avatarUrl ,
+                introduction: formData.introduction || "",
+                industry: formData.industry || "",
+                addresses: formData.addresses || [],
+                website: formData.website || "",
             }
-            console.log({companyData});
-            
-            const dataResponse = await postCreateCompany(companyData);
-            console.log({dataResponse});
+            await postCreateCompany(companyData);
             toast.success("Company created successfully");
             navigate("/hire-talent");
         } catch (error) {
@@ -46,27 +53,86 @@ const CompanyAccess = () => {
         if (file) {
             const previewURL = URL.createObjectURL(file);
             setAvatarPreview(previewURL);
+            setFormData({
+                ...formData,
+                avatar: file,
+                avatarUrl: "",
+            })
         }
     };
 
+    const isValidImageUrl = (url, callback) => {
+        try {
+            const parsedUrl = new URL(url);
+            if (!["http:", "https:"].includes(parsedUrl.protocol)) {
+                callback(false);
+                return;
+            }
+
+            const img = new Image();
+            img.onload = () => callback(true);
+            img.onerror = () => callback(false);
+            img.src = url;
+        } catch (error) {
+            callback(false);
+        }
+    };
+
+    const handleAvatalUrlChange = (e) => {
+        const url = e.target.value;
+
+        isValidImageUrl(url, (isValid) => {
+            if (isValid) {
+                if (avatarPreview) {
+                    URL.revokeObjectURL(avatarPreview);
+                }
+                setAvatarPreview(url);
+                setFormData({
+                    ...formData,
+                    avatar: undefined,
+                    avatarUrl: url,
+                })
+            } else {
+                toast.error("Invalid image URL");
+            }
+        });
+    };
+
+    const handleFormChange = (e) => {
+        const { name, value } = e.target;
+        setFormData({
+            ...formData,
+            [name]: value,
+        });
+    }
+
     const handleAddressChange = (index, event) => {
-        const updatedAddresses = [...addresses];
+        const updatedAddresses = [...formData.addresses];
         updatedAddresses[index] = event.target.value;
-        setAddresses(updatedAddresses);
+        setFormData({
+            ...formData,
+            addresses: updatedAddresses,
+        })
     };
 
     const handleRemoveAddress = (index) => {
-        if (addresses.length === 1) {
+        if (formData.addresses.length === 1) {
             return;
         }
-        const updatedAddresses = [...addresses];
+        const updatedAddresses = [...formData.addresses];
         updatedAddresses.splice(index, 1);
-        setAddresses(updatedAddresses);
+        setFormData({
+            ...formData,
+            addresses: updatedAddresses,
+        })
     };
 
     // Hàm thêm ô nhập địa chỉ mới
     const addAddressField = () => {
-        setAddresses([...addresses, ""]);
+        setFormData({
+            ...formData,
+            addresses: [...formData.addresses, ""],
+        })
     };
 
     return (
@@ -116,6 +182,8 @@ const CompanyAccess = () => {
                             placeholder="enter your name"
                             name="company_name"
                             required
+                            value={formData.company_name}
+                            onChange={handleFormChange}
                         />
                     </div>
                 </div>
@@ -126,12 +194,21 @@ const CompanyAccess = () => {
                     <div className="col-sm-9 col-xl-10">
                         <input
                             type="file"
-                            className="form-control"
+                            className="form-control mb-3"
                             id="avatar"
                             name="avatar"
                             accept="image/*"
+                            // value={formData.avatar}
                             onChange={handleAvatarChange}
-                            
+                        />
+                        <input
+                            type="text"
+                            className="form-control mt-2"
+                            id="avatarUrl"
+                            placeholder="enter your company avatar URL"
+                            name="avatarUrl"
+                            defaultValue={formData.avatarUrl}
+                            onChange={handleAvatalUrlChange}
                         />
                     </div>
                 </div>
@@ -139,7 +216,11 @@ const CompanyAccess = () => {
                     <div className="row mb-3">
                         <div className="col-sm-3 col-xl-2"></div>
                         <div className="col-sm-9 col-xl-10">
-                            <img src={avatarPreview} alt="avatar preview" className="img-fluid shadow rounded" />
+                            <img
+                                src={avatarPreview}
+                                alt="avatar preview"
+                                className="img-fluid shadow rounded border border-dark"
+                            />
                         </div>
                     </div>
                 )}
@@ -153,6 +234,8 @@ const CompanyAccess = () => {
                             id="introduction"
                             name="introduction"
                             placeholder="write a brief introduction about your company"
+                            value={formData.introduction}
+                            onChange={handleFormChange}
                         ></textarea>
                     </div>
                 </div>
@@ -168,6 +251,8 @@ const CompanyAccess = () => {
                             name="industry"
                             placeholder="enter your company industry"
                             required
+                            value={formData.industry}
+                            onChange={handleFormChange}
                         />
                     </div>
                 </div>
@@ -176,7 +261,7 @@ const CompanyAccess = () => {
                         Addresses*
                     </label>
                     <div className="col-sm-9 col-xl-10">
-                        {addresses.map((address, index) => (
+                        {formData.addresses.map((address, index) => (
                             <div key={index} className="input-group mb-2">
                                 <input
                                     type="text"
@@ -216,6 +301,8 @@ const CompanyAccess = () => {
                             id="website"
                             name="website"
                             placeholder="enter your company website"
+                            value={formData.website}
+                            onChange={handleFormChange}
                         />
                     </div>
                 </div>

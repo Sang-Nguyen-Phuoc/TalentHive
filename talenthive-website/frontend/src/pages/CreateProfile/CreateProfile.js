@@ -7,7 +7,9 @@ import { toast } from "react-toastify";
 const CreateProfile = () => {
     const { user } = useUser();
     const navigate = useNavigate();
-    const [avatarPreview, setAvatarPreview] = useState(`https://robohash.org/set_set5/bgset_bg1/${user._id}?size=300x300`);
+    const [avatarPreview, setAvatarPreview] = useState(
+        `https://robohash.org/set_set5/bgset_bg1/${Math.random()}?size=300x300`
+    );
     const [loading, setLoading] = useState(false);
 
     const handleCreateProfileSubmit = async (e) => {
@@ -15,16 +17,15 @@ const CreateProfile = () => {
         e.preventDefault();
         const formData = new FormData(e.target);
         const data = Object.fromEntries(formData.entries());
-        console.log(data);
         const bodyData = {
             full_name: data.full_name,
             introduction: data.introduction,
             address: data.address,
             phone: data.phone,
-        }
+            avatar: avatarPreview === formData.get("avatarUrl") ? avatarPreview : formData.get("avatar"),
+        };
         try {
             const dataResponse = await postUpdateEmployerProfile(bodyData);
-            console.log(dataResponse);
             toast.success("Profile created successfully");
             navigate("/profile/me");
         } catch (error) {
@@ -43,6 +44,40 @@ const CreateProfile = () => {
             const previewURL = URL.createObjectURL(file);
             setAvatarPreview(previewURL);
         }
+    };
+
+    const isValidImageUrl = (url, callback) => {
+        try {
+            // Kiểm tra xem URL có hợp lệ không
+            const parsedUrl = new URL(url);
+            if (!["http:", "https:"].includes(parsedUrl.protocol)) {
+                callback(false);
+                return;
+            }
+
+            // Tải thử ảnh
+            const img = new Image();
+            img.onload = () => callback(true); // Hợp lệ nếu tải thành công
+            img.onerror = () => callback(false); // Không hợp lệ nếu không tải được
+            img.src = url;
+        } catch (error) {
+            callback(false);
+        }
+    };
+
+    const handleAvatalUrlChange = (e) => {
+        const url = e.target.value;
+
+        isValidImageUrl(url, (isValid) => {
+            if (isValid) {
+                if (avatarPreview) {
+                    URL.revokeObjectURL(avatarPreview);
+                }
+                setAvatarPreview(url);
+            } else {
+                toast.error("Invalid image URL. Please provide a valid image.");
+            }
+        });
     };
 
     return (
@@ -96,16 +131,25 @@ const CreateProfile = () => {
                 </div>
                 <div className="row mb-3">
                     <label htmlFor="avatar" className="col-sm-3 col-xl-2 col-form-label fw-bold">
-                        Avatar
+                        Avatar (Choose file or enter URL)
                     </label>
                     <div className="col-sm-9 col-xl-10">
                         <input
                             type="file"
-                            className="form-control"
+                            className="form-control mb-3"
                             id="avatar"
                             name="avatar"
                             accept="image/*"
                             onChange={handleAvatarChange}
+                        />
+                        <input
+                            type="text"
+                            className="form-control"
+                            id="avatarUrl"
+                            name="avatarUrl"
+                            placeholder="Enter URL for avatar image"
+                            defaultValue={avatarPreview}
+                            onChange={handleAvatalUrlChange}
                         />
                     </div>
                 </div>
@@ -167,8 +211,7 @@ const CreateProfile = () => {
                                 </div>
                             ) : (
                                 "Create Profile"
-                            )    
-                            }
+                            )}
                         </button>
                     </div>
                 </div>

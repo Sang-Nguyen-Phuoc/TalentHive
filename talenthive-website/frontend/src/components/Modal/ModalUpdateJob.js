@@ -2,15 +2,19 @@ import Modal from "react-bootstrap/Modal";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router";
-import { postCreateJob, putUpdateJob } from "../../services/jobsServices";
+import { putUpdateJob } from "../../services/jobsServices";
 
 const ModalUpdateJob = ({ show, setShow, company, jobTypes, jobCategories, job }) => {
     const navigate = useNavigate();
     const [formData, setFormData] = useState(() => {
         const [max_salary, min_salary] = job?.salary_range?.match(/\d+/g) || [0, 0];
         const salary_unit = job?.salary_range?.match(/[a-zA-Z]+/g)[0] || "USD";
-        console.log("expires_at", job?.expires_at);
-        
+        const localDateTime = new Date(
+            new Date(job?.expires_at || 0).getTime() - new Date().getTimezoneOffset() * 60000
+        )
+            .toISOString()
+            .slice(0, 16);
+
         return {
             title: job?.title || "",
             image: job?.image || "",
@@ -24,13 +28,15 @@ const ModalUpdateJob = ({ show, setShow, company, jobTypes, jobCategories, job }
             skills: job?.skills || [""],
             requirements: job?.requirements || [""],
             benefits: job?.benefits || [""],
-            expires_at: job?.expires_at || "",
+            expires_at: localDateTime,
             job_type: job?.job_type || "",
             job_category: job?.job_category || "",
             is_public: job?.is_public || false,
-        }
+        };
     });
-    
+
+    console.log("formData =>> ", formData);
+
     const [loading, setLoading] = useState(false);
 
     const handleChange = (e) => {
@@ -271,11 +277,7 @@ const ModalUpdateJob = ({ show, setShow, company, jobTypes, jobCategories, job }
                             </button>
                         </div>
                     ))}
-                    <button
-                        type="button"
-                        className="btn btn-primary mb-3"
-                        onClick={() => addArrayField("skills")}
-                    >
+                    <button type="button" className="btn btn-primary mb-3" onClick={() => addArrayField("skills")}>
                         + Add Skill
                     </button>
 
@@ -329,11 +331,7 @@ const ModalUpdateJob = ({ show, setShow, company, jobTypes, jobCategories, job }
                             </button>
                         </div>
                     ))}
-                    <button
-                        type="button"
-                        className="btn btn-primary mb-3"
-                        onClick={() => addArrayField("benefits")}
-                    >
+                    <button type="button" className="btn btn-primary mb-3" onClick={() => addArrayField("benefits")}>
                         + Add Benefit
                     </button>
 
@@ -343,12 +341,14 @@ const ModalUpdateJob = ({ show, setShow, company, jobTypes, jobCategories, job }
                             Expiration Date *
                         </label>
                         <input
-                            type="date"
+                            type="datetime-local"
                             className="form-control"
                             id="expires_at"
                             name="expires_at"
                             value={formData.expires_at}
-                            onChange={handleChange}
+                            onChange={(e) => {
+                                handleChange(e);
+                            }}
                             required
                         />
                     </div>
@@ -374,7 +374,11 @@ const ModalUpdateJob = ({ show, setShow, company, jobTypes, jobCategories, job }
                             Cancel
                         </button>
                         <button type="submit" className="btn btn-primary">
-                            {loading ? <span className="spinner-border spinner-border-sm" role="status"></span> : "Update"}
+                            {loading ? (
+                                <span className="spinner-border spinner-border-sm" role="status"></span>
+                            ) : (
+                                "Update"
+                            )}
                         </button>
                     </div>
                 </form>

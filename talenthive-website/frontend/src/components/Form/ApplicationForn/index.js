@@ -25,7 +25,6 @@ const ApplicationForm = ({ show, setShow }) => {
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        console.log("Form Data:", formData);
         // Optionally, you can also close the modal after submission
         setShow(false);
     };

@@ -10,7 +10,6 @@ import CandidateProfile from "../models/candidateProfile";
 import EmployerProfile from "../models/employerProfile";
 import { createSendToken } from "../utils/tokenServices";
 import { StatusCodes } from "http-status-codes";
-import { userSeeder } from "../seeds/userSeeder";
 import { isRequired } from "../utils/validateServices";
 
 export const register = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
@@ -38,9 +37,9 @@ export const register = catchAsync(async (req: Request, res: Response, next: Nex
     let profile = null;
 
     if (role === "candidate") {
-        profile = await CandidateProfile.create({ email: email, full_name: full_name });
+        profile = await CandidateProfile.create({ email: email, full_name: full_name, contact_email: email });
     } else if (role === "employer") {
-        profile = await EmployerProfile.create({ email: email, full_name: full_name });
+        profile = await EmployerProfile.create({ email: email, full_name: full_name, contact_email: email });
     }
 
     const newUser = await User.create({ email, password, role, profile_id: profile ? profile._id : undefined });
@@ -238,17 +237,12 @@ export const getMe = catchAsync(async (req: Request, res: Response, next: NextFu
 
 export const updateMe = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const currentUser = req.body.user;
-    if (!currentUser) {
-        return next(new AppError("attachUser middleware must be called before updateMe route", 500));
-    }
-    // both
-    const { email, full_name, address, phone } = req.body;
+
+    // // both
+    const { email, full_name, address, phone, avatar, contact_email } = req.body;
 
     // employer
     const {  introduction,  company_id } = req.body;
-
-    // candidate
-    const { date_of_birth, gender,  city, education, skills, certification, experience, work_experience, resume, avatar, visibility } = req.body;
 
     if (email && !validator.isEmail(email)) {
         return next(new AppError("Email is not valid", StatusCodes.BAD_REQUEST));
@@ -263,16 +257,7 @@ export const updateMe = catchAsync(async (req: Request, res: Response, next: Nex
         }
         profile.email = email || profile.email;
         profile.full_name = full_name || profile.full_name;
-        profile.date_of_birth = date_of_birth || profile.date_of_birth;
-        profile.gender = gender || profile.gender;
-        profile.phone = phone || profile.phone; 
-        profile.address = address || profile.address;
-        profile.city = city || profile.city; 
-        profile.skills = skills || profile.skills;
-        profile.certification = certification || profile.certification;
-        profile.work_experience = work_experience || profile.work_experience;
         profile.avatar = avatar || profile.avatar;
-        profile.visibility = visibility || profile.visibility;
         await profile.save();
 
         return res.status(StatusCodes.OK).json({
@@ -293,6 +278,7 @@ export const updateMe = catchAsync(async (req: Request, res: Response, next: Nex
         profile.address = address || profile.address;
         profile.introduction = introduction || profile.introduction;
         profile.company_id = company_id || profile.company_id;
+        profile.avatar = avatar || profile.avatar;
 
         await profile.save();
 

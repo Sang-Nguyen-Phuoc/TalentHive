@@ -4,9 +4,10 @@ import validator from "validator";
 export interface IEmployerProfile {
     _id?: Types.ObjectId;
     email?: string;
+    contact_email?: string;
     full_name?: string;
     introduction?: string;
-    avatar?: object;
+    avatar?: string;
     phone?: string;
     address?: string;
     company_id?: Types.ObjectId;
@@ -20,54 +21,58 @@ export interface IEmployerProfile {
 const EmployerProfileSchema = new Schema<IEmployerProfile>({
     full_name: {
         type: String,
-        trim: true
+        trim: true,
     },
     avatar: {
-        type: Object,
+        type: String,
     },
     introduction: {
         type: String,
-        trim: true
+        trim: true,
     },
     address: {
         type: String,
-        trim: true
+        trim: true,
     },
     company_id: {
         type: Schema.Types.ObjectId,
-        ref: 'Company',
+        ref: "Company",
     },
     company_role: {
         type: String,
         trim: true,
-        enum: ["company_manager", "employee"]
+        enum: ["company_manager", "employee"],
     },
     email: {
         type: String,
-        validate: [validator.isEmail, 'Invalid email address']
+        validate: [validator.isEmail, "Invalid email address"],
+    },
+    contact_email: {
+        type: String,
+        validate: [validator.isEmail, "Invalid email address"],
     },
     phone: {
         type: String,
     },
     category: {
         type: String,
-        trim: true
+        trim: true,
     },
     active: {
         type: Boolean,
         default: true,
-        select: false
+        select: false,
     },
     created_at: {
         type: Date,
-        default: Date.now()
+        default: Date.now(),
     },
     updated_at: {
         type: Date,
-        default: Date.now()
-    }
-})
+        default: Date.now(),
+    },
+});
 
-const EmployerProfile = model<IEmployerProfile>('EmployerProfile', EmployerProfileSchema);
+const EmployerProfile = model<IEmployerProfile>("EmployerProfile", EmployerProfileSchema);
 
 export default EmployerProfile;

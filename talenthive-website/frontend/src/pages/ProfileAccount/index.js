@@ -121,7 +121,7 @@ const ProfileAccount = () => {
                 <div className="row my-4">
                     <div className="col-lg-10 mx-auto p-lg-4 shadow rounded bg-white">
                         <h1 className="pb-4 fw-bold pt-4 pt-lg-0 border-bottom text-center">
-                            {isOwner ? "Your Profile" : `${userById?.name || "User"}'s Profile`}
+                            {isOwner ? "Your Account" : `${userById?.name || "User"}'s Account`}
                         </h1>
                         <table className="table table-borderless">
                             <tbody>
@@ -136,41 +136,6 @@ const ProfileAccount = () => {
                                 <tr className="table-light">
                                     <td className="fw-bold col-4">Name:</td>
                                     <td>{userById?.full_name || <span className="text-muted">Not provided</span>}</td>
-                                </tr>
-                                <tr className="table-light">
-                                    <td className="fw-bold col-4">Avatar:</td>
-                                    <td>
-                                        {userById?.avatar ? (
-                                            <img
-                                                className="shadow border-2 rounded-circle"
-                                                style={{
-                                                    width: "150px",
-                                                    height: "150px",
-                                                    objectFit: "cover",
-                                                }}
-                                                src={userById.avatar}
-                                                alt="avatar"
-                                            />
-                                        ) : (
-                                            <span className="text-muted">No avatar available</span>
-                                        )}
-                                    </td>
-                                </tr>
-                                <tr className="table-light">
-                                    <td className="fw-bold col-4">Phone:</td>
-                                    <td>{userById?.phone || <span className="text-muted">Not provided</span>}</td>
-                                </tr>
-                                <tr className="table-light">
-                                    <td className="fw-bold col-4">Address:</td>
-                                    <td>{userById?.address || <span className="text-muted">Not provided</span>}</td>
-                                </tr>
-                                <tr className="table-light">
-                                    <td className="fw-bold col-4">Introduction:</td>
-                                    <td>
-                                        {userById?.introduction || (
-                                            <span className="text-muted">No introduction available</span>
-                                        )}
-                                    </td>
                                 </tr>
                             </tbody>
                         </table>

@@ -8,11 +8,12 @@ import { motion } from "framer-motion";
 
 const ModalUpdateCandidate = ({ show, onClose, candidate }) => {
     const navigate = useNavigate();
-    const { user } = useUser();
+    const { user, login } = useUser();
     const [formData, setFormData] = useState({
         contact_email: candidate?.contact_email || "",
         full_name: candidate?.full_name || "",
-        avatar: candidate?.avatar || "",
+        avatar: undefined,
+        avatarUrl: candidate?.avatar || `https://robohash.org/set_set5/bgset_bg1/${user._id}?size=300x300`,
         phone: candidate?.phone || "",
         address: candidate?.address || "",
         city: candidate?.city || "",
@@ -21,6 +22,9 @@ const ModalUpdateCandidate = ({ show, onClose, candidate }) => {
         certification: candidate?.certification || "",
         work_experience: candidate?.work_experience || "",
     });
+    const [previewAvatar, setPreviewAvatar] = useState(
+        candidate?.avatar || `https://robohash.org/set_set5/bgset_bg1/${user._id}?size=300x300`
+    );
 
     const handleInputChange = (e) => {
         const { name, value, files } = e.target;
@@ -28,6 +32,7 @@ const ModalUpdateCandidate = ({ show, onClose, candidate }) => {
             setFormData({
                 ...formData,
                 [name]: files[0],
+                avatarUrl: "",
             });
         } else {
             setFormData({
@@ -39,18 +44,64 @@ const ModalUpdateCandidate = ({ show, onClose, candidate }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("Updated Data", formData);
         try {
             const bodyData = formData;
+            bodyData.avatar = formData.avatar || formData.avatarUrl;
             const data = await postUpdateCandidate(bodyData);
-            console.log("Updated Data", data);
             toast.success("Candidate information updated successfully");
+            login();
             onClose();
             navigate(`/candidate/${user._id}/dashboard`);
         } catch (error) {
             console.error("Error while updating candidate", error?.message || error);
             toast.error("Error while updating candidate");
         }
+    };
+
+    const handleAvatarChange = (e) => {
+        const file = e.target.files[0];
+        if (previewAvatar) {
+            URL.revokeObjectURL(previewAvatar);
+        }
+        if (file) {
+            const previewURL = URL.createObjectURL(file);
+            setPreviewAvatar(previewURL);
+        }
+    };
+
+    const isValidImageUrl = (url, callback) => {
+        try {
+            const parsedUrl = new URL(url);
+            if (!["http:", "https:"].includes(parsedUrl.protocol)) {
+                callback(false);
+                return;
+            }
+            const img = new Image();
+            img.onload = () => callback(true);
+            img.onerror = () => callback(false);
+            img.src = url;
+        } catch (error) {
+            callback(false);
+        }
+    };
+
+    const handleAvatarUrlChange = (e) => {
+        const url = e.target.value;
+        isValidImageUrl(url, (isValid) => {
+            if (isValid) {
+                if (previewAvatar) {
+                    URL.revokeObjectURL(previewAvatar);
+                }
+                setPreviewAvatar(url);
+                setFormData({
+                    ...formData,
+                    avatar: undefined,
+                    avatarUrl: url,
+                });
+            } else {
+                toast.error("Invalid image URL");
+            }
+        });
     };
 
     return (
@@ -311,18 +362,46 @@ const ModalUpdateCandidate = ({ show, onClose, candidate }) => {
                         animate={{ opacity: 1 }}
                         transition={{ delay: 1.3 }}
                     >
-                        <h6 className="text-primary">Avatar Image</h6>
+                        <h6 className="text-primary">Avatar Image (Choose file or enter URL)</h6>
                         <div className="form-group">
                             <motion.input
                                 type="file"
                                 className="form-control"
                                 id="avatar"
                                 name="avatar"
-                                onChange={handleInputChange}
+                                onChange={(e) => {
+                                    handleAvatarChange(e);
+                                    handleInputChange(e);
+                                }}
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 transition={{ delay: 1.4 }}
                             />
+                            <motion.input
+                                type="text"
+                                className="form-control mt-3"
+                                id="avatarUrl"
+                                name="avatarUrl"
+                                placeholder="Enter URL for avatar image"
+                                value={formData.avatarUrl}
+                                onChange={(e) => {
+                                    handleAvatarUrlChange(e);
+                                    handleInputChange(e);
+                                }}
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ delay: 1.5 }}
+                            />
+                            {previewAvatar && (
+                                <motion.img
+                                    src={previewAvatar}
+                                    alt="avatar preview"
+                                    className="img-fluid shadow rounded mt-3"
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    transition={{ delay: 1.6 }}
+                                />
+                            )}
                         </div>
                     </motion.div>
 

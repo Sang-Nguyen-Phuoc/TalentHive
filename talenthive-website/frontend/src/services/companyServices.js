@@ -23,7 +23,11 @@ export const getCompanyAsEmployer = async () => {
 
 export const postCreateCompany = async (bodyData) => {
     try {
-        const data = await axiosCustom.post("/api/v1/companies", bodyData);
+        const data = await axiosCustom.post("/api/v1/companies", bodyData, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        });
         return data;
     } catch (error) {
         console.error("Error while creating company", error?.message || error);
@@ -33,7 +37,11 @@ export const postCreateCompany = async (bodyData) => {
 
 export const postUpdateCompany = async (bodyData) => {
     try {
-        const data = await axiosCustom.post("/api/v1/companies/update", bodyData);
+        const data = await axiosCustom.post("/api/v1/companies/update", bodyData, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        });
         return data;
     } catch (error) {
         console.error("Error while updating company", error?.message || error);

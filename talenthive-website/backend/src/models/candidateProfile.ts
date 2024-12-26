@@ -15,7 +15,7 @@ export interface ICandidateProfile {
     skills: string;
     certification: string;
     work_experience: string;
-    avatar: object;
+    avatar: string;
     created_at: Date;
     updated_at: Date;
     visibility: boolean;
@@ -47,7 +47,7 @@ const CandidateProfileSchema = new Schema<ICandidateProfile>({
     },
     phone: {
         type: String,
-        validate: [validator.isMobilePhone, 'Invalid phone number']
+        trim: true
     },
     address: {
         type: String,
@@ -66,9 +66,7 @@ const CandidateProfileSchema = new Schema<ICandidateProfile>({
     work_experience: {
         type: String,
     },
-    avatar: {
-        type: Object,
-    },
+    avatar: String,
     visibility: {
         type: Boolean,
         default: true

@@ -8,6 +8,7 @@ import { getJobsByCompany } from "../../services/jobsServices";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import ModalUpdateCompany from "../../components/Modal/ModalUpdateCompany";
+import ModalUpdateEmployer from "../../components/Modal/ModalUpdateEmployer";
 
 // Loader Function
 export const employerDashboardLoader = async ({ params }) => {
@@ -33,13 +34,12 @@ const animationVariants = {
 const ProfileHeader = ({ isOwner, onOpenModalEdition, company }) => (
     <motion.div
         className="shadow rounded border border-1 border-secondary p-2 d-flex flex-column flex-sm-row gap-3"
-        variants={animationVariants.fadeIn}
-        initial="hidden"
-        animate="visible"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
     >
         <motion.img
-            src="https://robohash.org/1"
+            src={company?.avatar || "https://placehold.co/600x400"}
             alt="Avatar"
             className="img-fluid shadow-lg rounded border border-1"
             style={{ objectFit: "contain", maxHeight: 200 }}
@@ -49,18 +49,16 @@ const ProfileHeader = ({ isOwner, onOpenModalEdition, company }) => (
         <div className="flex-fill position-relative">
             <motion.h1
                 className=""
-                variants={animationVariants.fadeIn}
-                initial="hidden"
-                animate="visible"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
             >
                 {company?.name || "None"}
             </motion.h1>
             {company?.introduction && (
                 <motion.p
-                    variants={animationVariants.fadeIn}
-                    initial="hidden"
-                    animate="visible"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
                     transition={{ delay: 0.4 }}
                     className="text-muted mb-3"
                     style={{ fontSize: "1rem" }}
@@ -71,20 +69,19 @@ const ProfileHeader = ({ isOwner, onOpenModalEdition, company }) => (
             <div className="mb-3">
                 {company?.industry && (
                     <motion.p
-                        variants={animationVariants.fadeIn}
-                        initial="hidden"
-                        animate="visible"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
                         transition={{ delay: 0.5 }}
                         className="mb-1"
                     >
-                        <strong>Industry: </strong>{company?.industry}
+                        <strong>Industry: </strong>
+                        {company?.industry}
                     </motion.p>
                 )}
                 {company?.website && (
                     <motion.p
-                        variants={animationVariants.fadeIn}
-                        initial="hidden"
-                        animate="visible"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
                         transition={{ delay: 0.6 }}
                         className="mb-1"
                     >
@@ -94,21 +91,18 @@ const ProfileHeader = ({ isOwner, onOpenModalEdition, company }) => (
                         </a>
                     </motion.p>
                 )}
-                {company?.addresses && company?.addresses.length > 0 && (
-                    <motion.p
-                        variants={animationVariants.fadeIn}
-                        initial="hidden"
-                        animate="visible"
+                {company?.addresses?.length > 0 && (
+                    <motion.ul
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
                         transition={{ delay: 0.7 }}
-                        className="mb-1"
+                        className="mb-1 ps-3"
                     >
                         <strong>Addresses: </strong>
-                        <ul className="pl-3">
-                            {company?.addresses.map((address, index) => (
-                                <li key={index}>{address}</li>
-                            ))}
-                        </ul>
-                    </motion.p>
+                        {company?.addresses.map((address, index) => (
+                            <li key={index}>{address}</li>
+                        ))}
+                    </motion.ul>
                 )}
             </div>
             {isOwner && (
@@ -127,12 +121,12 @@ const ProfileHeader = ({ isOwner, onOpenModalEdition, company }) => (
     </motion.div>
 );
 
+
 const Card = ({ title, children, delay = 0.1 }) => (
     <motion.div
         className="card overflow-hidden mb-4"
-        variants={animationVariants.zoomIn}
-        initial="hidden"
-        animate="visible"
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
         transition={{ delay }}
     >
         <h2
@@ -146,84 +140,65 @@ const Card = ({ title, children, delay = 0.1 }) => (
 );
 
 const JobList = ({ jobList }) => {
-  const [filterStatus, setFilterStatus] = useState("all"); // State cho filter status
+    const [filterStatus, setFilterStatus] = useState("all");
 
-  // Lọc jobs theo filterStatus
-  const filteredJobs =
-    filterStatus === "all"
-      ? jobList
-      : jobList.filter((job) => job.status === filterStatus);
+    const filteredJobs = filterStatus === "all" ? jobList : jobList.filter((job) => job.status === filterStatus);
 
-  return (
-    <motion.div
-      initial="hidden"
-      animate="visible"
-      variants={animationVariants.fadeIn} // Toàn bộ container có hiệu ứng fade-in
-    >
-      {/* Bộ lọc status */}
-      <motion.div
-        className="my-3"
-        variants={animationVariants.slideIn} // Slide-in cho bộ lọc
-      >
-        <label htmlFor="statusFilter" className="form-label fw-bold">
-          Filter by Status:
-        </label>
-        <select
-          id="statusFilter"
-          className="form-select"
-          value={filterStatus}
-          onChange={(e) => setFilterStatus(e.target.value)}
+    return (
+        <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
         >
-          <option value="all">All</option>
-          <option value="pending">Pending</option>
-          <option value="accepted">Accepted</option>
-          <option value="rejected">Rejected</option>
-        </select>
-      </motion.div>
+            <div className="my-3">
+                <label htmlFor="statusFilter" className="form-label fw-bold">
+                    Filter by Status:
+                </label>
+                <select
+                    id="statusFilter"
+                    className="form-select"
+                    value={filterStatus}
+                    onChange={(e) => setFilterStatus(e.target.value)}
+                >
+                    <option value="all">All</option>
+                    <option value="pending">Pending</option>
+                    <option value="accepted">Accepted</option>
+                    <option value="rejected">Rejected</option>
+                </select>
+            </div>
+            <p className="text-muted">
+                Showing {filteredJobs?.length} of {jobList?.length} jobs
+            </p>
 
-      {/* Hiển thị số jobs */}
-      <motion.p
-        className="text-muted"
-        variants={animationVariants.slideIn} // Slide-in cho số lượng jobs
-      >
-        Showing {filteredJobs.length} of {jobList.length} jobs
-      </motion.p>
-
-      {/* Danh sách jobs */}
-      <ul className="row my-3 g-3 list-unstyled">
-        {filteredJobs.length > 0 ? (
-          filteredJobs.map((job, index) => (
-            <motion.li
-              className="col-12"
-              key={index}
-              variants={animationVariants.fadeIn} // Fade-in từng job
-              initial="hidden"
-              animate="visible"
-              whileHover={{ scale: 1.05 }} // Hiệu ứng hover
-              whileTap={{ scale: 0.95 }} // Hiệu ứng khi nhấn
-              transition={{ type: "spring", stiffness: 200, damping: 10 }}
-            >
-              <Link
-                to={`/jobs/${job._id}`}
-                className="text-decoration-none text-dark"
-              >
-                <JobItem.Detail job={job} isEmployer={false} />
-              </Link>
-            </motion.li>
-          ))
-        ) : (
-          <motion.div
-            className="text-center p-5"
-            variants={animationVariants.fadeIn} // Fade-in khi không có job
-            initial="hidden"
-            animate="visible"
-          >
-            <h2 className="fw-bold">No jobs found</h2>
-          </motion.div>
-        )}
-      </ul>
-    </motion.div>
-  );
+            <ul className="row my-3 g-3 list-unstyled">
+                {filteredJobs?.length > 0 ? (
+                    filteredJobs.map((job, index) => (
+                        <motion.li
+                            className="col-12"
+                            key={index}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            transition={{ duration: 0.3 }}
+                        >
+                            <Link to={`/jobs/${job._id}`} className="text-decoration-none text-dark">
+                                <JobItem.Detail job={job} isEmployer={false} />
+                            </Link>
+                        </motion.li>
+                    ))
+                ) : (
+                    <motion.div
+                        className="text-center p-5"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                    >
+                        <h2 className="fw-bold">No jobs found</h2>
+                    </motion.div>
+                )}
+            </ul>
+        </motion.div>
+    );
 };
 
 
@@ -233,19 +208,49 @@ const EmployerDashboard = () => {
     const userById = userData?.user;
     const isOwner = user?._id === userById?._id;
 
-    console.log("User Data:", userData);
-    
-
     const [showModalUpdateCompany, setShowModalUpdateCompany] = useState(false);
-    
+    const [showModalUpdateEmployer, setShowModalUpdateEmployer] = useState(false);
 
     return (
         <div className="container py-4">
-            <ModalUpdateCompany company={userById?.company} onClose={() => setShowModalUpdateCompany(false)} show={showModalUpdateCompany} />
-            <ProfileHeader company={userById?.company} isOwner={isOwner} onOpenModalEdition={() => setShowModalUpdateCompany(true)} />
+            {showModalUpdateCompany && (
+                <ModalUpdateCompany
+                    company={userById?.company}
+                    onClose={() => setShowModalUpdateCompany(false)}
+                    show={showModalUpdateCompany}
+                />
+            )}
+            {showModalUpdateEmployer && (
+                <ModalUpdateEmployer
+                    employer={userById}
+                    onClose={() => setShowModalUpdateEmployer(false)}
+                    show={showModalUpdateEmployer}
+                />
+            )}
+
+            <ProfileHeader
+                company={userById?.company}
+                isOwner={isOwner}
+                onOpenModalEdition={() => setShowModalUpdateCompany(true)}
+            />
 
             <div className="row mt-4">
                 <div className="col-12 col-md-4">
+                    <motion.div className="d-flex mb-4 border bg-white rounded" variants={animationVariants.fadeIn}>
+                        <div className="w-50">
+                            <img
+                                src={userById?.avatar || "https://placehold.co/300x300"}
+                                alt="employer avatar"
+                                className="img-fluid rounded-circle shadow"
+                                style={{ aspectRatio: 1 , objectFit: "cover" }}
+                            />
+                        </div>
+                        <div className="flex-fill d-flex flex-column justify-content-center">
+                            <motion.h6 className="fw-bold text-center fs-4" variants={animationVariants.fadeIn}>
+                                {userById?.full_name || "No Name"}
+                            </motion.h6>
+                        </div>
+                    </motion.div>
                     <Card title="Introduction">
                         <motion.p
                             className="p-0"
@@ -277,6 +282,17 @@ const EmployerDashboard = () => {
                             </motion.p>
                         ))}
                     </Card>
+                    <div className="d-flex justify-content-end">
+                        <motion.button
+                            className="btn btn-primary"
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.95 }}
+                            transition={{ type: "spring", stiffness: 300 }}
+                            onClick={() => setShowModalUpdateEmployer(true)}
+                        >
+                            Update Profile
+                        </motion.button>
+                    </div>
                 </div>
 
                 <div className="col-12 col-md-8">

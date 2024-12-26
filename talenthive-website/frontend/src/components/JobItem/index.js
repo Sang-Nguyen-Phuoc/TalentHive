@@ -83,11 +83,7 @@ const JobItem = {
     },
 
     ////// HIRE TALENT PAGE //////
-    Detail: ({ job, show, setShow, role, application }) => {
-        
-        console.log(" application", application);
-        
-
+    Detail: ({ job, show, setShow, role, application }) => {       
         return (
             <div className="container shadow rounded-3 px-4 mb-4 border border-1 border-secondary bg-white">
                 <div className="row py-3">
@@ -118,10 +114,10 @@ const JobItem = {
                 </div>
                 <div className="d-flex justify-content-between align-content-center flex-wrap py-2 pb-3">
                     <span className="text-muted" style={{ fontSize: "0.8rem" }}>
-                        Post {formatDistanceToNow(new Date(job?.posted_at || 0), { addSuffix: true })}
+                        Post {formatDistanceToNow(new Date(job?.posted_at || 0), { addSuffix: true, includeSeconds: true })}
                     </span>
                     <span className="text-muted" style={{ fontSize: "0.8rem" }}>
-                        {formatDistanceToNow(new Date(job?.expires_at || 0), { addSuffix: true })}
+                        {formatDistanceToNow(new Date(job?.expires_at || 0), { addSuffix: true, includeSeconds: true })}
                     </span>
                 </div>
                 <div className={styleDetail.footer}>

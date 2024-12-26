@@ -18,8 +18,6 @@ const ApplicationDetail = () => {
     const { applicationData } = useLoaderData();
     const application = applicationData?.application;
 
-    console.log("application data", applicationData);
-
     return (
         <div className="col-md-4 mb-md-0 mb-4">
             <div className="card shadow rounded">

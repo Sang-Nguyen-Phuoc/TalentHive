@@ -5,21 +5,18 @@ import AppError from "../utils/appError";
 import validator from "validator";
 import { StatusCodes } from "http-status-codes";
 import User from "../models/user";
-import { isNotFound, isObjectIdOfMongoDB } from "../utils/validateServices";
+import { isNotFound, isObjectIdOfMongoDB, isValidEmail } from "../utils/validateServices";
 import Company from "../models/company";
 
-export const getAllEmployers = catchAsync(
-    async (req: Request, res: Response, next: NextFunction) => {
-        const employers = await EmployerProfile.find().populate("user_id");
-        res.status(StatusCodes.OK).json({
-            status: "success",
-            data: {
-                employers,
-            },
-        });
-    }
-);
-
+export const getAllEmployers = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const employers = await EmployerProfile.find().populate("user_id");
+    res.status(StatusCodes.OK).json({
+        status: "success",
+        data: {
+            employers,
+        },
+    });
+});
 
 export const getEmployer = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const id = req.params.id;
@@ -49,27 +46,48 @@ export const getEmployer = catchAsync(async (req: Request, res: Response, next: 
     });
 });
 
+export const updateEmployerInfo = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const { user } = req.body;
 
+    if (!user?.profile_id) {
+        return next(new AppError("User profile not found", StatusCodes.NOT_FOUND));
+    }
+
+    const { contact_email, full_name, introduction, phone, address, avatar } = req.body;
+    isValidEmail(contact_email, "contact_email", `Invalid contact_email: ${contact_email}`);
+
+    const employerProfile = await EmployerProfile.findById(user?.profile_id);
+    isNotFound(employerProfile, "", `Profile with id: ${user?.profile_id} not found`);
+
+    await employerProfile?.updateOne({
+        contact_email: contact_email || employerProfile?.contact_email || null,
+        full_name: full_name || employerProfile?.full_name || null,
+        introduction: introduction || employerProfile?.introduction || null,
+        phone: phone || employerProfile?.phone || null,
+        address: address || employerProfile?.address || null,
+        avatar: avatar || employerProfile?.avatar || null,
+    });
+
+    const employerProfileUpdated = await EmployerProfile.findById(user?.profile_id);
+
+    res.status(StatusCodes.OK).json({
+        status: "success",
+        data: {
+            employer: employerProfileUpdated,
+        },
+    });
+});
 
 export const updateEmployer = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const {
-        full_name,
-        avatar,
-        introduction,
-        address,
-        email,
-        phone,
-        category
-    } = req.body;
+    const { full_name, avatar, introduction, address, email, phone, category } = req.body;
 
     let employer: any;
     try {
         employer = await EmployerProfile.findOne({ user_id: req.body.userId });
-    } catch(err) {
+    } catch (err) {
         return next(new AppError("Database error occurred. Please try again", 500));
     }
-  
-  
+
     if (!employer) {
         return next(new AppError("Employer not found", 404));
     }
@@ -83,7 +101,7 @@ export const updateEmployer = catchAsync(async (req: Request, res: Response, nex
         if (typeof full_name !== "string") {
             return next(new AppError("Full name must be a string", 400));
         }
-       
+
         // if full_name contains non-alphabetic characters
         if (!/^[a-zA-Z ]+$/.test(full_name)) {
             return next(new AppError("Full name must contain only alphabetic characters", 400));
@@ -114,7 +132,6 @@ export const updateEmployer = catchAsync(async (req: Request, res: Response, nex
         return next(new AppError("category must be a string", 400));
     }
 
-
     // just update the fields that are provided
     const updatedEmployer = await EmployerProfile.findOneAndUpdate(
         { user_id: req.body.userId },
@@ -125,7 +142,7 @@ export const updateEmployer = catchAsync(async (req: Request, res: Response, nex
             address: address || employer.address,
             email: email || employer.email,
             phone: phone || employer.phone,
-            category: category || employer.category
+            category: category || employer.category,
         },
         { new: true }
     );
@@ -133,21 +150,19 @@ export const updateEmployer = catchAsync(async (req: Request, res: Response, nex
     res.status(200).json({
         status: "success",
         data: {
-            employer: updatedEmployer
-        }
+            employer: updatedEmployer,
+        },
     });
 });
 
 export const deleteEmployerById = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const {employerId} = req.params;
+    const { employerId } = req.params;
     isObjectIdOfMongoDB(employerId, "employerId", "employerId in params is not a valid MongoDB ObjectId");
 
     const employer = await User.findById(employerId);
-    if (!employer)
-        return next(new AppError(`Employer with id: ${employerId} not found`, StatusCodes.NOT_FOUND));
+    if (!employer) return next(new AppError(`Employer with id: ${employerId} not found`, StatusCodes.NOT_FOUND));
 
-    if (employer.role !== "employer")
-        return next(new AppError("The user is not an employer", StatusCodes.BAD_REQUEST));
+    if (employer.role !== "employer") return next(new AppError("The user is not an employer", StatusCodes.BAD_REQUEST));
 
     const employerProfile = await EmployerProfile.findById(employer.profile_id);
     if (!employerProfile)
@@ -159,7 +174,7 @@ export const deleteEmployerById = catchAsync(async (req: Request, res: Response,
     res.status(StatusCodes.OK).json({
         status: "success",
         data: {
-            user: null
-        }
-    })
-})
+            user: null,
+        },
+    });
+});

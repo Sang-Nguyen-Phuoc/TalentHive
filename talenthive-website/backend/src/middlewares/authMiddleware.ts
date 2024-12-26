@@ -80,3 +80,21 @@ export const authorizeRole = (roles?: Role[] | undefined) => {
         next();
     });
 };
+
+
+export const preserveBodyMiddleware = (req: any, res: any, next: any) => {
+    req.savedBody = { ...req.body };
+    console.log({ savedBody: req.savedBody });
+    next();
+};
+
+export const handleUploadAvatar = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    req.body = { ...(req as any).savedBody, ...req.body };
+    if (!req.files || req.files.length === 0) {
+        return next();
+    }
+    const avatar = (req.files as Express.Multer.File[])[0];
+    const { mimetype, buffer } = avatar;
+    req.body.avatar = `data:${mimetype};base64,${buffer.toString("base64")}`;
+    next();
+});

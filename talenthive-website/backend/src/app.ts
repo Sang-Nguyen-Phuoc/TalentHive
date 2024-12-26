@@ -14,11 +14,15 @@ import AppError from "./utils/appError";
 import applicationRouter from "./routes/applicationRouter";
 import savedJobRouter from "./routes/savedJobRoutes";
 import { StatusCodes } from "http-status-codes";
+import multer from "multer";
 
 const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+const upload = multer({ dest: 'uploads/' });
+
 app.use(cors({ origin: "*" }));
 app.use(cookieParser());
 

@@ -16,8 +16,6 @@ const ModalApplyJob = ({ show, setShow, job, application }) => {
         cv: application?.cv || null,
     });
 
-    console.log("formData", formData);
-
     const handleInputChange = (e) => {
         const { name, value, files } = e.target;
         if (name === "cv") {
@@ -50,17 +48,14 @@ const ModalApplyJob = ({ show, setShow, job, application }) => {
     const handleSubmit = async (e) => {
         setLoading(true);
         e.preventDefault();
-        console.log(formData);
         try {
             const formDataToSend = new FormData();
             for (const key in formData) {
                 formDataToSend.append(key, formData[key]);
             }
             // Gửi formDataToSend lên server
-            console.log("Form Data:", formDataToSend);
             const data = await postApplyJob(job._id, formData);
 
-            console.log({ data });
             toast.success("Application submitted successfully");
 
             setShow(false);

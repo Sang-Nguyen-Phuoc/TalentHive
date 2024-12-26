@@ -32,8 +32,6 @@ const AppliedJobsPage = () => {
 
     const [selectedJob, setSelectedJob] = useState(null);
 
-    console.log("applications in applied jobs", jobs);
-
     return (
         <main className="container my-5">
             <div className="row flex-column-reverse flex-md-row">
