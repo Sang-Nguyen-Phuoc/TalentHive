@@ -10,3 +10,11 @@ export const ROLES = {
     ADMIN: "admin",
     GUEST: "guest",
 }
+
+export const USER_STATUSES = {
+    ACTIVE: 'active',
+    INACTIVE: 'inactive',
+    DELETED: 'deleted',
+    SUSPENDED: 'suspended',
+    LOCKED: 'locked'
+}

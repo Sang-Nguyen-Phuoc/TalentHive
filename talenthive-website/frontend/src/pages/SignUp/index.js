@@ -63,7 +63,7 @@ function SignUp() {
 
         try {
             const data = await postSignup(bodyData.email, bodyData.password, bodyData.name , bodyData.role);
-            
+
             saveAccessToken(data?.accessToken);
             login();
             toast.success("Register successfully!");
@@ -129,7 +129,7 @@ function SignUp() {
                         onClick={() => setShowPass(!showPass)}
                     />
                 </div>
-                <ul>
+                <ul className="list-unstyled mt-3 mb-0">
                     {passwordRules.map((rule, index) => (
                         <li key={index} className={`${styles.convention} ${styles[rule.valid ? "valid" : "invalid"]}`}>
                             {rule.message}

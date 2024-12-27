@@ -282,7 +282,8 @@ const EmployerDashboard = () => {
                             </motion.p>
                         ))}
                     </Card>
-                    <div className="d-flex justify-content-end">
+                    {isOwner && (
+                        <div className="d-flex justify-content-end">
                         <motion.button
                             className="btn btn-primary"
                             whileHover={{ scale: 1.1 }}
@@ -293,6 +294,7 @@ const EmployerDashboard = () => {
                             Update Profile
                         </motion.button>
                     </div>
+                    )}
                 </div>
 
                 <div className="col-12 col-md-8">

@@ -1,9 +1,7 @@
 import { useLoaderData, useLocation, useNavigate } from "react-router";
 import JobItem from "../../components/JobItem";
-import styles from "../../styles/pages/JobDetail.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSquareArrowUpRight } from "@fortawesome/free-solid-svg-icons";
-import ApplicationForm from "../../components/Form/ApplicationForn";
 import { getApplicationForJob, getJobCategoryList, getJobDetail, getJobTypeList } from "../../services/jobsServices";
 import { toast } from "react-toastify";
 import { ROLES } from "../../utils/Constants";
@@ -11,6 +9,7 @@ import { useUser } from "../../context/UserContext";
 import ModalRemoveJob from "../../components/Modal/ModalRemoveJob";
 import ModalUpdateJob from "../../components/Modal/ModalUpdateJob";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 export const jobDetailLoader = async ({ params }) => {
     let jobData = null;
@@ -168,13 +167,13 @@ function JobDetail({ isSearch }) {
                         </div>
                         <hr className="m-0" />
                         <div className="text-center d-flex justify-content-center p-3">
-                            <a
+                            <Link
                                 className="cursor-pointer d-flex gap-2 align-items-center justify-content-center"
-                                href="/profile/dashboard"
+                                to={`/employer/${job?.employer_id?._id}/dashboard`}
                             >
                                 View company
                                 <FontAwesomeIcon icon={faSquareArrowUpRight} />
-                            </a>
+                            </Link>
                         </div>
                         <div></div>
                     </div>

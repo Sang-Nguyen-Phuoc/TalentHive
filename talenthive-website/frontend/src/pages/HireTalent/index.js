@@ -198,7 +198,7 @@ function HireTalent() {
                         {companyData ? (
                             <>
                                 <div className="row justify-content-center">
-                                    <div className="mb-3">
+                                    <div className="mb-3 text-center">
                                         <motion.img
                                             whileHover={{ scale: 1.1 }}
                                             src={company?.avatar || "https://placehold.co/400"}

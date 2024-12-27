@@ -10,7 +10,7 @@ import ProfileAccount, { changePasswordAction, profileLoader } from "./pages/Pro
 import ProfileDashboard, { profileDashboardLoader } from "./pages/ProfileDashboard";
 import JobDetail, { jobDetailLoader } from "./pages/JobDetail";
 import ManageWorkers, { candidateListLoader } from "./pages/ManageWorkers/ManageWorkers";
-import ManageEmployers from "./pages/ManageEmployers";
+import ManageEmployers, { employerListLoader } from "./pages/ManageEmployers/ManageEmployers";
 import Signin from "./pages/Signin";
 import SignUp from "./pages/SignUp";
 import ForgotPassword from "./pages/ForgotPassword";
@@ -141,6 +141,14 @@ const router = createBrowserRouter([
             {
                 path: "manage-employers",
                 element: <ManageEmployers />,
+                loader: employerListLoader,
+                children: [
+                    {
+                        path: ":id",
+                        element: <EmployerDashboard />,
+                        loader: employerDashboardLoader,
+                    }
+                ]
             },
         ],
     },
