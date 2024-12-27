@@ -67,3 +67,38 @@ export const postUpdateEmployerInfo = async (data) => {
         throw error;
     }
 }
+
+export const getEmployerListByAdmin = async () => {
+    try {
+        const data = await axiosCustom.get(`/api/v1/users/employers`);
+        return data;
+    } catch (error) {
+        console.error("Error while getting employer list by admin", error?.message || error);
+        throw error;
+    }
+}
+
+export const postAdminBlockUser = async (id) => {
+    try {
+        const response = await axiosCustom.post(`/api/v1/users/lock/`, {
+            id: id
+        });
+        return response;
+    } catch (error) {
+        console.error("Error while locking user", error?.message || error);
+        throw error;
+    }
+}
+
+export const postAdminUnlockUser = async (id) => {
+    try {
+        const response = await axiosCustom.post(`/api/v1/users/unlock`, {
+            id: id
+        });
+        return response;
+    } catch (error) {
+        console.error("Error while unlocking user", error?.message || error);
+        throw error;
+        
+    }
+}

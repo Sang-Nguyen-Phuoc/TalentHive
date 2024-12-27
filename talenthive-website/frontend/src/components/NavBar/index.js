@@ -112,7 +112,10 @@ const NavBar = () => {
                                     <>
                                         <Dropdown.Divider />
                                         <Dropdown.Item>
-                                            <Link className="text-decoration-none text-dark" to="/admin/manage-candidates">
+                                            <Link
+                                                className="text-decoration-none text-dark"
+                                                to="/admin/manage-candidates"
+                                            >
                                                 Candidates Management
                                             </Link>
                                         </Dropdown.Item>
