@@ -1,22 +1,14 @@
-import { useNavigate, Link } from "react-router-dom";
-import { removeAccessToken } from "../../utils/authToken";
-import styles from "../../styles/components/NavBar.module.css";
+import { Link } from "react-router-dom";
+// import styles from "../../styles/components/NavBar.module.css";
+import ModalLogout from "../Modal/ModalLogout";
 import { useUser } from "../../context/UserContext";
 import { Dropdown } from "react-bootstrap";
 import { ROLES } from "../../utils/Constants";
+import { useState } from "react";
 
 const NavBar = () => {
-    const { user, role, logout } = useUser();
-    const navigate = useNavigate();
-
-    const handleLogout = () => {
-        const confirmLogout = window.confirm("Are you sure you want to log out?");
-        if (confirmLogout) {
-            logout();
-            removeAccessToken();
-            navigate("/");
-        }
-    };
+    const [showModal, setShowModal] = useState(false);
+    const { user, role } = useUser();
 
     return (
         <header className="">
@@ -130,7 +122,7 @@ const NavBar = () => {
                                     </>
                                 )}
                                 <Dropdown.Divider />
-                                <Dropdown.Item href="#" onClick={handleLogout}>
+                                <Dropdown.Item href="#" onClick={() => setShowModal(true)}>
                                     Sign out
                                 </Dropdown.Item>
                             </Dropdown.Menu>
@@ -138,6 +130,7 @@ const NavBar = () => {
                     </div>
                 )}
             </div>
+            <ModalLogout show={showModal} setShow={setShowModal}/>
         </header>
     );
 };

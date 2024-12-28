@@ -29,7 +29,7 @@ const AppliedJobItem = ({ job }) => {
                 </div>
                 <div className="col-md-4 d-flex align-items-center gap-2 mb-4 mb-md-0">
                     <FontAwesomeIcon icon={faLocationDot} className="opacity-50" />
-                    <span>{job?.address?.split(",").pop()}</span>
+                    <span>{job?.address}</span>
                 </div>
                 <div className="col-md-4 d-flex align-items-center gap-2 mb-4 mb-md-0">
                     <FontAwesomeIcon icon={faFilter} className="opacity-50" />
@@ -41,7 +41,7 @@ const AppliedJobItem = ({ job }) => {
                     Post {formatDistanceToNow(new Date(job?.posted_at || 0), { addSuffix: true })}
                 </span>
                 <span className="text-muted" style={{ fontSize: "0.8rem" }}>
-                    {formatDistanceToNow(new Date(job?.expires_at || 0), { addSuffix: true })}
+                    Expires {formatDistanceToNow(new Date(job?.expires_at || 0), { addSuffix: true })}
                 </span>
             </div>
         </div>

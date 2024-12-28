@@ -144,7 +144,7 @@ function JobDetail({ isSearch }) {
                         <div className="d-flex p-3 flex-wrap">
                             <img
                                 className="p-0 shadow-lg rounded"
-                                style={{ width: 100, aspectRatio: 1, objectFit: "cover" }}
+                                style={{ width: 100, aspectRatio: 1, objectFit: "contain" }}
                                 src={job?.company?.logo || "https://via.placeholder.com/150"}
                                 alt="logo"
                             />

@@ -53,8 +53,8 @@ const ApplicationDetail = () => {
                         { key: "Phone", value: application?.phone },
                         { key: "Skills", value: application?.skills },
                         { key: "Work Experience", value: application?.work_experience },
-                        { key: "certifications", value: application?.certification},
-                        { key: "cover letter", value: application?.cover_letter }
+                        { key: "Certifications", value: application?.certification},
+                        { key: "Cover letter", value: application?.cover_letter }
                     ].map((item, index) => (
                         <p key={index}>
                             <span className="fw-bold">{item.key}: </span>

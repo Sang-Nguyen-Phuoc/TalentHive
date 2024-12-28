@@ -216,7 +216,7 @@ const ModalPostJob = ({ show, setShow, company, jobTypes, jobCategories }) => {
                             className="form-control"
                             id="address"
                             name="address"
-                            placeholder="Enter address"
+                            placeholder="e.g., District 1, HCM City"
                             value={formData.address}
                             onChange={handleChange}
                             required
