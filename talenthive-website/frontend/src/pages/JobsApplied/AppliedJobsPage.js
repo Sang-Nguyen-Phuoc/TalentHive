@@ -28,7 +28,7 @@ const AppliedJobsPage = () => {
     const [state, setState] = useState("all");
     const [sortType, setSortType] = useState("asc");
 
-    const jobs = appliedJobsData?.jobs || [];
+    const jobs = appliedJobsData?.jobs.filter(job => (state === 'all' || job.status === state)) || [];
 
     const [selectedJob, setSelectedJob] = useState(null);
 
@@ -68,21 +68,22 @@ const AppliedJobsPage = () => {
                         </div>
                     </div>
                     <div className="row justify-content-start mb-3 fw-bold fs-5">
-                        <div className="col-12">10 applied jobs</div>
+                        <div className="col-12">{jobs.length} applied jobs</div>
                     </div>
                     <ul className="list-unstyled" style={{ overflowY: "auto", height: "70vh" }}>
                         {jobs?.length > 0 ? (
                             jobs.map((job) => (
-                                <li key={job._id}>
-                                    <NavLink
-                                        to={`/applied-jobs/application/${job?.application?._id}`}
-                                        className={({ isActive }) =>
-                                            `text-decoration-none ${isActive ? "fw-bold text-primary" : "text-dark"}`
-                                        }
-                                    >
-                                        <AppliedJobItem job={job} />
-                                    </NavLink>
-                                </li>
+                                        <li key={job._id}>
+                                            <NavLink
+                                                to={`/applied-jobs/application/${job?.application?._id}`}
+                                                className={({ isActive }) =>
+                                                    `text-decoration-none ${isActive ? "fw-bold text-primary" : "text-dark"}`
+                                            }
+                                            >
+                                                <AppliedJobItem job={job} />
+                                            </NavLink>
+                                        </li>
+                                    
                             ))
                         ) : (
                             <p>No jobs applied yet.</p>

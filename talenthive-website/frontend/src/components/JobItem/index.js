@@ -13,12 +13,11 @@ const JobItem = {
     ////// HOME PAGE //////
     HomePage: ({ job, state }) => {
         const navigate = useNavigate();
-
         return (
             <div className={styleHome.wrapper} onClick={() => navigate(`/jobs/${job?._id}`)}>
                 <div className={styleHome.header}>
                     <div className={styleHome["left-header"]}>
-                        <img src={job?.image || "https://via.placeholder.com/150"} alt="logo"></img>
+                        <img src={job?.image || "https://via.placeholder.com/150"} alt="logo" className="object-fit-contain"></img>
                     </div>
                     <div className={styleHome["right-header"]}>
                         <p className={styleHome.position}>{job?.position}</p>
@@ -33,7 +32,7 @@ const JobItem = {
                     </div>
                     <div className={styleHome.location}>
                         <FontAwesomeIcon icon={faLocationDot} className={styleHome.icon} />
-                        <p>{job?.location}</p>
+                        <p>{job?.address}</p>
                     </div>
                     <div className={styleHome.category}>
                         <FontAwesomeIcon icon={faFilter} className={styleHome.icon} />
@@ -42,7 +41,7 @@ const JobItem = {
                 </div>
                 <div className={styleHome.timeline}>
                     <p>Post {formatDistanceToNow(new Date(job?.posted_at), { addSuffix: true })}</p>
-                    <p>{formatDistanceToNow(new Date(job?.expires_at), { addSuffix: true })}</p>
+                    <p>Expires {formatDistanceToNow(new Date(job?.expires_at), { addSuffix: true })}</p>
                 </div>
             </div>
         );
@@ -105,7 +104,7 @@ const JobItem = {
                     </div>
                     <div className="col-md-4 d-flex align-items-center gap-2 mb-4 mb-md-0">
                         <FontAwesomeIcon icon={faLocationDot} className={styleDetail.icon} />
-                        <span>{job?.address?.split(",")[0]}</span>
+                        <span>{job?.address}</span>
                     </div>
                     <div className="col-md-4 d-flex align-items-center gap-2 mb-4 mb-md-0">
                         <FontAwesomeIcon icon={faFilter} className={styleDetail.icon} />
@@ -117,7 +116,7 @@ const JobItem = {
                         Post {formatDistanceToNow(new Date(job?.posted_at || 0), { addSuffix: true, includeSeconds: true })}
                     </span>
                     <span className="text-muted" style={{ fontSize: "0.8rem" }}>
-                        {formatDistanceToNow(new Date(job?.expires_at || 0), { addSuffix: true, includeSeconds: true })}
+                        Expires {formatDistanceToNow(new Date(job?.expires_at || 0), { addSuffix: true, includeSeconds: true })}
                     </span>
                 </div>
                 <div className={styleDetail.footer}>

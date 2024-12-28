@@ -1,6 +1,6 @@
 import { Link, useNavigate, Form } from "react-router-dom";
 import styles from "../../styles/pages/Authentication.module.css";
-import { useRef, useState, useEffect, useContext } from "react";
+import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-regular-svg-icons";
 import { postLogin } from "../../services/authServices";
@@ -103,7 +103,7 @@ function Signin() {
                     )}
                 </motion.button>
             </div>
-            <div className={`${styles.container} ${styles.signup} align-items-center gap-3`}>
+            <div className={`${styles.container} ${styles.signup} align-items-center gap-2`}>
                 <p className={`${styles.question} m-0`}>Do you have any account yet?</p>
                 <Link to="/signup" className={`${styles.link} ${styles["signup-link"]}`}>
                     Sign up now
