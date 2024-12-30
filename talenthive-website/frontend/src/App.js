@@ -4,7 +4,7 @@ import AuthenticationLayout from "./layouts/AuthenticationLayout";
 import DefaultLayout from "./layouts/DefaultLayout";
 import Home from "./pages/Home";
 import AboutUs from "./pages/AboutUs";
-import Search from "./pages/Search";
+import SearchPage from "./pages/Search";
 import HireTalent, { HireTalentLoader } from "./pages/HireTalent";
 import ProfileAccount, { changePasswordAction, profileLoader } from "./pages/ProfileAccount";
 import ProfileDashboard, { profileDashboardLoader } from "./pages/ProfileDashboard";
@@ -54,7 +54,7 @@ const router = createBrowserRouter([
             },
             {
                 path: "/search",
-                element: <Search />,
+                element: <SearchPage />,
             },
             {
                 path: "/hire-talent",

@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import catchAsync from "../utils/catchAsync";
 import Job from "../models/job";
 import AppError from "../utils/appError";
-import mongoose from "mongoose";
+import mongoose, { Types } from "mongoose";
 import Application from "../models/application";
 
 import { StatusCodes } from "http-status-codes";
@@ -13,46 +13,75 @@ import JobType from "../models/jobType";
 import JobCategory from "../models/jobCategory";
 
 export const searchJobs = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const { title, company_id, salary_range, location, skills, job_type, job_category } = req.query;
+    const { keyword, job_type, job_category, location } = req.query;
 
+    console.log("keyword", keyword);
+    
     const filter: any = {};
 
-    if (title) filter.title = { $regex: title, $options: "i" };
-    if (company_id) filter.company_id = new mongoose.Types.ObjectId(company_id.toString().trim());
-
-    if (location) filter.location = { $regex: location, $options: "i" };
-    if (job_type) filter.job_type = job_type;
-    if (job_category) filter.job_category = job_category;
-
-    // Parse salary_range
-    if (salary_range) {
-        const [min, max] = (salary_range as string).split("-").map(Number);
-        filter.$and = [{ "salary_range.min": { $gte: min } }, { "salary_range.max": { $lte: max } }];
+    // Tìm kiếm theo keyword (áp dụng trên title, skills, introduction, benefits, requirements)
+    if (keyword) {
+        const keywordRegex = new RegExp(keyword.toString().trim(), "i"); // Case-insensitive
+        filter.$or = [
+            { title: { $regex: keywordRegex } },
+            { skills: { $regex: keywordRegex } },
+            { description: { $regex: keywordRegex } }, // Assuming "description" is used for "introduction"
+            { benefits: { $regex: keywordRegex } },
+            { requirements: { $regex: keywordRegex } },
+        ];
     }
 
-    // Parse skills with case-insensitive matching
-    if (skills) {
-        const skillArray = Array.isArray(skills) ? skills : [skills];
-        filter.skills = {
-            $elemMatch: {
-                $in: skillArray.map((skill) => new RegExp(`^${skill}$`, "i")), // Create case-insensitive regex for each skill
-            },
-        };
+    // Tìm kiếm theo jobCategory (dựa trên tên jobCategory)
+    if (job_category) {
+        const jobCategoryId = await JobCategory.findOne({ name: job_category.toString().trim() });
+        filter.job_category = jobCategoryId ? jobCategoryId._id : null;
     }
 
+    // Tìm kiếm theo jobType (dựa trên tên jobType)
+    if (job_type) {
+        const jobTypeId = await JobType.findOne({ name: job_type.toString().trim() });
+        filter.job_type = jobTypeId ? jobTypeId._id : null;
+    }
+
+    // Tìm kiếm theo location (áp dụng trên address)
+    if (location) {
+        const locationRegex = new RegExp(location.toString().trim(), "i"); // Case-insensitive
+        filter.address = { $regex: locationRegex };
+    }
+    
+    filter.is_public = true;
+
+    // Truy vấn cơ sở dữ liệu với các bộ lọc
     const jobs = await Job.find(filter)
         .populate("company_id")
         .populate("job_type")
         .populate("job_category")
         .populate("employer_id");
 
+    const jobsFilter = jobs.map((job: any) => {
+        return {
+            _id: job._id,
+            title: job.title,
+            company: job?.company_id?.name || null,
+            image: job?.company_id?.avatar || null,
+            salary: job.salary_range.min + " - " + job.salary_range.max + " USD" || null,
+            category: job?.job_category?.name || null,
+            address: job.address || null,
+            posted_at: job.posted_at || null,
+            expires_at: job.expires_at || null,
+        };
+    })
+
+    // Trả về kết quả
     res.status(StatusCodes.OK).json({
         status: "success",
         data: {
-            jobs,
+            total_jobs: jobs.length,
+            jobs: jobsFilter,
         },
     });
 });
+
 
 export const getPublicJobList = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const { page, limit } = req.query;
@@ -766,3 +795,19 @@ export const getJobCategoryList = catchAsync(async (req: Request, res: Response,
         },
     });
 });
+
+export const getJobLocationList = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const addressList = await Job.find().distinct("address");
+
+    const jobLocations = addressList.map((address: string) => {
+        return address.split(",")[address.split(",").length - 1].trim();
+    });
+
+    res.status(StatusCodes.OK).json({
+        status: "success",
+        data: {
+            total_job_locations: jobLocations.length,
+            job_locations: jobLocations,
+        },
+    });
+})

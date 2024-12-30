@@ -91,6 +91,16 @@ export const getJobCategoryList = async () => {
     }
 }
 
+export const getLocationList = async () => {
+    try {
+        const data = await axiosCustom.get("/api/v1/jobs/locations");
+        return data;
+    } catch (error) {
+        console.error("Error while getting location list", error?.message || error);
+        throw error;
+    }
+}
+
 export const postApplyJob = async (jobId, bodyData) => {
     try {
         const data = await axiosCustom.post(`/api/v1/jobs/${jobId}/apply`, bodyData);
@@ -138,6 +148,23 @@ export const getApplicationForJob = async (jobId) => {
         return data;
     } catch (error) {
         console.error("Error while getting applications for job", error?.message || error);
+        throw error;
+    }
+}
+
+export const getJobListSearching = async (keyword, job_type, job_category, location) => {
+    try {
+        const data = await axiosCustom.get("/api/v1/jobs/search", {
+            params: {
+                keyword,
+                job_type,
+                job_category,
+                location,
+            },
+        });
+        return data;
+    } catch (error) {
+        console.error("Error while getting job list", error?.message || error);
         throw error;
     }
 }
