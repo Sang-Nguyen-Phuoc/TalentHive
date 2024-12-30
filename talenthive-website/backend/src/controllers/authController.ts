@@ -11,6 +11,7 @@ import EmployerProfile from "../models/employerProfile";
 import { createSendToken } from "../utils/tokenServices";
 import { StatusCodes } from "http-status-codes";
 import { isRequired } from "../utils/validateServices";
+import Log from "../models/log";
 
 export const register = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const { email, password, full_name, role } = req.body;
@@ -64,6 +65,8 @@ export const login = catchAsync(async (req: Request, res: Response, next: NextFu
     if (!user.password || !(await bcrypt.compare(password, user.password))) {
         return next(new AppError("Wrong password", StatusCodes.UNAUTHORIZED));
     }
+
+    await Log.create({ user_id: user._id, action: "login", timestamp: Date.now() });
 
     createSendToken(user, StatusCodes.OK, res);
 });

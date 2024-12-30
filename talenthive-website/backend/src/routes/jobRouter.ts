@@ -7,11 +7,12 @@ import { validateApplicationFields, validateMissingApplicationFields } from "../
 
 const jobRouter = Router();
 
-jobRouter.get("/search", trimJobFields, validateJobFields, jobController.searchJobs);
+jobRouter.get("/search", jobController.searchJobs);
 jobRouter.get("/public", jobController.getPublicJobList); // used
 jobRouter.get("/employer", authorizeRole(["employer"]), jobController.getJobListingsByEmployer); // used
 jobRouter.get("/types", jobController.getJobTypeList); // used
 jobRouter.get("/categories", jobController.getJobCategoryList); // used
+jobRouter.get("/locations", jobController.getJobLocationList); // used
 
 
 jobRouter.get("/companies/:companyId", jobController.getJobsByCompany); // used
