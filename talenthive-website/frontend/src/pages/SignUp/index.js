@@ -118,7 +118,6 @@ function SignUp() {
                             handleMatchPassword();
                         }}
                         required
-                        defaultValue="123456789@Aa"
                     />
                     <FontAwesomeIcon
                         className={styles.icon}
@@ -150,7 +149,6 @@ function SignUp() {
                             handleMatchPassword();
                         }}
                         required
-                        defaultValue="123456789@Aa"
                     />
                     <FontAwesomeIcon
                         className={styles.icon}

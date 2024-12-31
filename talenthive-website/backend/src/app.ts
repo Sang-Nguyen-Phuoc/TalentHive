@@ -15,6 +15,7 @@ import applicationRouter from "./routes/applicationRouter";
 import savedJobRouter from "./routes/savedJobRoutes";
 import { StatusCodes } from "http-status-codes";
 import multer from "multer";
+import adminRouter from "./routes/adminRouter";
 
 const app = express();
 
@@ -41,6 +42,7 @@ app.use("/api/v1/employers", employerRouter);
 app.use("/api/v1/candidates", candidateRouter);
 app.use("/api/v1/applications", applicationRouter);
 app.use("/api/v1/test", testRouter);
+app.use("/api/v1/admin", adminRouter);
 
 app.use("/api/v1/saved-jobs", savedJobRouter);
 

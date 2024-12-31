@@ -1,7 +1,5 @@
-import mongoose from "mongoose";
 import statusCodes, { StatusCodes } from "http-status-codes";
 import { NextFunction, Request, Response } from "express";
-import validator from "validator";
 
 import User from "../models/user";
 import catchAsync from "../utils/catchAsync";

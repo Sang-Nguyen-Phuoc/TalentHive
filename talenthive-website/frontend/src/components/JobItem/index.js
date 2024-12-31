@@ -89,7 +89,7 @@ const JobItem = {
     },
 
     ////// HIRE TALENT PAGE //////
-    Detail: ({ job, show, setShow, role, application }) => {
+    Detail: ({ job, show, setShow, role, application }) => {        
         return (
             <div className="container shadow rounded-3 px-4 mb-4 border border-1 border-secondary bg-white mb-lg-2">
                 <div className="row py-3">
