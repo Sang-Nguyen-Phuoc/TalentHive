@@ -6,7 +6,7 @@ import Services from "../../components/Services";
 import Works from "../../components/Works";
 import Experience from "../../components/Experience";
 import HLuong from "../../images/HLuong.png";
-import Sang from "../../images/Sang.png";
+import Sang from "../../images/Sang.jpg";
 
 
 function AboutUs() {
