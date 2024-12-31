@@ -9,6 +9,8 @@ import { StatusCodes } from "http-status-codes";
 import { isNotFound, isObjectIdOfMongoDB, isRequired } from "../utils/validateServices";
 import Email from "../utils/email";
 import FollowCompany from "../models/followCompany";
+import Log from "../models/log";
+import { LOG_ACTIONS } from "../models/log";
 
 export const deleteUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     if (!req.body.email) {
@@ -39,6 +41,7 @@ export const deleteUser = catchAsync(async (req: Request, res: Response, next: N
 });
 
 export const lockUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const admin = req.body.user;
     const { id } = req.body;
     isObjectIdOfMongoDB(id, "id", `Invalid id: ${id} in body`);
 
@@ -62,6 +65,19 @@ export const lockUser = catchAsync(async (req: Request, res: Response, next: Nex
 
     new Email(user!).informLockedAccount();
 
+    await Log.create({
+        user_id: admin._id,
+        action: LOG_ACTIONS.LOCK_USER,
+        details: {
+            locked_user_id: id,
+            locked_by: admin._id,
+            // reason: req.body.reason || null,
+        },
+        ip: req.ip,
+        user_agent: req.get("User-Agent"),
+        timestamp: new Date(),
+    })
+
     return res.status(StatusCodes.OK).json({
         status: "success",
         data: {
@@ -70,6 +86,7 @@ export const lockUser = catchAsync(async (req: Request, res: Response, next: Nex
     });
 });
 export const unlockUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const admin = req.body.user;
     const { id } = req.body;
     isObjectIdOfMongoDB(id, "id", `Invalid id: ${id} in body`);
 
@@ -89,6 +106,18 @@ export const unlockUser = catchAsync(async (req: Request, res: Response, next: N
     }
 
     new Email(user!).informUnlockedAccount();
+
+    await Log.create({
+        user_id: admin._id,
+        action: LOG_ACTIONS.UNLOCK_USER,
+        details: {
+            unlocked_user_id: id,
+            unlocked_by: admin._id,
+        },
+        ip: req.ip,
+        user_agent: req.get("User-Agent"),
+        timestamp: new Date(),
+    })
 
     return res.status(StatusCodes.OK).json({
         status: "success",
@@ -114,6 +143,17 @@ export const createAdmin = catchAsync(async (req: Request, res: Response, next: 
     const user = await User.create({ email, password, role: "admin" });
 
     user.password = undefined;
+
+    await Log.create({
+        user_id: user._id,
+        action: LOG_ACTIONS.CREATE_ADMIN,
+        details: {
+            created_admin_id: user._id,
+        },
+        ip: req.ip,
+        user_agent: req.get("User-Agent"),
+        timestamp: new Date(),
+    })
 
     return res.status(StatusCodes.CREATED).json({
         status: "success",

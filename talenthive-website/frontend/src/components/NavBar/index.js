@@ -69,7 +69,9 @@ const NavBar = () => {
                     </nav>
                 ) : (
                     <div className="text-end ms-3 d-flex align-items-center gap-3 flex-wrap-reverse justify-content-center">
-                        <p className="m-0 text-light fs-5 fw-bold">{user?.full_name || (role === "admin" ? "Admin" : "No Name")}</p>
+                        <p className="m-0 text-light fs-5 fw-bold">
+                            {user?.full_name || (role === "admin" ? "Admin" : "No Name")}
+                        </p>
                         <Dropdown>
                             <Dropdown.Toggle
                                 as="div"
@@ -90,7 +92,7 @@ const NavBar = () => {
                                 <Dropdown.Item>
                                     <Link
                                         className="text-decoration-none text-dark"
-                                        to={`/${role}/${user?._id}/dashboard`}
+                                        to={`/${role}/${role !== ROLES.ADMIN ? user?._id + "/" : ""}dashboard`}
                                     >
                                         Dashboard
                                     </Link>
@@ -130,7 +132,7 @@ const NavBar = () => {
                     </div>
                 )}
             </div>
-            <ModalLogout show={showModal} setShow={setShowModal}/>
+            <ModalLogout show={showModal} setShow={setShowModal} />
         </header>
     );
 };

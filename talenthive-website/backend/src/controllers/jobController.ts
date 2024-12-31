@@ -12,6 +12,8 @@ import Company from "../models/company";
 import JobType from "../models/jobType";
 import JobCategory from "../models/jobCategory";
 import path from "path";
+import Log from "../models/log";
+import { LOG_ACTIONS } from "../models/log";
 
 export const searchJobs = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const { keyword, job_type, job_category, location } = req.query;
@@ -235,7 +237,10 @@ export const getJobsByCompany = catchAsync(async (req: Request, res: Response, n
     const companyId = req.params.companyId;
     isObjectIdOfMongoDB(companyId, "companyId", `Company Id ${companyId} in params is not a valid MongoDB ObjectId`);
 
-    const jobs = await Job.find({ company_id: companyId });
+    const jobs = await Job.find({ company_id: companyId })
+        .populate("job_type")
+        .populate("job_category");
+
 
     const jobsFilter = jobs.map((job: any) => {
         return {
@@ -320,6 +325,20 @@ export const createApplication = catchAsync(async (req: Request, res: Response, 
             status: "pending",
             applied_at: new Date(),
         });
+
+        await Log.create({
+            user_id: candidate._id,
+            action: LOG_ACTIONS.APPLY_JOB,
+            details: {
+                job_id: jobId,
+                candidate_id: candidateId,
+                full_name: full_name,
+                email: email,
+            },
+            ip: req.ip,
+            user_agent: req.get("User-Agent"),
+            timestamp: new Date(),
+        })
 
         res.status(StatusCodes.CREATED).json({
             status: "success",
@@ -572,6 +591,20 @@ export const createJob = catchAsync(async (req: Request, res: Response, next: Ne
 
     const job = await Job.create(job_fields);
 
+    await Log.create({
+        user_id: user._id,
+        action: LOG_ACTIONS.POST_JOB,
+        details: {
+            job_id: job._id,
+            title: job.title,
+            job_type: job_type,
+            job_category: job_category,
+        },
+        ip: req.ip,
+        user_agent: req.get("User-Agent"),
+        timestamp: new Date(),
+    })
+
     res.status(StatusCodes.CREATED).json({
         status: "success",
         data: {
@@ -695,11 +728,25 @@ export const updateJob = catchAsync(async (req: Request, res: Response, next: Ne
         job_type: existing_job_type?._id,
         job_category: existing_job_category?._id,
         is_public: is_public,
-    };
+    };    
 
     await existingJob?.updateOne(job_fields);
 
     const updatedJob = await Job.findById(jobId);
+
+    await Log.create({
+        user_id: user._id,
+        action: LOG_ACTIONS.UPDATE_JOB,
+        details: {
+            job_id: jobId,
+            title: updatedJob?.title,
+            job_type: job_type,
+            job_category: job_category,
+        },
+        ip: req.ip,
+        user_agent: req.get("User-Agent"),
+        timestamp: new Date(),
+    })
 
     res.status(StatusCodes.OK).json({
         status: "success",
@@ -717,6 +764,20 @@ export const deleteJob = catchAsync(async (req: Request, res: Response, next: Ne
     isNotFound(job, "Job", `Job with id ${jobId} not found`);
 
     await Job.deleteOne({ _id: jobId });
+
+    await Log.create({
+        user_id: req.body.user._id,
+        action: LOG_ACTIONS.DELETE_JOB,
+        details: {
+            job_id: jobId,
+            title: job?.title,
+            job_type: job?.job_type,
+            job_category: job?.job_category,
+        },
+        ip: req.ip,
+        user_agent: req.get("User-Agent"),
+        timestamp: new Date(),
+    })
 
     res.status(StatusCodes.OK).json({
         status: "success",

@@ -26,6 +26,7 @@ import CandidateDashboard, { candidateDashboardLoader } from "./pages/ProfileDas
 import ApplicationDetail, { applicationDetailLoader, appliedJobDetailLoader } from "./pages/JobsApplied/ApplicationDetail";
 import AdminLayout from "./layouts/AdminLayout/AdminLayout";
 import EnterCompanyAccessingCode from "./pages/CompanyAccess/EnterCompanyAccessingCode";
+import AdminDashboard, { adminDashboardLoader } from "./pages/ProfileDashboard/AdminDashboard";
 
 const RedirectToProfile = () => {
     const { user } = useUser(); // Lấy id từ context
@@ -151,6 +152,12 @@ const router = createBrowserRouter([
                     }
                 ]
             },
+            {
+                path: "dashboard",
+                element: <AdminDashboard />,
+                loader: adminDashboardLoader,
+
+            }
         ],
     },
     {

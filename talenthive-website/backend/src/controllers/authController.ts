@@ -11,7 +11,7 @@ import EmployerProfile from "../models/employerProfile";
 import { createSendToken } from "../utils/tokenServices";
 import { StatusCodes } from "http-status-codes";
 import { isRequired } from "../utils/validateServices";
-import Log from "../models/log";
+import Log, { LOG_ACTIONS } from "../models/log";
 
 export const register = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const { email, password, full_name, role } = req.body;
@@ -66,7 +66,14 @@ export const login = catchAsync(async (req: Request, res: Response, next: NextFu
         return next(new AppError("Wrong password", StatusCodes.UNAUTHORIZED));
     }
 
-    await Log.create({ user_id: user._id, action: "login", timestamp: Date.now() });
+    await Log.create({
+        user_id: user._id,
+        action: LOG_ACTIONS.LOGIN,
+        timestamp: Date.now(),
+        details: "User logged in",
+        ip: req.ip,
+        user_agent: req.get("User-Agent"),
+    });
 
     createSendToken(user, StatusCodes.OK, res);
 });
@@ -237,7 +244,6 @@ export const getMe = catchAsync(async (req: Request, res: Response, next: NextFu
     });
 });
 
-
 export const updateMe = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const currentUser = req.body.user;
 
@@ -245,7 +251,7 @@ export const updateMe = catchAsync(async (req: Request, res: Response, next: Nex
     const { email, full_name, address, phone, avatar, contact_email } = req.body;
 
     // employer
-    const {  introduction,  company_id } = req.body;
+    const { introduction, company_id } = req.body;
 
     if (email && !validator.isEmail(email)) {
         return next(new AppError("Email is not valid", StatusCodes.BAD_REQUEST));
@@ -268,8 +274,7 @@ export const updateMe = catchAsync(async (req: Request, res: Response, next: Nex
             data: {
                 user: await User.findById(currentUser._id).populate("profile_id"),
             },
-        })
-
+        });
     } else if (role === "employer") {
         const profile = await EmployerProfile.findById(currentUser.profile_id);
         if (!profile) {
@@ -290,9 +295,8 @@ export const updateMe = catchAsync(async (req: Request, res: Response, next: Nex
             data: {
                 user: await User.findById(currentUser._id).populate("profile_id"),
             },
-        })
+        });
     } else {
         return next(new AppError("User role is not valid", StatusCodes.BAD_REQUEST));
     }
-
 });
