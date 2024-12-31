@@ -14,11 +14,16 @@ import AppError from "./utils/appError";
 import applicationRouter from "./routes/applicationRouter";
 import savedJobRouter from "./routes/savedJobRoutes";
 import { StatusCodes } from "http-status-codes";
+import multer from "multer";
+import adminRouter from "./routes/adminRouter";
 
 const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+const upload = multer({ dest: 'uploads/' });
+
 app.use(cors({ origin: "*" }));
 app.use(cookieParser());
 
@@ -35,8 +40,9 @@ app.use("/api/v1/companies", companyRouter);
 app.use("/api/v1/candidates", candidateRouter);
 app.use("/api/v1/employers", employerRouter);
 app.use("/api/v1/candidates", candidateRouter);
-app.use("/api/v1", applicationRouter);
+app.use("/api/v1/applications", applicationRouter);
 app.use("/api/v1/test", testRouter);
+app.use("/api/v1/admin", adminRouter);
 
 app.use("/api/v1/saved-jobs", savedJobRouter);
 

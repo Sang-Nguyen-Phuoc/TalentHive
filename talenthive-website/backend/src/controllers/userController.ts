@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import User from "../models/user";
+import User, { USER_STATUSES } from "../models/user";
 import EmployerProfile from "../models/employerProfile";
 import CandidateProfile from "../models/candidateProfile";
 import catchAsync from "../utils/catchAsync";
@@ -9,6 +9,8 @@ import { StatusCodes } from "http-status-codes";
 import { isNotFound, isObjectIdOfMongoDB, isRequired } from "../utils/validateServices";
 import Email from "../utils/email";
 import FollowCompany from "../models/followCompany";
+import Log from "../models/log";
+import { LOG_ACTIONS } from "../models/log";
 
 export const deleteUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     if (!req.body.email) {
@@ -39,41 +41,42 @@ export const deleteUser = catchAsync(async (req: Request, res: Response, next: N
 });
 
 export const lockUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const { email, userAccountId } = req.body;
-    if (!email && !userAccountId) {
-        return next(new AppError("Please provide an email or userAccountId", StatusCodes.BAD_REQUEST));
+    const admin = req.body.user;
+    const { id } = req.body;
+    isObjectIdOfMongoDB(id, "id", `Invalid id: ${id} in body`);
+
+    const user = await User.findById(id);
+
+    console.log("status, ",id, user,  user?.status, USER_STATUSES.ACTIVE);
+    
+
+    if (user?.status !== USER_STATUSES.ACTIVE) {
+        return next(new AppError("User is not active", StatusCodes.BAD_REQUEST));
     }
-    if (email && userAccountId) {
-        return next(new AppError("Please provide an email or userAccountId, but not both", StatusCodes.BAD_REQUEST));
-    }
 
-    let user = undefined;
-
-    if (userAccountId) {
-        isObjectIdOfMongoDB(userAccountId, "userId");
-        user = await User.findByIdAndUpdate(userAccountId, { active: false });
-        console.log({ user });
-
-        isNotFound(user, "", "User not found with the provided userAccountId");
-    } else if (email) {
-        if (!validator.isEmail(email)) {
-            return next(new AppError("Please provide a valid email", StatusCodes.BAD_REQUEST));
-        }
-        user = await User.findOneAndUpdate({ email: email }, { active: false });
-        console.log({ user });
-
-        isNotFound(user, "", "User not found with the provided email");
-    } else {
-        return next(new AppError("Please provide an email or userId", StatusCodes.BAD_REQUEST));
-    }
+    await user?.updateOne({ active: false, status: USER_STATUSES.LOCKED });
+    isNotFound(user, "", "User not found with the provided userId");
 
     if (user!.role === "employer") {
-        await EmployerProfile.findOneAndUpdate({ user_id: userAccountId }, { active: false });
+        await EmployerProfile.findByIdAndUpdate(user?.profile_id, { active: false });
     } else if (user!.role === "candidate") {
-        await CandidateProfile.findOneAndUpdate({ user_id: userAccountId }, { active: false });
+        await CandidateProfile.findByIdAndUpdate(user?.profile_id, { active: false });
     }
 
     new Email(user!).informLockedAccount();
+
+    await Log.create({
+        user_id: admin._id,
+        action: LOG_ACTIONS.LOCK_USER,
+        details: {
+            locked_user_id: id,
+            locked_by: admin._id,
+            // reason: req.body.reason || null,
+        },
+        ip: req.ip,
+        user_agent: req.get("User-Agent"),
+        timestamp: new Date(),
+    })
 
     return res.status(StatusCodes.OK).json({
         status: "success",
@@ -83,41 +86,38 @@ export const lockUser = catchAsync(async (req: Request, res: Response, next: Nex
     });
 });
 export const unlockUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const { email, userAccountId } = req.body;
-    if (!email && !userAccountId) {
-        return next(new AppError("Please provide an email or userAccountId", StatusCodes.BAD_REQUEST));
+    const admin = req.body.user;
+    const { id } = req.body;
+    isObjectIdOfMongoDB(id, "id", `Invalid id: ${id} in body`);
+
+    const user = await User.findById(id);
+
+    if (user?.status !== USER_STATUSES.LOCKED) {
+        return next(new AppError("User is not active", StatusCodes.BAD_REQUEST));
     }
-    if (email && userAccountId) {
-        return next(new AppError("Please provide an email or userAccountId, but not both", StatusCodes.BAD_REQUEST));
-    }
 
-    let user = undefined;
-
-    if (userAccountId) {
-        isObjectIdOfMongoDB(userAccountId, "userId");
-        user = await User.findByIdAndUpdate(userAccountId, { active: true });
-        console.log({ user });
-
-        isNotFound(user, "", "User not found with the provided userAccountId");
-    } else if (email) {
-        if (!validator.isEmail(email)) {
-            return next(new AppError("Please provide a valid email", StatusCodes.BAD_REQUEST));
-        }
-        user = await User.findOneAndUpdate({ email: email }, { active: true });
-        console.log({ user });
-
-        isNotFound(user, "", "User not found with the provided email");
-    } else {
-        return next(new AppError("Please provide an email or userId", StatusCodes.BAD_REQUEST));
-    }
+    await user?.updateOne({ active: true, status: USER_STATUSES.ACTIVE });
+    isNotFound(user, "", "User not found with the provided userId");
 
     if (user!.role === "employer") {
-        await EmployerProfile.findOneAndUpdate({ user_id: userAccountId }, { active: true });
+        await EmployerProfile.findByIdAndUpdate(user?.profile_id, { active: true });
     } else if (user!.role === "candidate") {
-        await CandidateProfile.findOneAndUpdate({ user_id: userAccountId }, { active: true });
+        await CandidateProfile.findByIdAndUpdate(user?.profile_id, { active: true });
     }
 
     new Email(user!).informUnlockedAccount();
+
+    await Log.create({
+        user_id: admin._id,
+        action: LOG_ACTIONS.UNLOCK_USER,
+        details: {
+            unlocked_user_id: id,
+            unlocked_by: admin._id,
+        },
+        ip: req.ip,
+        user_agent: req.get("User-Agent"),
+        timestamp: new Date(),
+    })
 
     return res.status(StatusCodes.OK).json({
         status: "success",
@@ -143,6 +143,17 @@ export const createAdmin = catchAsync(async (req: Request, res: Response, next: 
     const user = await User.create({ email, password, role: "admin" });
 
     user.password = undefined;
+
+    await Log.create({
+        user_id: user._id,
+        action: LOG_ACTIONS.CREATE_ADMIN,
+        details: {
+            created_admin_id: user._id,
+        },
+        ip: req.ip,
+        user_agent: req.get("User-Agent"),
+        timestamp: new Date(),
+    })
 
     return res.status(StatusCodes.CREATED).json({
         status: "success",
@@ -208,6 +219,61 @@ export const getUser = catchAsync(async (req: Request, res: Response, next: Next
         status: "success",
         data: {
             user: userFiltered,
+        },
+    });
+});
+
+export const getCandidates = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const candidates = await User.find({ role: "candidate" }).populate("profile_id");
+
+    const filteredCandidates = candidates.map((candidate: any) => {
+        return {
+            _id: candidate._id,
+            email: candidate.email || null,
+            role: candidate.role || null,
+            full_name: candidate.profile_id?.full_name || null,
+            phone: candidate.profile_id?.phone || null,
+            address: candidate.profile_id?.address || null,
+            introduction: candidate.profile_id?.introduction || null,
+            avatar: candidate.profile_id?.avatar || null,
+            status: candidate.status || null,
+            statusReason: candidate.statusReason || null,
+        };
+    });
+    res.status(StatusCodes.OK).json({
+        status: "success",
+        data: {
+            total_candidates: filteredCandidates.length,
+            candidates: filteredCandidates,
+        },
+    });
+});
+
+export const getEmployers = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const employers = await User.find({ role: "employer" }).populate("profile_id");
+
+    const filteredEmployers = employers.map((employer: any) => {
+        return {
+            _id: employer?._id,
+            email: employer?.email || null,
+            role: employer?.role || null,
+            status: employer?.status || null,
+            contact_email: employer?.profile_id?.contact_email || null,
+            full_name: employer?.profile_id?.full_name || null,
+            introduction: employer?.profile_id?.introduction || null,
+            phone: employer?.profile_id?.phone || null,
+            address: employer?.profile_id?.address || null,
+            company_id: employer?.profile_id?.company_id || null,
+            company_role: employer?.profile_id?.company_role || null,
+            avatar: employer?.profile_id?.avatar || null,
+        };
+    });
+
+    res.status(StatusCodes.OK).json({
+        status: "success",
+        data: {
+            total_employers: filteredEmployers.length,
+            employers: filteredEmployers,
         },
     });
 });

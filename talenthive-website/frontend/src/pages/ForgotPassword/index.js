@@ -13,18 +13,16 @@ function ForgotPassword() {
         const data = {
             'email': emailRef.current.value,
         }
-
-        console.log(data)
     }
     return (
-        <div className={styles.wrapper}>
-            <form className = {styles.form} onSubmit={handleResetPassword}>
+        // <div className={styles.wrapper}>
+            <form className = {styles.form + ' container p-3 p-sm-4 p-md-5'} onSubmit={handleResetPassword}>
                 <div className={styles.email}>
                     <label htmlFor='emailInput'>
                         Email
                         <span>*</span>
                     </label>
-                    <input className={styles['email-input']} 
+                    <input className={styles['email-input'] + ' form-control'} 
                            ref={emailRef}
                            id='emailInput' 
                            type='email' 
@@ -44,7 +42,7 @@ function ForgotPassword() {
                     </button>
                 </div>
             </form>
-        </div>
+        // </div>
     );
 }
 

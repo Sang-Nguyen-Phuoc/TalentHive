@@ -2,21 +2,24 @@ import { useState } from "react";
 import { Modal, Button } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { postApplyJob } from "../../services/jobsServices";
+import { useUser } from "../../context/UserContext";
+import { getCandidateById } from "../../services/userServices";
 
-const ModalApplyJob = ({ show, setShow, job }) => {
+const ModalApplyJob = ({ show, setShow, job, application }) => {
+    
+    const { user } = useUser();
+
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
-        full_name: "",
-        email: "",
-        phone: "",
-        skills: "",
-        worker_experience: "",
-        certification: "",
-    cover_letter: "",
-        cv: null,
+        full_name: application?.full_name || "",
+        email: application?.email || "",
+        phone: application?.phone || "",
+        skills: application?.skills || "",
+        worker_experience: application?.worker_experience || "",
+        certification: application?.certification || "",
+        cover_letter: application?.cover_letter || "",
+        cv: application?.cv || null,
     });
-
-    console.log("formData", formData);
 
     const handleInputChange = (e) => {
         const { name, value, files } = e.target;
@@ -33,16 +36,18 @@ const ModalApplyJob = ({ show, setShow, job }) => {
         }
     };
 
-    const handleUseProfile = () => {
-        // Giả sử có API lấy dữ liệu từ hồ sơ
+    const handleUseProfile = async () => {
+        
+        const candidate = await getCandidateById(user._id);
+        const profile = candidate.user;
         setFormData({
-            full_name: "John Doe",
-            email: "johndoe@example.com",
-            phone: "123-456-7890",
-            skills: "React, JavaScript, Node.js",
-            worker_experience: "5 years of full-stack development",
-            certification: "Certified Web Developer",
-            cover_letter: "",
+            full_name: profile.full_name,
+            email: profile.contact_email,
+            phone: profile.phone,
+            skills: profile.skills,
+            worker_experience: profile.work_experience,
+            certification: profile.certification,
+            cover_letter: profile.introduction,
             cv: null,
         });
     };
@@ -50,17 +55,14 @@ const ModalApplyJob = ({ show, setShow, job }) => {
     const handleSubmit = async (e) => {
         setLoading(true);
         e.preventDefault();
-        console.log(formData);
         try {
             const formDataToSend = new FormData();
             for (const key in formData) {
                 formDataToSend.append(key, formData[key]);
             }
             // Gửi formDataToSend lên server
-            console.log("Form Data:", formDataToSend);
             const data = await postApplyJob(job._id, formData);
 
-            console.log({ data });
             toast.success("Application submitted successfully");
 
             setShow(false);

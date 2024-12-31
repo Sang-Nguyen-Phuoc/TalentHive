@@ -1,22 +1,13 @@
-import { useNavigate, Link } from "react-router-dom";
-import { removeAccessToken } from "../../utils/authToken";
-import styles from "../../styles/components/NavBar.module.css";
+import { Link } from "react-router-dom";
+import ModalLogout from "../Modal/ModalLogout";
 import { useUser } from "../../context/UserContext";
 import { Dropdown } from "react-bootstrap";
 import { ROLES } from "../../utils/Constants";
+import { useState } from "react";
 
 const NavBar = () => {
-    const { user, role, logout } = useUser();
-    const navigate = useNavigate();
-
-    const handleLogout = () => {
-        const confirmLogout = window.confirm("Are you sure you want to log out?");
-        if (confirmLogout) {
-            logout();
-            removeAccessToken();
-            navigate("/");
-        }
-    };
+    const [showModal, setShowModal] = useState(false);
+    const { user, role } = useUser();
 
     return (
         <header className="">
@@ -40,18 +31,24 @@ const NavBar = () => {
                                 About Us
                             </Link>
                         </li>
-                        <li className="nav-item">
-                            <Link className="nav-link link-light fs-5 link-opacity-75-hover" to="/">
-                                Dashboard
-                            </Link>
-                        </li>
                         {role === ROLES.EMPLOYER ? (
                             <li className="nav-item">
                                 <Link className="nav-link link-light fs-5 link-opacity-75-hover" to="/hire-talent">
                                     Hire Talent
                                 </Link>
                             </li>
-                        ) : "" }
+                        ) : (
+                            ""
+                        )}
+                        {role === ROLES.CANDIDATE ? (
+                            <li className="nav-item">
+                                <Link className="nav-link link-light fs-5 link-opacity-75-hover" to="/applied-jobs">
+                                    Applied Jobs
+                                </Link>
+                            </li>
+                        ) : (
+                            ""
+                        )}
                     </ul>
                 </nav>
 
@@ -72,11 +69,14 @@ const NavBar = () => {
                     </nav>
                 ) : (
                     <div className="text-end ms-3 d-flex align-items-center gap-3 flex-wrap-reverse justify-content-center">
-                        <p className="m-0 text-light fs-5 fw-bold">{user?.full_name || "No Name"}</p>
+                        <p className="m-0 text-light fs-5 fw-bold">
+                            {user?.full_name || (role === "admin" ? "Admin" : "No Name")}
+                        </p>
                         <Dropdown>
                             <Dropdown.Toggle
                                 as="div"
                                 className="d-block link-dark text-decoration-none"
+                                style={{ cursor: "pointer" }}
                                 id="dropdownUser1"
                             >
                                 <img
@@ -90,17 +90,49 @@ const NavBar = () => {
 
                             <Dropdown.Menu align="end" className="text-small">
                                 <Dropdown.Item>
-                                    <Link className="text-decoration-none text-dark" to={`/profile/${user?._id}`}>
-                                        Settings
+                                    <Link
+                                        className="text-decoration-none text-dark"
+                                        to={`/${role}/${role !== ROLES.ADMIN ? user?._id + "/" : ""}dashboard`}
+                                    >
+                                        Dashboard
                                     </Link>
                                 </Dropdown.Item>
                                 <Dropdown.Item>
                                     <Link className="text-decoration-none text-dark" to={`/profile/${user?._id}`}>
-                                        Profile
+                                        Account
                                     </Link>
                                 </Dropdown.Item>
+                                {role === ROLES.ADMIN && (
+                                    <>
+                                        <Dropdown.Divider />
+                                        <Dropdown.Item>
+                                            <Link
+                                                className="text-decoration-none text-dark"
+                                                to="/admin/manage-candidates"
+                                            >
+                                                Candidates Management
+                                            </Link>
+                                        </Dropdown.Item>
+                                        <Dropdown.Item>
+                                            <Link
+                                                className="text-decoration-none text-dark"
+                                                to="/admin/manage-employers"
+                                            >
+                                                Employers Management
+                                            </Link>
+                                        </Dropdown.Item>
+                                        <Dropdown.Item>
+                                            <Link
+                                                className="text-decoration-none text-dark"
+                                                to="/admin/manage-jobs"
+                                            >
+                                                Jobs Management
+                                            </Link>
+                                        </Dropdown.Item>
+                                    </>
+                                )}
                                 <Dropdown.Divider />
-                                <Dropdown.Item href="#" onClick={handleLogout}>
+                                <Dropdown.Item href="#" onClick={() => setShowModal(true)}>
                                     Sign out
                                 </Dropdown.Item>
                             </Dropdown.Menu>
@@ -108,6 +140,7 @@ const NavBar = () => {
                     </div>
                 )}
             </div>
+            <ModalLogout show={showModal} setShow={setShowModal} />
         </header>
     );
 };

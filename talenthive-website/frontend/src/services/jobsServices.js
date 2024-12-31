@@ -91,12 +91,125 @@ export const getJobCategoryList = async () => {
     }
 }
 
+export const getLocationList = async () => {
+    try {
+        const data = await axiosCustom.get("/api/v1/jobs/locations");
+        return data;
+    } catch (error) {
+        console.error("Error while getting location list", error?.message || error);
+        throw error;
+    }
+}
+
 export const postApplyJob = async (jobId, bodyData) => {
     try {
         const data = await axiosCustom.post(`/api/v1/jobs/${jobId}/apply`, bodyData);
         return data;
     } catch (error) {
         console.error("Error while applying job", error?.message || error);
+        throw error;
+    }
+}
+
+export const getJobsByCompany = async (companyId) => {
+    try {
+        const data = await axiosCustom.get(`/api/v1/jobs/companies/${companyId}`);
+        return data;
+    } catch (error) {
+        console.error("Error while getting job list by company", error?.message || error);
+        throw error;
+    }
+}
+
+
+export const getMyAppliedJobs = async () => {
+    try {
+        const data = await axiosCustom.get("/api/v1/applications/applied-jobs");
+        return data;
+    } catch (error) {
+        console.error("Error while getting applied job list", error?.message || error);
+        throw error;
+    }
+}
+
+export const getApplicationDetail = async (id) => {
+    try {
+        const data = await axiosCustom.get(`/api/v1/applications/${id}`);
+        return data;
+    } catch (error) {
+        console.error("Error while getting applied job detail", error?.message || error);
+        throw error;
+    }
+}
+
+export const getApplicationForJob = async (jobId) => {
+    try {
+        const data = await axiosCustom.get(`/api/v1/applications/jobs/${jobId}`);
+        return data;
+    } catch (error) {
+        console.error("Error while getting applications for job", error?.message || error);
+        throw error;
+    }
+}
+
+export const getJobListSearching = async (keyword, job_type, job_category, location) => {
+    try {
+        const data = await axiosCustom.get("/api/v1/jobs/search", {
+            params: {
+                keyword,
+                job_type,
+                job_category,
+                location,
+            },
+        });
+        return data;
+    } catch (error) {
+        console.error("Error while getting job list", error?.message || error);
+        throw error;
+    }
+}
+
+
+export const getAllJobApplications = async (jobID) => {
+    try {
+        const data = await axiosCustom.get(`/api/v1/jobs/${jobID}/all-applications`);
+        return data.applications;
+    }
+    catch (error) {
+        console.error("Error while getting all job applications", error?.message || error);
+        throw error;
+    }
+}
+export const getJobListByAdmin = async () => {
+    try {
+        const data = await axiosCustom.get(`/api/v1/jobs/`);
+        return data;
+    } catch (error) {
+        console.error("Error while getting job list by admin", error?.message || error);
+        throw error;
+    }
+}
+
+export const postAdminApproveJob = async (id) => {
+    try {
+        const response = await axiosCustom.post(`/api/v1/jobs/approve`, {
+            id: id
+        });
+        return response;
+    } catch (error) {
+        console.error("Error while approving job", error?.message || error);
+        throw error;
+    }
+}
+
+export const postAdminRejectJob = async (id) => {
+    try {
+        const response = await axiosCustom.post(`/api/v1/jobs/reject`, {
+            id: id
+        });
+        return response;
+    } catch (error) {
+        console.error("Error while rejecting job", error?.message || error);
         throw error;
     }
 }

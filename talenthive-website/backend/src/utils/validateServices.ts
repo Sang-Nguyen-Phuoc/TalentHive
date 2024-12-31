@@ -33,9 +33,13 @@ export const isString = (field: any, fieldName: string, messageCustom: string = 
 }
 
 export const isURL = (field: any, fieldName: string, messageCustom: string = "") => {
-    console.log(field);
-    
     if (field && !validator.isURL(field)) {
         throw new AppError(messageCustom.length === 0 ? `${fieldName} is not a valid URL` : messageCustom, StatusCodes.BAD_REQUEST);
+    }
+}
+
+export const isValidEmail = (field: any, fieldName: string, messageCustom: string = "") => {
+    if (field && !validator.isEmail(field)) {
+        throw new AppError(messageCustom.length === 0 ? `${fieldName} is not a valid email` : messageCustom, StatusCodes.BAD_REQUEST);
     }
 }

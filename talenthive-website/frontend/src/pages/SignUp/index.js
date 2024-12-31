@@ -5,12 +5,10 @@ import { toast } from "react-toastify";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-regular-svg-icons";
 import { postSignup } from "../../services/authServices";
-import { useUser } from "../../context/UserContext";
 import { saveAccessToken } from "../../utils/authToken";
 
 function SignUp() {
     const navigate = useNavigate();
-    const { login } = useUser();
 
     const [passwordRules, setPasswordRules] = useState([]);
     const [passwordMatch, setPasswordMatch] = useState(true);
@@ -63,12 +61,10 @@ function SignUp() {
 
         try {
             const data = await postSignup(bodyData.email, bodyData.password, bodyData.name , bodyData.role);
-            console.log({data});
-            
+
             saveAccessToken(data?.accessToken);
-            login();
             toast.success("Register successfully!");
-            navigate("/create-employer-profile");
+            navigate("/signin");
         } catch (error) {
             toast.error(error?.message || error);
         }
@@ -84,7 +80,7 @@ function SignUp() {
                 </label>
                 <input
                     ref={fullnameRef}
-                    className={styles["username-input"]}
+                    className={styles["username-input"] + ' form-control mt-1'}
                     id="usernameInput"
                     type="text"
                     placeholder="Full name"
@@ -98,7 +94,7 @@ function SignUp() {
                 </label>
                 <input
                     ref={emailRef}
-                    className={styles["email-input"]}
+                    className={styles["email-input"] + ' form-control mt-1'}
                     id="emailInput"
                     type="email"
                     placeholder="Email"
@@ -113,7 +109,7 @@ function SignUp() {
                 <div className={styles["input-icon-container"]}>
                     <input
                         ref={passwordRef}
-                        className={styles["password-input"]}
+                        className={styles["password-input"] + ' form-control mt-1'}
                         id="passwordInput"
                         type={showPass ? "input" : "password"}
                         placeholder="Password"
@@ -122,7 +118,6 @@ function SignUp() {
                             handleMatchPassword();
                         }}
                         required
-                        defaultValue="123456789@Aa"
                     />
                     <FontAwesomeIcon
                         className={styles.icon}
@@ -130,7 +125,7 @@ function SignUp() {
                         onClick={() => setShowPass(!showPass)}
                     />
                 </div>
-                <ul>
+                <ul className="mt-1 mb-0 p-0">
                     {passwordRules.map((rule, index) => (
                         <li key={index} className={`${styles.convention} ${styles[rule.valid ? "valid" : "invalid"]}`}>
                             {rule.message}
@@ -146,7 +141,7 @@ function SignUp() {
                 <div className={styles["input-icon-container"]}>
                     <input
                         ref={repasswordRef}
-                        className={styles["password-input"]}
+                        className={styles["password-input"] + ' form-control mt-1'}
                         id="repasswordInput"
                         type={showRePass ? "input" : "password"}
                         placeholder="Confirm password"
@@ -154,7 +149,6 @@ function SignUp() {
                             handleMatchPassword();
                         }}
                         required
-                        defaultValue="123456789@Aa"
                     />
                     <FontAwesomeIcon
                         className={styles.icon}
@@ -162,7 +156,7 @@ function SignUp() {
                         onClick={() => setShowRePass(!showRePass)}
                     />
                 </div>
-                {!passwordMatch && <p className={`${styles.invalid} ${styles.convention}`}>Password does not match</p>}
+                {!passwordMatch && <p className={`${styles.invalid} ${styles.convention} mb-0 ms-1`}>Password does not match</p>}
             </div>
             <div className={styles.password}>
                 <label htmlFor="roleInput">
@@ -171,7 +165,7 @@ function SignUp() {
                 </label>
                 <select
                     ref={roleRef}
-                    className={styles.dropdown}
+                    className={styles.dropdown + ' form-select mt-1'}
                     id="roleInput"
                     // defaultValue={"default"}
                     onChange={(e) => (roleRef.current.value = e.target.value)}
@@ -190,7 +184,7 @@ function SignUp() {
                     checked={chkbox}
                     onChange={(v) => setChkbox(v.target.checked)}
                 />
-                <p className={styles["policy-content"]}>
+                <p className={styles["policy-content"] + ' mb-0'}>
                     I have read and agree to TalentHive's
                     <Link to={"/about-us"} className={styles.link}>
                         {" "}
@@ -208,7 +202,7 @@ function SignUp() {
                     {isLoading ? <span className="spinner-border text-light"></span> : "SIGN UP"}
                 </button>
             </div>
-            <div className={`${styles.container} ${styles.signin} gap-3`}>
+            <div className={`${styles.container} ${styles.signin} gap-2`}>
                 <p className={`${styles.question} m-0`}>Already have an account?</p>
                 <Link to="/signin" className={`${styles.link} ${styles["signup-link"]}`}>
                     Sign in now

@@ -8,9 +8,10 @@ import catchAsync from "../utils/catchAsync";
 import Company from "../models/company";
 import Image from "../models/image";
 import EmployerProfile, { IEmployerProfile } from "../models/employerProfile";
-import { isObjectIdOfMongoDB, isRequired, isString } from "../utils/validateServices";
+import { isNotFound, isObjectIdOfMongoDB, isRequired, isString } from "../utils/validateServices";
 import User from "../models/user";
 import { isURL } from "../utils/validateServices";
+import Email from "../utils/email";
 
 export const getAllCompanies = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const companies = await Company.find().populate("company_manager").populate("avatar");
@@ -23,6 +24,8 @@ export const getAllCompanies = catchAsync(async (req: Request, res: Response, ne
 });
 
 export const createCompany = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    console.log(req.body);
+
     const { user } = req.body;
 
     const employerProfile = await EmployerProfile.findById(user.profile_id);
@@ -32,8 +35,8 @@ export const createCompany = catchAsync(async (req: Request, res: Response, next
     if (employerProfile.company_id) {
         return next(new AppError("Employer already has a company", StatusCodes.BAD_REQUEST));
     }
-    
-    const { name, industry, addresses, website, introduction, phone } = req.body;
+
+    const { name, industry, addresses, website, introduction, phone, avatar } = req.body;
     isRequired(name, "name");
     isRequired(industry, "industry");
     isRequired(addresses, "addresses");
@@ -49,39 +52,9 @@ export const createCompany = catchAsync(async (req: Request, res: Response, next
         return next(new AppError("addresses must have at least one address", StatusCodes.BAD_REQUEST));
     }
 
-    let image = null;
-
-    if (req.files && Array.isArray(req.files) && req.files.length > 0) {
-        if (req.files.length > 1) {
-            return next(new AppError("Only one file is allowed", StatusCodes.BAD_REQUEST));
-        }
-        const avatar = req.files[0];
-        if (avatar.fieldname !== "avatar") {
-            return next(new AppError("fieldname must be avatar", StatusCodes.BAD_REQUEST));
-        }
-        if (!avatar.mimetype.startsWith("image")) {
-            return next(new AppError("Only image files are allowed", StatusCodes.BAD_REQUEST));
-        }
-
-        const fileExtension = avatar.originalname.split(".").pop();
-        if (!/\.(jpg|jpeg|png)$/.test(`.${fileExtension}`)) {
-            return next(new AppError("Only jpg, jpeg and png files are allowed", StatusCodes.BAD_REQUEST));
-        }
-        if (avatar.size > 1024 * 1024) {
-            return next(new AppError("File size must not exceed 1MB", StatusCodes.BAD_REQUEST));
-        }
-
-        image = await Image.create({
-            originalname: avatar.originalname,
-            contentType: avatar.mimetype,
-            data: avatar.buffer,
-        });
-
-    } else {
-    }
     const company = await Company.create({
         name: name || null,
-        avatar: image ? image._id : null,
+        avatar: avatar || null,
         introduction: introduction || null,
         industry: industry || null,
         addresses: addresses || null,
@@ -97,6 +70,36 @@ export const createCompany = catchAsync(async (req: Request, res: Response, next
         status: "success",
         data: {
             company,
+        },
+    });
+});
+
+export const updateCompanyByEmployer = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const { user } = req.body;
+
+    const employerProfile = await EmployerProfile.findById(user.profile_id);
+    isNotFound(employerProfile, "", `Employer profile with id: ${user.profile_id} not found`);
+
+    const company = await Company.findById(employerProfile!.company_id);
+    isNotFound(company, "", `Company with id: ${employerProfile!.company_id} not found`);
+
+    const { name, industry, addresses, website, introduction, avatar } = req.body;
+
+    await company!.updateOne({
+        name: name || company!.name || null,
+        industry: industry || company!.industry || null,
+        addresses: addresses || company!.addresses || null,
+        website: website || company!.website || null,
+        introduction: introduction || company!.introduction || null,
+        avatar: avatar || company!.avatar || null,
+    });
+
+    const updatedCompany = await Company.findById(employerProfile!.company_id);
+
+    res.status(StatusCodes.OK).json({
+        status: "success",
+        data: {
+            company: updatedCompany,
         },
     });
 });
@@ -122,98 +125,6 @@ export const deleteCompany = catchAsync(async (req: Request, res: Response, next
         status: "success",
         data: {
             company: null,
-        },
-    });
-});
-
-export const updateCompany = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const { id } = req.params;
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        return next(new AppError("Invalid ID", StatusCodes.BAD_REQUEST));
-    }
-
-    const company = await Company.findById(id);
-    if (!company) {
-        return next(new AppError(`Company with id: ${id} not found`, StatusCodes.NOT_FOUND));
-    }
-
-    const { name, locations, industry, address, website, company_manager } = req.body;
-
-    if (name) {
-        company.name = name;
-    }
-    if (locations) {
-        if (!Array.isArray(locations) || !locations.every((location) => typeof location === "string")) {
-            return next(new AppError("locations must be an array of strings", StatusCodes.BAD_REQUEST));
-        }
-        if (locations.length === 0) {
-            return next(new AppError("locations must have at least one location", StatusCodes.BAD_REQUEST));
-        }
-        company.addresses = locations;
-    }
-    if (industry) {
-        company.industry = industry;
-    }
-    if (address) {
-        company.addresses = [address];
-    }
-    if (website) {
-        if (typeof website !== "string") {
-            return next(new AppError("website must be a string", StatusCodes.BAD_REQUEST));
-        }
-        if (!validator.isURL(website)) {
-            return next(new AppError("Invalid website URL", StatusCodes.BAD_REQUEST));
-        }
-        company.website = website;
-    }
-    if (company_manager) {
-        if (!mongoose.Types.ObjectId.isValid(company_manager) || !(await EmployerProfile.findById(company_manager))) {
-            return next(new AppError("Invalid company_manager ID", StatusCodes.BAD_REQUEST));
-        }
-        company.company_manager = company_manager;
-    }
-
-    if (req.files && Array.isArray(req.files) && req.files.length > 0) {
-        if (req.files.length > 1) {
-            return next(new AppError("Only one file is allowed", StatusCodes.BAD_REQUEST));
-        }
-        const avatar = req.files[0];
-        if (!avatar.mimetype.startsWith("image")) {
-            return next(new AppError("Only image files are allowed", StatusCodes.BAD_REQUEST));
-        }
-        const fileExtension = avatar.originalname.split(".").pop();
-        if (!/\.(jpg|jpeg|png)$/.test(`.${fileExtension}`)) {
-            return next(new AppError("Only jpg, jpeg and png files are allowed", StatusCodes.BAD_REQUEST));
-        }
-        if (avatar.size > 1024 * 1024) {
-            return next(new AppError("File size must not exceed 1MB", StatusCodes.BAD_REQUEST));
-        }
-
-        if (company.avatar) {
-            await Image.findByIdAndDelete(company.avatar);
-        }
-
-        const image = await Image.create({
-            originalname: avatar.originalname,
-            contentType: avatar.mimetype,
-            data: avatar.buffer,
-        });
-
-        company.avatar = image._id;
-    } else if (req.files && Array.isArray(req.files)) {
-        console.log(req.files);
-        if (company.avatar) {
-            await Image.findByIdAndDelete(company.avatar);
-            company.avatar = undefined;
-        }
-    }
-
-    await company.save();
-
-    res.status(StatusCodes.OK).json({
-        status: "success",
-        data: {
-            company,
         },
     });
 });
@@ -316,24 +227,33 @@ export const getMyCompanyAsEmployer = catchAsync(async (req: Request, res: Respo
         return next(new AppError(`Employer profile with id: ${user.profile_id} not found`, StatusCodes.NOT_FOUND));
     }
     if (!employerProfile.company_id) {
-        return next(new AppError(`Employer with id: ${user._id} is not associated with any company`, StatusCodes.NOT_FOUND));
+        return next(
+            new AppError(`Employer with id: ${user._id} is not associated with any company`, StatusCodes.NOT_FOUND)
+        );
     }
     const company = await Company.findById(employerProfile.company_id);
     if (!company) {
-        return next(new AppError(`Company with id: ${employerProfile.company_id} in employer profile not found`, StatusCodes.NOT_FOUND));
-    }    
+        return next(
+            new AppError(
+                `Company with id: ${employerProfile.company_id} in employer profile not found`,
+                StatusCodes.NOT_FOUND
+            )
+        );
+    }
     if (company.company_manager?.toString() !== user._id.toString()) {
         return next(new AppError(`Employer with id: ${user._id} is not the company manager`, StatusCodes.UNAUTHORIZED));
     }
-    
+
     const companyFields = {
-        name: company.name,
-        industry: company.industry,
-        addresses: company.addresses,
-        website: company.website,
-        introduction: company.introduction,
-        company_manager: employerProfile.full_name,
-    }
+        name: company?.name || null,
+        avatar: company?.avatar || null,
+        industry: company?.industry || null,
+        addresses: company?.addresses || null,
+        website: company?.website || null,
+        introduction: company?.introduction || null,
+        company_manager: employerProfile?.full_name || null,
+        company_manager_email: employerProfile?.contact_email || null,
+    };
 
     res.status(StatusCodes.OK).json({
         status: "success",
@@ -342,3 +262,91 @@ export const getMyCompanyAsEmployer = catchAsync(async (req: Request, res: Respo
         },
     });
 });
+
+export const getHumanResources = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const companyId = req.params.id;
+    isObjectIdOfMongoDB(companyId, "id", `Invalid company ID: ${companyId}`);
+
+    const company = await Company.findById(companyId);
+    isNotFound(company, "", `Company with id: ${companyId} not found`);
+
+    const employers = await User.find({
+        _id: { $in: company!.employers || [] },
+    }).populate("profile_id");
+    const employers_filtered = employers.map((employer: any) => ({
+        _id: employer._id,
+        full_name: employer.profile_id?.full_name,
+        contact_email: employer.contact_email || employer.email || null,
+        avatar: employer.profile_id?.avatar || null,
+    }));
+
+    const company_manager = await User.findById(company!.company_manager).populate("profile_id") as any;
+    const company_manager_filtered = {
+        _id: company_manager?._id,
+        full_name: company_manager?.profile_id?.full_name,
+        contact_email: company_manager?.contact_email || company_manager?.email || null,
+        avatar: company_manager?.profile_id?.avatar || null,
+    }
+
+    res.status(StatusCodes.OK).json({
+        status: "success",
+        data: {
+            company_manager: company_manager_filtered,
+            total_employers: employers.length,
+            employers: employers_filtered,
+        },
+    });
+});
+
+export const generateAccessionCode = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const { user } = req.body;
+    const companyId = req.params.id;
+    isObjectIdOfMongoDB(companyId, "id", `Invalid company ID: ${companyId}`);
+
+    const company = await Company.findById(companyId);
+    isNotFound(company, "", `Company with id: ${companyId} not found`);
+
+    const accession_code = Math.random().toString(36).substring(2, 8).toUpperCase();
+    company!.accession_code = accession_code;
+    await company!.save();
+
+    new Email(user).sendAccessionCode(accession_code);
+
+    res.status(StatusCodes.OK).json({
+        status: "success",
+        data: {
+            accession_code: accession_code,
+            email: user.email,
+        },
+    });
+});
+
+export const verifyAccessionCode = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const { user } = req.body;
+    const { accession_code } = req.body;
+
+    console.log(accession_code);
+    
+    
+
+    const company = await Company.findOne({ accession_code: accession_code });
+    isNotFound(company, "", `Company with accession code: ${accession_code} not found`);
+
+    const employerProfile = await EmployerProfile.findById(user?.profile_id);
+    isNotFound(employerProfile, "", `Employer profile with id: ${user?.profile_id} not found`);
+
+    employerProfile!.company_id = company!._id;
+    employerProfile!.company_role = "employer";
+    await employerProfile!.save();
+
+    company!.employers?.push(user._id);
+    await company!.save();
+
+    res.status(StatusCodes.OK).json({
+        status: "success",
+        data: {
+            company: company,
+        },
+    });
+});
+

@@ -1,5 +1,4 @@
 import { model, Schema, Types } from "mongoose";
-import validator from "validator";
 
 export interface IApplication {
     _id: Types.ObjectId;
@@ -9,9 +8,9 @@ export interface IApplication {
     full_name: string;
     email: string;
     phone: string;
-    skills: [string];
+    skills: string;
     worker_experience: string;
-    certification: [string];
+    certification: string;
     cover_letter: string;
     cv: object;
 
@@ -48,6 +47,19 @@ const ApplicationSchema = new Schema<IApplication>({
     },
     phone: {
         type: String,
+    },
+    skills: {
+        type: String,
+    },  
+    worker_experience: {
+        type: String,
+        trim: true
+    },
+    certification: {
+        type: String,
+    },
+    cv: {
+        type: Object,
     },
     status: {
         type: String,

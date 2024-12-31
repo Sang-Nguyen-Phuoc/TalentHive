@@ -5,8 +5,6 @@ import { useNavigate } from "react-router";
 import { postCreateJob } from "../../services/jobsServices";
 
 const ModalPostJob = ({ show, setShow, company, jobTypes, jobCategories }) => {
-    console.log({jobTypes, jobCategories});
-    
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
         title: "",
@@ -218,7 +216,7 @@ const ModalPostJob = ({ show, setShow, company, jobTypes, jobCategories }) => {
                             className="form-control"
                             id="address"
                             name="address"
-                            placeholder="Enter address"
+                            placeholder="e.g., District 1, HCM City"
                             value={formData.address}
                             onChange={handleChange}
                             required
@@ -336,12 +334,12 @@ const ModalPostJob = ({ show, setShow, company, jobTypes, jobCategories }) => {
                             Expiration Date *
                         </label>
                         <input
-                            type="date"
+                            type="datetime-local"
                             className="form-control"
                             id="expires_at"
                             name="expires_at"
                             value={formData.expires_at}
-                            onChange={handleChange}
+                            onChange={handleChange} 
                             required
                         />
                     </div>

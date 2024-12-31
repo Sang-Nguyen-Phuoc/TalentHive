@@ -37,7 +37,6 @@ function Home() {
             const data = await getPublicJobList(activeIndex + 1, numJob);
             setJobs(data.jobs);
             setNumPage(Math.ceil(data.total_jobs / numJob));
-            console.log(data);
         } catch (error) {
             console.error('Error:', error);
         }

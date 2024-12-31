@@ -20,25 +20,21 @@ export const HireTalentLoader = async () => {
         companyData = await getCompanyAsEmployer();
     } catch (error) {
         console.error("Error while getting company", error?.message || error);
-        toast.error("Error while getting company" + error?.message || error);
     }
     try {
         jobListData = await getJobListAsEmployer();
     } catch (error) {
         console.error("Error while getting job list", error?.message || error);
-        toast.error("Error while getting job list");
     }
     try {
         jobTypeListData = await getJobTypeList();
     } catch (error) {
         console.error("Error while getting job type list", error?.message || error);
-        toast.error("Error while getting job type list");
     }
     try {
         jobCategoryListData = await getJobCategoryList();
     } catch (error) {
         console.error("Error while getting job category list", error?.message || error);
-        toast.error("Error while getting job category list");
     }
     return { companyData, jobListData, jobTypeListData, jobCategoryListData };
 };
@@ -54,10 +50,19 @@ function HireTalent() {
     const jobTypes = jobTypeListData?.job_types;
     const jobCategories = jobCategoryListData?.job_categories;
 
-    const renderTotalJobs = (total_jobs) => {
-        if (total_jobs > 1) {
-            return `${total_jobs} posts`;
-        } else if (total_jobs === 1) {
+    const renderTotalJobs = (jobList) => {
+        let total = 0
+        if (jobList && Array.isArray(jobList)) {
+            if (state === 'all') {
+                total = jobList.length;
+            }
+            else {
+                total = jobList.filter(job => job.status === state).length;
+            }
+        }
+        if (total > 1) {
+            return `${total} posts`;
+        } else if (total === 1) {
             return "1 post";
         } else {
             return "No post";
@@ -66,11 +71,14 @@ function HireTalent() {
 
     const [showForm, setShowForm] = useState(false);
     const [state, setState] = useState("all");
-    // const [jobList, setJobList] = useState();
 
     if (!companyData) {
         return (
-            <div className="container text-center p-5">
+            <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="container text-center p-5"
+            >
                 <div className="alert alert-warning py-4 px-5 rounded-3 shadow-sm">
                     <h2 className="fw-bold mb-3" style={{ color: "var(--primary-color)" }}>
                         No Company Found
@@ -78,24 +86,21 @@ function HireTalent() {
                     <p className="mb-4 text-muted fs-5">
                         It seems like you haven’t created a company yet. Please create a company to proceed.
                     </p>
-                    <Link
-                        to="/create-company-access"
+                    <motion.button
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.95 }}
                         className="btn btn-primary btn-lg px-4 py-2"
-                        style={{
-                            backgroundColor: "#007BFF",
-                            borderColor: "#007BFF",
-                            boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-                        }}
+                        onClick={() => (window.location.href = "/create-company-access")}
                     >
                         Create Company Now
-                    </Link>
+                    </motion.button>
                 </div>
-            </div>
+            </motion.div>
         );
     }
 
     return (
-        <div className="container mb-5">
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="container mb-5">
             <ModalPostJob
                 show={showForm}
                 setShow={setShowForm}
@@ -104,12 +109,22 @@ function HireTalent() {
                 jobCategories={jobCategories}
             />
             <div className="row mt-2 g-3 g-md-4 g-xl-5 flex-column-reverse flex-md-row">
-                <div className="col-12 col-md-8">
+                <motion.div
+                    initial={{ x: -50, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ type: "spring", stiffness: 100 }}
+                    className="col-12 col-md-8"
+                >
                     <div className="row py-3">
                         <div className="col-12 d-flex">
-                            <button className="btn btn-primary flex-fill" onClick={() => setShowForm(!showForm)}>
+                            <motion.button
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                className="btn btn-primary flex-fill"
+                                onClick={() => setShowForm(!showForm)}
+                            >
                                 Create new post
-                            </button>
+                            </motion.button>
                         </div>
                     </div>
                     <div className="row justify-content-end">
@@ -123,7 +138,7 @@ function HireTalent() {
                             >
                                 <option value="all">All</option>
                                 <option value="pending">Pending</option>
-                                <option value="accepted">Accepted</option>
+                                <option value="approved">Approved</option>
                                 <option value="rejected">Rejected</option>
                             </select>
                         </div>
@@ -143,25 +158,33 @@ function HireTalent() {
                             </select>
                         </div>
                     </div>
-                    <div className="row my-3">
-                        <span className="fw-bold">{renderTotalJobs(total_jobs)}</span>
+                    <div className="d-flex my-3 ">
+                        <motion.span whileHover={{ scale: 1.3 }} className="fw-bold flex-grow-0">
+                            {renderTotalJobs(jobList)}
+                        </motion.span>
                     </div>
                     <ul className="row my-3 g-3 list-unstyled">
                         {jobList ? (
                             Array.isArray(jobList) &&
-                            jobList?.map((job, index) => {
+                            jobList?.filter(job => state === 'all' || job.status === state).map((job, index) => {
                                 return (
-                                    <li className="col-12" key={index}>
+                                    <motion.li
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        key={index}
+                                        className="col-12"
+                                    >
                                         <Link to={`/jobs/${job._id}`} className="text-decoration-none text-dark">
                                             <motion.div
                                                 whileHover={{ scale: 1.04 }}
                                                 whileTap={{ scale: 0.95 }}
                                                 transition={{ type: "spring", stiffness: 200, damping: 10 }}
                                             >
-                                                <Job job={job} isEmployer={false} />
+                                                <Job job={job}/>
                                             </motion.div>
                                         </Link>
-                                    </li>
+                                        <Link to={`/jobs/${job._id}/applications`} className="ms-3">View Candidates List</Link>
+                                    </motion.li>
                                 );
                             })
                         ) : (
@@ -170,55 +193,66 @@ function HireTalent() {
                             </div>
                         )}
                     </ul>
-                </div>
-                <div className="col-12 col-md-4">
+                </motion.div>
+                <motion.div
+                    initial={{ x: 50, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ type: "spring", stiffness: 100 }}
+                    className="col-12 col-md-4"
+                >
                     <div className="container shadow rounded">
                         {companyData ? (
                             <>
                                 <div className="row justify-content-center">
-                                    <img
-                                        src={company?.avatar}
-                                        className="img-thumbnail m-3"
-                                        style={{ width: 200, aspectRatio: 1, objectFit: "cover" }}
-                                        alt="Avatar"
-                                    />
+                                    <div className="mb-3 text-center">
+                                        <motion.img
+                                            whileHover={{ scale: 1.1 }}
+                                            src={company?.avatar || "https://placehold.co/400"}
+                                            className="img-fluid shadow rounded p-0"
+                                            style={{ objectFit: "cover" }}
+                                            alt="Avatar"
+                                        />
+                                    </div>
                                     <h2 className="col-auto text-wrap fw-bold fs-4 mt-3 mt-md-0">{company?.name}</h2>
                                 </div>
                                 <hr className="m-2" />
-                                <div className="p-3">
-                                    <span className="fw-bold">Description: </span>
-                                    {company?.description || "Nothing more"}
-                                </div>
-                                <div className="p-3">
-                                    <span className="fw-bold">Industry: </span>
-                                    {company?.industry || "Nothing more"}
-                                </div>
-                                <div className="m-3">
-                                    <span className="fw-bold">Our website: </span>
-                                    <a className="cursor-pointer text-break" href={company?.website}>
-                                        {company?.website || "Nothing more"}
-                                    </a>
-                                </div>
-                                <hr className="m-0" />
-                                <div className="text-center d-flex justify-content-center p-3">
+                                {[
+                                    { key: "manager", value: company?.company_manager },
+                                    { key: "introduction", value: company?.introduction },
+                                    { key: "industry", value: company?.industry },
+                                    { key: "location", value: company?.addresses?.[0] },
+                                    { key: "contact email", value: company?.company_manager_email },
+                                    { key: "website", value: company?.website },
+                                ].map((item, index) => (
+                                    <div key={index} className="p-3">
+                                        <span className="fw-bold">{item.key}: </span>
+                                        {item.value ? item.value : <span className="text-muted">Not defined</span>}
+                                    </div>
+                                ))}
+                                <hr className="m-2" />
+                                { company?.website && (
+                                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="p-3">
                                     <a
-                                        className="cursor-pointer d-flex gap-2 align-items-center justify-content-center"
-                                        href="/profile/dashboard"
+                                        href={company?.website}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-decoration-none"
+                                        style={{ color: "var(--bs-primary)" }}
                                     >
-                                        View company
-                                        <FontAwesomeIcon icon={faSquareArrowUpRight} />
+                                        <FontAwesomeIcon icon={faSquareArrowUpRight} /> Visit website
                                     </a>
-                                </div>
+                                </motion.div>
+                                )}
                             </>
                         ) : (
-                            <div className="text-center p-5">
-                                <h2 className="fw-bold">No company</h2>
+                            <div className="row">
+                                <h2 className="text-center fw-bold">No company data available</h2>
                             </div>
                         )}
                     </div>
-                </div>
+                </motion.div>
             </div>
-        </div>
+        </motion.div>
     );
 }
 

@@ -2,21 +2,20 @@ import mongoose, { Schema, Types } from "mongoose";
 import validator from "validator";
 
 export interface ICandidateProfile {
-    user_id: Types.ObjectId;
+    _id?: Types.ObjectId;
     full_name: string;
     email: string;
+    contact_email: string;
+    introduction: string;
     date_of_birth: Date;
     gender: boolean;
-    phone_number: string;
+    phone: string;
     address: string;
     city: string;
-    education: string;
-    skills: [string];
-    certifications: [string];
-    experience: string;
+    skills: string;
+    certification: string;
     work_experience: string;
-    resume: object;
-    avatar: object;
+    avatar: string;
     created_at: Date;
     updated_at: Date;
     visibility: boolean;
@@ -24,10 +23,6 @@ export interface ICandidateProfile {
 }
 
 const CandidateProfileSchema = new Schema<ICandidateProfile>({
-    user_id: {
-        type: Schema.Types.ObjectId,
-        ref: 'User',
-    },
     full_name: {
         type: String,
         trim: true
@@ -36,15 +31,23 @@ const CandidateProfileSchema = new Schema<ICandidateProfile>({
         type: String,
         validate: [validator.isEmail, 'Invalid email address']
     },
+    contact_email: {
+        type: String,
+        validate: [validator.isEmail, 'Invalid email address']
+    },
+    introduction: {
+        type: String,
+        trim: true
+    },
     date_of_birth: {
         type: Date,
     },
     gender: {
         type: Boolean,
     },
-    phone_number: {
+    phone: {
         type: String,
-        validate: [validator.isMobilePhone, 'Invalid phone number']
+        trim: true
     },
     address: {
         type: String,
@@ -54,28 +57,16 @@ const CandidateProfileSchema = new Schema<ICandidateProfile>({
         type: String,
         trim: true
     },
-    education: {
-        type: String,
-        trim: true
-    },
     skills: {
-        type: [String],
+        type: String,
     },
-    certifications: {
-        type: [String],
-    },
-    experience: {
+    certification: {
         type: String,
     },
     work_experience: {
         type: String,
     },
-    resume: {
-        type: Object,
-    },
-    avatar: {
-        type: Object,
-    },
+    avatar: String,
     visibility: {
         type: Boolean,
         default: true

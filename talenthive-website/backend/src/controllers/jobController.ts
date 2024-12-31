@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import catchAsync from "../utils/catchAsync";
-import Job from "../models/job";
+import Job, { JOB_STATUSES } from "../models/job";
 import AppError from "../utils/appError";
-import mongoose from "mongoose";
+import mongoose, { Types } from "mongoose";
 import Application from "../models/application";
 
 import { StatusCodes } from "http-status-codes";
@@ -11,48 +11,80 @@ import EmployerProfile from "../models/employerProfile";
 import Company from "../models/company";
 import JobType from "../models/jobType";
 import JobCategory from "../models/jobCategory";
+import path from "path";
+import Log from "../models/log";
+import { LOG_ACTIONS } from "../models/log";
 
 export const searchJobs = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const { title, company_id, salary_range, location, skills, job_type, job_category } = req.query;
+    const { keyword, job_type, job_category, location } = req.query;
 
+    console.log("keyword", keyword);
+    
     const filter: any = {};
 
-    if (title) filter.title = { $regex: title, $options: "i" };
-    if (company_id) filter.company_id = new mongoose.Types.ObjectId(company_id.toString().trim());
-
-    if (location) filter.location = { $regex: location, $options: "i" };
-    if (job_type) filter.job_type = job_type;
-    if (job_category) filter.job_category = job_category;
-
-    // Parse salary_range
-    if (salary_range) {
-        const [min, max] = (salary_range as string).split("-").map(Number);
-        filter.$and = [{ "salary_range.min": { $gte: min } }, { "salary_range.max": { $lte: max } }];
+    // Tìm kiếm theo keyword (áp dụng trên title, skills, introduction, benefits, requirements)
+    if (keyword) {
+        const keywordRegex = new RegExp(keyword.toString().trim(), "i"); // Case-insensitive
+        filter.$or = [
+            { title: { $regex: keywordRegex } },
+            { skills: { $regex: keywordRegex } },
+            { description: { $regex: keywordRegex } }, // Assuming "description" is used for "introduction"
+            { benefits: { $regex: keywordRegex } },
+            { requirements: { $regex: keywordRegex } },
+        ];
     }
 
-    // Parse skills with case-insensitive matching
-    if (skills) {
-        const skillArray = Array.isArray(skills) ? skills : [skills];
-        filter.skills = {
-            $elemMatch: {
-                $in: skillArray.map((skill) => new RegExp(`^${skill}$`, "i")), // Create case-insensitive regex for each skill
-            },
-        };
+    // Tìm kiếm theo jobCategory (dựa trên tên jobCategory)
+    if (job_category) {
+        const jobCategoryId = await JobCategory.findOne({ name: job_category.toString().trim() });
+        filter.job_category = jobCategoryId ? jobCategoryId._id : null;
     }
 
+    // Tìm kiếm theo jobType (dựa trên tên jobType)
+    if (job_type) {
+        const jobTypeId = await JobType.findOne({ name: job_type.toString().trim() });
+        filter.job_type = jobTypeId ? jobTypeId._id : null;
+    }
+
+    // Tìm kiếm theo location (áp dụng trên address)
+    if (location) {
+        const locationRegex = new RegExp(location.toString().trim(), "i"); // Case-insensitive
+        filter.address = { $regex: locationRegex };
+    }
+    
+    filter.is_public = true;
+
+    // Truy vấn cơ sở dữ liệu với các bộ lọc
     const jobs = await Job.find(filter)
         .populate("company_id")
         .populate("job_type")
         .populate("job_category")
         .populate("employer_id");
 
+    const jobsFilter = jobs.map((job: any) => {
+        return {
+            _id: job._id,
+            title: job.title,
+            company: job?.company_id?.name || null,
+            image: job?.company_id?.avatar || null,
+            salary: job.salary_range.min + " - " + job.salary_range.max + " USD" || null,
+            category: job?.job_category?.name || null,
+            address: job.address || null,
+            posted_at: job.posted_at || null,
+            expires_at: job.expires_at || null,
+        };
+    })
+
+    // Trả về kết quả
     res.status(StatusCodes.OK).json({
         status: "success",
         data: {
-            jobs,
+            total_jobs: jobs.length,
+            jobs: jobsFilter,
         },
     });
 });
+
 
 export const getPublicJobList = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const { page, limit } = req.query;
@@ -91,7 +123,7 @@ export const getPublicJobList = catchAsync(async (req: Request, res: Response, n
             image: job?.company_id?.avatar || null,
             salary: job.salary_range.min + " - " + job.salary_range.max + " USD" || null,
             category: job?.job_category?.name || null,
-            location: job.location || null,
+            address: job.address || null,
             posted_at: job.posted_at || null,
             expires_at: job.expires_at || null,
         };
@@ -115,13 +147,16 @@ export const getPublicJobList = catchAsync(async (req: Request, res: Response, n
 });
 
 export const getJobList = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const totalJobs = await Job.countDocuments();
-    res.status(StatusCodes.OK).json({
+    const jobs = await Job.find()
+        .populate("company_id")
+        .populate("employer_id")
+        .populate("job_type")
+        .populate("job_category");
+        res.status(StatusCodes.OK).json({
         status: "success",
         data: {
-            total_jobs: totalJobs,
-            // max_page: maxPage,
-            // jobs: jobs,
+            total_jobs: jobs.length,
+            jobs: jobs,
         },
     });
 });
@@ -198,6 +233,48 @@ export const getAJobApplication = catchAsync(async (req: Request, res: Response,
     });
 });
 
+export const getJobsByCompany = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const companyId = req.params.companyId;
+    isObjectIdOfMongoDB(companyId, "companyId", `Company Id ${companyId} in params is not a valid MongoDB ObjectId`);
+
+    const jobs = await Job.find({ company_id: companyId })
+        .populate("job_type")
+        .populate("job_category");
+
+
+    const jobsFilter = jobs.map((job: any) => {
+        return {
+            _id: job._id,
+            title: job.title,
+            salary_range: job.salary_range.min + " - " + job.salary_range.max + " " + job.salary_unit || null,
+            job_category: job?.job_category?.name || null,
+            job_type: job?.job_type?.name || null,
+            address: job.address || null,
+            description: job.description || null,
+            benefits: job.benefits || null,
+            skills: job.skills || null,
+            requirements: job.requirements || null,
+            views: job.views || null,
+            applications_count: job.applications_count || null,
+            posted_at: job.posted_at || null,
+            expires_at: job.expires_at || null,
+            employer_id: job.employer_id || null,
+            company: job?.company_id?.name || null,
+            image: job?.image || null,
+            status: job?.status || null,
+            is_public: job.is_public || null,
+        };
+    });
+
+    res.status(StatusCodes.OK).json({
+        status: "success",
+        data: {
+            total_jobs: jobs.length,
+            jobs: jobsFilter,
+        },
+    });
+});
+
 export const createApplication = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const jobId = req.params.jobId;
     const candidate = req.body.user;
@@ -211,28 +288,74 @@ export const createApplication = catchAsync(async (req: Request, res: Response, 
     isRequired(skills, "skills");
     isRequired(worker_experience, "worker_experience");
     isRequired(certification, "certification");
-      
-    const application = await Application.create({
-        job_id: jobId,
-        candidate_id: candidateId,
-        full_name: full_name,
-        email: email,
-        phone: phone,
-        skills: skills,
-        worker_experience: worker_experience,
-        certification: certification,
-        cover_letter: cover_letter,
-        cv: cv || null,
-        status: "pending",
-        applied_at: new Date(),
-    });
 
-    res.status(StatusCodes.CREATED).json({
-        status: "success",
-        data: {
-            application: application,
-        },
-    });
+    const existingApplication = await Application.findOne({ job_id: jobId, candidate_id: candidateId });
+    if (existingApplication) {
+        const updatedApplication = await existingApplication.updateOne({
+            full_name: full_name,
+            email: email,
+            phone: phone,
+            skills: skills,
+            worker_experience: worker_experience,
+            certification: certification,
+            cover_letter: cover_letter,
+            cv: cv || null,
+            status: "pending",
+            applied_at: new Date(),
+        });
+
+        res.status(StatusCodes.OK).json({
+            status: "success",
+            data: {
+                application: updatedApplication,
+            },
+        });
+    } else {
+        const job = await Job.findById(jobId);
+        if (job) {
+            if (job.applications_count) {
+                job.applications_count += 1;
+            } else {
+                job.applications_count = 1;
+            }
+            await job.save();
+        }
+        const application = await Application.create({
+            job_id: jobId,
+            candidate_id: candidateId,
+            full_name: full_name,
+            email: email,
+            phone: phone,
+            skills: skills,
+            worker_experience: worker_experience,
+            certification: certification,
+            cover_letter: cover_letter,
+            cv: cv || null,
+            status: "pending",
+            applied_at: new Date(),
+        });
+
+        await Log.create({
+            user_id: candidate._id,
+            action: LOG_ACTIONS.APPLY_JOB,
+            details: {
+                job_id: jobId,
+                candidate_id: candidateId,
+                full_name: full_name,
+                email: email,
+            },
+            ip: req.ip,
+            user_agent: req.get("User-Agent"),
+            timestamp: new Date(),
+        })
+
+        res.status(StatusCodes.CREATED).json({
+            status: "success",
+            data: {
+                application: application,
+            },
+        });
+    }
 });
 
 export const updateApplication = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
@@ -338,14 +461,16 @@ export const responseToJobApplication = catchAsync(async (req: Request, res: Res
 });
 
 export const getJobListingsByEmployer = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const { role, id } = req.body.user;
+    const { user } = req.body;
     const { status, page, limit } = req.query;
 
-    if (role !== "employer") {
-        return next(new AppError("You are not authorized to view this page", StatusCodes.UNAUTHORIZED));
-    }
+    const employerProfile = await EmployerProfile.findById(user.profile_id);
+    isNotFound(employerProfile, "Employer", `Employer with id ${user.profile_id} not found`);
 
-    const filter: any = { employer_id: id };
+    const company = await Company.findById(employerProfile?.company_id);
+    isNotFound(company, "Company", `Company with id ${employerProfile?.company_id} not found`);
+
+    const filter: any = { employer_id: user._id };
     const validStatus = ["pending", "approved", "rejected"];
     if (status && validStatus.includes(status as string)) filter.status = status;
 
@@ -365,31 +490,29 @@ export const getJobListingsByEmployer = catchAsync(async (req: Request, res: Res
 
     const jobs = await jobsQuery;
 
-    console.log({ jobs });
-
     const totalJobs = page && limit ? await Job.countDocuments(filter) : jobs.length;
 
     const jobsFilter = jobs.map((job: any) => {
         return {
-            _id: job._id,
-            title: job.title,
-            salary_range: job.salary_range.min + " - " + job.salary_range.max + " " + job.salary_unit || null,
+            _id: job?._id,
+            title: job?.title,
+            salary_range: job?.salary_range.min + " - " + job?.salary_range.max + " " + job?.salary_unit || null,
             job_category: job?.job_category?.name || null,
             job_type: job?.job_type?.name || null,
-            address: job.address || null,
-            description: job.description || null,
-            benefits: job.benefits || null,
-            skills: job.skills || null,
-            requirements: job.requirements || null,
-            views: job.views || null,
-            applications_count: job.applications_count || null,
-            posted_at: job.posted_at || null,
-            expires_at: job.expires_at || null,
-            employer_id: job.employer_id || null,
+            address: job?.address || null,
+            description: job?.description || null,
+            benefits: job?.benefits || null,
+            skills: job?.skills || null,
+            requirements: job?.requirements || null,
+            views: job?.views || null,
+            applications_count: job?.applications_count || null,
+            posted_at: job?.posted_at || null,
+            expires_at: job?.expires_at || null,
+            employer_id: job?.employer_id || null,
             company: job?.company_id?.name || null,
             image: job?.image || null,
             status: job?.status || null,
-            is_public: job.is_public || null,
+            is_public: job?.is_public || null,
         };
     });
 
@@ -472,9 +595,24 @@ export const createJob = catchAsync(async (req: Request, res: Response, next: Ne
         job_type: existing_job_type?._id,
         job_category: existing_job_category?._id,
         is_public: is_public,
+        posted_at: new Date(),
     };
 
     const job = await Job.create(job_fields);
+
+    await Log.create({
+        user_id: user._id,
+        action: LOG_ACTIONS.POST_JOB,
+        details: {
+            job_id: job._id,
+            title: job.title,
+            job_type: job_type,
+            job_category: job_category,
+        },
+        ip: req.ip,
+        user_agent: req.get("User-Agent"),
+        timestamp: new Date(),
+    })
 
     res.status(StatusCodes.CREATED).json({
         status: "success",
@@ -531,9 +669,17 @@ export const getAllJobs = catchAsync(async (req: Request, res: Response, next: N
 
 export const updateJob = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const { user } = req.body;
-    // check if company's employer not exists
+
+    const jobId = req.params.jobId;
+    isObjectIdOfMongoDB(jobId, "JobId", `Job Id ${jobId} is not a valid MongoDB ObjectId`);
+
     const employer = await EmployerProfile.findById(user.profile_id);
     isNotFound(employer, "Employer", `Employer with id ${user.profile_id} not found`);
+
+    const existingJob = await Job.findOne({ _id: jobId, employer_id: user._id, company_id: employer?.company_id });
+    isNotFound(existingJob, "Job", `Job with id ${jobId} not found`);
+
+
     const company = await Company.findById(employer?.company_id);
     isNotFound(company, "Company", `Company with id ${employer?.company_id} not found`);
 
@@ -591,14 +737,30 @@ export const updateJob = catchAsync(async (req: Request, res: Response, next: Ne
         job_type: existing_job_type?._id,
         job_category: existing_job_category?._id,
         is_public: is_public,
-    };
+    };    
 
-    const job = await Job.create(job_fields);
+    await existingJob?.updateOne(job_fields);
 
-    res.status(StatusCodes.CREATED).json({
+    const updatedJob = await Job.findById(jobId);
+
+    await Log.create({
+        user_id: user._id,
+        action: LOG_ACTIONS.UPDATE_JOB,
+        details: {
+            job_id: jobId,
+            title: updatedJob?.title,
+            job_type: job_type,
+            job_category: job_category,
+        },
+        ip: req.ip,
+        user_agent: req.get("User-Agent"),
+        timestamp: new Date(),
+    })
+
+    res.status(StatusCodes.OK).json({
         status: "success",
         data: {
-            job: job,
+            job: updatedJob,
         },
     });
 });
@@ -611,6 +773,20 @@ export const deleteJob = catchAsync(async (req: Request, res: Response, next: Ne
     isNotFound(job, "Job", `Job with id ${jobId} not found`);
 
     await Job.deleteOne({ _id: jobId });
+
+    await Log.create({
+        user_id: req.body.user._id,
+        action: LOG_ACTIONS.DELETE_JOB,
+        details: {
+            job_id: jobId,
+            title: job?.title,
+            job_type: job?.job_type,
+            job_category: job?.job_category,
+        },
+        ip: req.ip,
+        user_agent: req.get("User-Agent"),
+        timestamp: new Date(),
+    })
 
     res.status(StatusCodes.OK).json({
         status: "success",
@@ -626,7 +802,12 @@ export const getAJobById = catchAsync(async (req: Request, res: Response, next: 
 
     const job = (await Job.findOne({ _id: jobId })
         .populate("company_id")
-        .populate("employer_id")
+        .populate({
+            path: "employer_id",
+            populate: {
+                path: "profile_id",
+            }
+        })
         .populate("job_type")
         .populate("job_category")) as any;
 
@@ -635,28 +816,39 @@ export const getAJobById = catchAsync(async (req: Request, res: Response, next: 
     }
 
     const jobFilter = {
-        _id: job._id,
-        title: job.title,
-        salary_range: job.salary_range.min + " - " + job.salary_range.max + " " + job.salary_unit || null,
+        _id: job?._id,
+        title: job?.title,
+        salary_range: job?.salary_range.min + " - " + job?.salary_range.max + " " + job?.salary_unit || null,
         job_category: job?.job_category?.name || null,
         job_type: job?.job_type?.name || null,
-        address: job.address || null,
-        description: job.description || null,
-        benefits: job.benefits || null,
-        skills: job.skills || null,
-        requirements: job.requirements || null,
-        views: job.views || null,
-        applications_count: job.applications_count || null,
-        posted_at: job.posted_at || null,
-        expires_at: job.expires_at || null,
-        employer_id: job.employer_id || null,
+        address: job?.address || null,
+        description: job?.description || null,
+        benefits: job?.benefits || null,
+        skills: job?.skills || null,
+        requirements: job?.requirements || null,
+        is_public: job?.is_public || null,
+        views: job?.views || null,
+        applications_count: job?.applications_count || null,
+        posted_at: job?.posted_at || null,
+        expires_at: job?.expires_at || null,
+        employer_id: {
+            _id: job?.employer_id?._id,
+            full_name: job?.employer_id?.profile_id?.full_name || null,
+            contact_email: job?.employer_id?.profile_id?.contact_email || null,
+            email: job?.employer_id?.profile_id?.email || null,
+            phone: job?.employer_id?.profile_id?.phone || null,
+            address: job?.employer_id?.profile_id?.address || null,
+            avatar: job?.employer_id?.profile_id?.avatar || null,
+            introduction: job?.employer_id?.profile_id?.introduction || null,
+            company_role: job?.employer_id?.profile_id?.company_role || null,
+        },
         company: {
             name: job?.company_id?.name || null,
             logo: job?.company_id?.avatar || null,
             website: job?.company_id?.website || null,
             size: job?.company_id?.size || null,
             industry: job?.company_id?.industry || null,
-            description: job?.company_id?.description || null,
+            introduction: job?.company_id?.introduction || null,
         },
     };
 
@@ -688,6 +880,67 @@ export const getJobCategoryList = catchAsync(async (req: Request, res: Response,
         data: {
             total_job_categories: jobCategories.length,
             job_categories: jobCategories,
+        },
+    });
+});
+
+export const getJobLocationList = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const addressList = await Job.find().distinct("address");
+
+    const jobLocations = addressList.map((address: string) => {
+        return address.split(",")[address.split(",").length - 1].trim();
+    });
+
+    res.status(StatusCodes.OK).json({
+        status: "success",
+        data: {
+            total_job_locations: jobLocations.length,
+            job_locations: jobLocations,
+        },
+    });
+});
+
+export const approveJob = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = req.body;
+    isObjectIdOfMongoDB(id, "id", `Invalid id: ${id} in body`);
+
+    const job = await Job.findById(id);
+
+    console.log("status, ", id, job, job?.status, JOB_STATUSES.PENDING);
+    
+
+    if (job?.status !== JOB_STATUSES.PENDING) {
+        return next(new AppError("Job is not in pending state", StatusCodes.BAD_REQUEST));
+    }
+
+    await job?.updateOne({ status: JOB_STATUSES.APPROVED });
+    isNotFound(job, "", "Job not found with the provided jobId");
+
+    return res.status(StatusCodes.OK).json({
+        status: "success",
+        data: {
+            job: null,
+        },
+    });
+});
+
+export const rejectJob = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = req.body;
+    isObjectIdOfMongoDB(id, "id", `Invalid id: ${id} in body`);
+
+    const job = await Job.findById(id);
+
+    if (job?.status !== JOB_STATUSES.PENDING) {
+        return next(new AppError("Job is not in pending state", StatusCodes.BAD_REQUEST));
+    }
+
+    await job?.updateOne({ status: JOB_STATUSES.REJECTED });
+    isNotFound(job, "", "Job not found with the provided jobId");
+
+    return res.status(StatusCodes.OK).json({
+        status: "success",
+        data: {
+            job: null,
         },
     });
 });

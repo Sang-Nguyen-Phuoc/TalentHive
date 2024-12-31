@@ -4,14 +4,16 @@ import { attachUserId, authorizeRole } from "../middlewares/authMiddleware";
 
 const userRouter = Router();
 
-userRouter.route("/").delete(attachUserId, authorizeRole(["admin"]), userController.deleteUser);
-userRouter.post("/lock", attachUserId, authorizeRole(["admin"]), userController.lockUser);
-userRouter.post("/unlock", attachUserId, authorizeRole(["admin"]), userController.unlockUser);
-userRouter.post("/admin", attachUserId, userController.createAdmin);
-userRouter.post("/follow/:companyId", attachUserId, userController.followCompany);
-userRouter.delete("/unfollow/:companyId", attachUserId, userController.unfollowCompany);
-userRouter.get("/followed", attachUserId, userController.getFollowedCompanies);
+userRouter.route("/").delete(authorizeRole(["admin"]), userController.deleteUser);
+userRouter.post("/lock", authorizeRole(["admin"]), userController.lockUser);
+userRouter.post("/unlock", authorizeRole(["admin"]), userController.unlockUser);
+userRouter.post("/admin", userController.createAdmin);
+userRouter.get("/candidates", authorizeRole(["admin"]), userController.getCandidates);
+userRouter.get("/employers", authorizeRole(["admin"]), userController.getEmployers);
+userRouter.post("/follow/:companyId", userController.followCompany);
+userRouter.delete("/unfollow/:companyId", userController.unfollowCompany);
+userRouter.get("/followed", userController.getFollowedCompanies);
 
-userRouter.route("/:id")
-    .get(userController.getUser)
+userRouter.get("/:id", userController.getUser);
+
 export default userRouter;

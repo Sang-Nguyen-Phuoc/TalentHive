@@ -1,21 +1,21 @@
 import { useLoaderData, useLocation, useNavigate } from "react-router";
 import JobItem from "../../components/JobItem";
-import styles from "../../styles/pages/JobDetail.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSquareArrowUpRight } from "@fortawesome/free-solid-svg-icons";
-import ApplicationForm from "../../components/Form/ApplicationForn";
-import { getJobCategoryList, getJobDetail, getJobTypeList } from "../../services/jobsServices";
+import { getApplicationForJob, getJobCategoryList, getJobDetail, getJobTypeList } from "../../services/jobsServices";
 import { toast } from "react-toastify";
 import { ROLES } from "../../utils/Constants";
 import { useUser } from "../../context/UserContext";
 import ModalRemoveJob from "../../components/Modal/ModalRemoveJob";
 import ModalUpdateJob from "../../components/Modal/ModalUpdateJob";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 export const jobDetailLoader = async ({ params }) => {
     let jobData = null;
     let jobTypeListData = [];
     let jobCategoryListData = [];
+    let applicationData = null;
     try {
         jobData = await getJobDetail(params.id);
     } catch (error) {
@@ -34,23 +34,30 @@ export const jobDetailLoader = async ({ params }) => {
         console.error("Error while getting job category list", error?.message || error);
         toast.error("Error while getting job category list");
     }
-    return { jobData, jobTypeListData, jobCategoryListData };
+    try {
+        applicationData = await getApplicationForJob(params.id);
+    } catch (error) {
+        console.error("Error while getting application for job", error?.message || error);
+    }
+    return { jobData, jobTypeListData, jobCategoryListData, applicationData };
 };
 
 function JobDetail({ isSearch }) {
-    const { role } = useUser();
+    const { role, user } = useUser();
     const [showRemoveModal, setShowRemoveModal] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
 
     const [showApplyModal, setShowApplyModal] = useState(false);
-    
-    const { jobData, jobTypeListData, jobCategoryListData } = useLoaderData();
+
+    const { jobData, jobTypeListData, jobCategoryListData, applicationData } = useLoaderData();
 
     const { job } = jobData;
-    console.log("xin chaof, job", job);
-    
+
     const jobTypes = jobTypeListData.job_types;
     const jobCategories = jobCategoryListData.job_categories;
+    const application = applicationData?.application;
+
+    const isOwner = job?.employer_id?._id === user?._id;
 
     const Job = JobItem.Detail;
 
@@ -59,7 +66,13 @@ function JobDetail({ isSearch }) {
         <div className="container mb-5">
             <main className="row g-3 g-md-4 g-lg-5 mt-5 mt-lg-0">
                 <div className="col-md-8">
-                    <Job job={job} show={showApplyModal} setShow={setShowApplyModal} role={role}/>
+                    <Job
+                        job={job}
+                        show={showApplyModal}
+                        setShow={setShowApplyModal}
+                        role={role}
+                        application={application}
+                    />
                     <div className="container">
                         <div className="row">
                             <div className="col shadow rounded-3 p-4">
@@ -91,7 +104,7 @@ function JobDetail({ isSearch }) {
                                         <li className="list-group-item">No benefits available</li>
                                     )}
                                 </ul>
-                                {role === ROLES.EMPLOYER && (
+                                {role === ROLES.EMPLOYER && isOwner && (
                                     <>
                                         <hr />
                                         <div className="row d-flex justify-content-evenly">
@@ -131,16 +144,36 @@ function JobDetail({ isSearch }) {
                         <div className="d-flex p-3 flex-wrap">
                             <img
                                 className="p-0 shadow-lg rounded"
-                                style={{ width: 100, aspectRatio: 1, objectFit: "cover" }}
+                                style={{ width: 100, aspectRatio: 1, objectFit: "contain" }}
                                 src={job?.company?.logo || "https://via.placeholder.com/150"}
                                 alt="logo"
                             />
                             <h2 className="text-wrap fw-bold fs-3 p-2 m-0">{job?.company?.name}</h2>
                         </div>
                         <hr className="m-0" />
-                        <div className="p-3">
+                        {[
+                            { label: "introduction", value: job?.company?.introduction },
+                            { label: "industry", value: job?.company?.industry },
+                            { label: "website", value: job?.company?.website },
+                        ].map((item, index) => (
+                            <div key={index} className="p-3">
+                                <span className="fw-bold">{item.label}: </span>
+                                {item.value ? (
+                                    item.label === "website" ? (
+                                        <a className="text-break" href={item.value}>
+                                            {item.value}
+                                        </a>
+                                    ) : (
+                                        <span className="text-break">{item.value}</span>
+                                    )
+                                ) : (
+                                    <span className="text-muted">not available</span>
+                                )}
+                            </div>
+                        ))}
+                        {/* <div className="p-3">
                             <span className="fw-bold">Description: </span>
-                            {job?.company?.description || "Nothing more"}
+                            {job?.company?.introduction || "Nothing more"}
                         </div>
                         <div className="p-3">
                             <span className="fw-bold">Industry: </span>
@@ -151,16 +184,32 @@ function JobDetail({ isSearch }) {
                             <a className="cursor-pointer text-break" href={job?.company?.website}>
                                 {job?.company?.website || "Nothing more"}
                             </a>
-                        </div>
+                        </div> */}
+                        <hr />
+                        <h3>Human Resource</h3>
+                        {[
+                            { label: "Name", value: job?.employer_id?.full_name },
+                            { label: "Email", value: job?.employer_id?.contact_email || job?.employer_id?.email },
+                            { label: "Phone", value: job?.employer_id?.phone },
+                        ].map((item, index) => (
+                            <div key={index} className="p-3">
+                                <span className="fw-bold">{item.label}: </span>
+                                {item.value ? (
+                                    <span className="text-break">{item.value}</span>
+                                ) : (
+                                    <span className="text-muted">not available</span>
+                                )}
+                            </div>
+                        ))}
                         <hr className="m-0" />
                         <div className="text-center d-flex justify-content-center p-3">
-                            <a
+                            <Link
                                 className="cursor-pointer d-flex gap-2 align-items-center justify-content-center"
-                                href="/profile/dashboard"
+                                to={`/employer/${job?.employer_id?._id}/dashboard`}
                             >
                                 View company
                                 <FontAwesomeIcon icon={faSquareArrowUpRight} />
-                            </a>
+                            </Link>
                         </div>
                         <div></div>
                     </div>

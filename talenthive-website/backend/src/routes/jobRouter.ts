@@ -7,11 +7,15 @@ import { validateApplicationFields, validateMissingApplicationFields } from "../
 
 const jobRouter = Router();
 
-jobRouter.get("/search", trimJobFields, validateJobFields, jobController.searchJobs);
+jobRouter.get("/search", jobController.searchJobs);
 jobRouter.get("/public", jobController.getPublicJobList); // used
 jobRouter.get("/employer", authorizeRole(["employer"]), jobController.getJobListingsByEmployer); // used
 jobRouter.get("/types", jobController.getJobTypeList); // used
 jobRouter.get("/categories", jobController.getJobCategoryList); // used
+jobRouter.get("/locations", jobController.getJobLocationList); // used
+
+
+jobRouter.get("/companies/:companyId", jobController.getJobsByCompany); // used
 
 jobRouter.post("/:jobId/apply", authorizeRole(["candidate"]), jobController.createApplication); // used
 
@@ -40,5 +44,8 @@ jobRouter
     .get(jobController.getAJobById) // used
     .put(authorizeRole(["employer"]), jobController.updateJob) // used
     .delete(authorizeRole(["employer", "admin"]), jobController.deleteJob); // used
+
+jobRouter.post("/approve", authorizeRole(["admin"]), jobController.approveJob);
+jobRouter.post("/reject", authorizeRole(["admin"]), jobController.rejectJob);
 
 export default jobRouter;

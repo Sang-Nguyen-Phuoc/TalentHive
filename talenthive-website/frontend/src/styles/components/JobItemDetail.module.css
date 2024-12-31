@@ -82,11 +82,6 @@
     color: var(--primary-color);
     font-weight: 500;
     align-self: flex-en d;
-    &:hover {
-        position: relative;
-        top: -2px;
-        text-decoration: underline;
-    }
 }
 
 .timeline {

@@ -20,10 +20,16 @@ export interface IJob {
     posted_at: Date;
     status: string;
     applications_count: number;
-    views: number;
+    views: number; 
     created_at: Date;
     updated_at: Date;
     location: string;
+}
+
+export const JOB_STATUSES = {
+    PENDING: 'pending',
+    APPROVED: 'approved',
+    REJECTED: 'rejected'
 }
 
 const JobSchema = new Schema<IJob>({

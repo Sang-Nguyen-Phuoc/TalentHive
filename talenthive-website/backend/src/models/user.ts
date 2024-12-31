@@ -10,6 +10,9 @@ export interface IUser {
     password?: string;
     profile_id?: Types.ObjectId;
     active: boolean;
+    status?: string;
+    statusReason?: string;
+    statusUpdatedAt: Date;
     password_reset_token?: string;
     password_reset_expires?: Date;
     password_changed_at?: Date;
@@ -17,6 +20,15 @@ export interface IUser {
     updated_at: Date;
     createPasswordResetToken: () => string;
     isModified: (field: string) => boolean;
+}
+
+
+export const USER_STATUSES = {
+    ACTIVE: 'active',
+    INACTIVE: 'inactive',
+    DELETED: 'deleted',
+    SUSPENDED: 'suspended',
+    LOCKED: 'locked'
 }
 
 const UserSchema = new Schema<IUser>({
@@ -58,6 +70,20 @@ const UserSchema = new Schema<IUser>({
         type: Boolean,
         default: true,
         select: false
+    },
+    status: {
+        type: String,
+        default: 'active',
+        enum: ['active', 'inactive', 'deleted', 'suspended', 'locked'],
+        // locked status means the user has been locked out of the system by an admin
+        // suspended status means the user has been suspended by an admin
+        // deleted status means the user deleted their account
+
+    },
+    statusReason: String,
+    statusUpdatedAt: {
+        type: Date,
+        default: Date.now()
     },
     created_at: {
         type: Date,
