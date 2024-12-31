@@ -91,7 +91,7 @@ const JobItem = {
     ////// HIRE TALENT PAGE //////
     Detail: ({ job, show, setShow, role, application }) => {
         return (
-            <div className="container shadow rounded-3 px-4 mb-4 border border-1 border-secondary bg-white">
+            <div className="container shadow rounded-3 px-4 mb-4 border border-1 border-secondary bg-white mb-lg-2">
                 <div className="row py-3">
                     <h2 className="col-sm-8 fw-bold fs-4 m-0">{job?.title}</h2>
                     <p
@@ -129,8 +129,8 @@ const JobItem = {
                     </span>
                 </div>
                 <div className={styleDetail.footer}>
-                    {job?.status === "accepted" && (
-                        <p className={styleDetail.candidate}>{`Candidate list (${job?.applications_count})`}</p>
+                    {job?.status === "approved" && (
+                        <p className={styleDetail.candidate}>{`Candidates quantity (${job?.applications_count})`}</p>
                     )}
                 </div>
                 {role === ROLES.CANDIDATE && (

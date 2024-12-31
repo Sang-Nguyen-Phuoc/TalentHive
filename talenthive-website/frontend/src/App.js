@@ -23,6 +23,7 @@ import { useUser } from "./context/UserContext";
 import JobsApplied, { appliedJobsLoader } from "./pages/JobsApplied/AppliedJobsPage";
 import EmployerDashboard, { employerDashboardLoader } from "./pages/ProfileDashboard/EmployerDashboard";
 import CandidateDashboard, { candidateDashboardLoader } from "./pages/ProfileDashboard/CandidateDashboard";
+import JobApplications, { applicationLoader } from "./pages/JobApplications";
 import ApplicationDetail, { applicationDetailLoader, appliedJobDetailLoader } from "./pages/JobsApplied/ApplicationDetail";
 import AdminLayout from "./layouts/AdminLayout/AdminLayout";
 import EnterCompanyAccessingCode from "./pages/CompanyAccess/EnterCompanyAccessingCode";
@@ -110,6 +111,11 @@ const router = createBrowserRouter([
             {
                 path: "/jobs",
                 children: [
+                    {
+                        path: ":id/applications",
+                        element: <JobApplications />,
+                        loader: applicationLoader,
+                    },
                     {
                         path: ":id",
                         element: <JobDetail />,

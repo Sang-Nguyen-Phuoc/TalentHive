@@ -16,7 +16,7 @@ const AppliedJobItem = ({ job }) => {
                     className="col-sm-4 fw-bold m-0 d-flex align-items-center justify-content-end"
                     style={{ color: "green" }}
                 >
-                    {job?.status}
+                    {job?.application.status}
                 </p>
             </div>
 

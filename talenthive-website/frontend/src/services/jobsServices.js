@@ -169,3 +169,14 @@ export const getJobListSearching = async (keyword, job_type, job_category, locat
     }
 }
 
+
+export const getAllJobApplications = async (jobID) => {
+    try {
+        const data = await axiosCustom.get(`/api/v1/jobs/${jobID}/all-applications`);
+        return data.applications;
+    }
+    catch (error) {
+        console.error("Error while getting all job applications", error?.message || error);
+        throw error;
+    }
+}
