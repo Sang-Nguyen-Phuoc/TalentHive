@@ -45,5 +45,7 @@ jobRouter
     .put(authorizeRole(["employer"]), jobController.updateJob) // used
     .delete(authorizeRole(["employer", "admin"]), jobController.deleteJob); // used
 
+jobRouter.post("/approve", authorizeRole(["admin"]), jobController.approveJob);
+jobRouter.post("/reject", authorizeRole(["admin"]), jobController.rejectJob);
 
 export default jobRouter;

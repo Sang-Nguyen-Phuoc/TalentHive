@@ -180,3 +180,36 @@ export const getAllJobApplications = async (jobID) => {
         throw error;
     }
 }
+export const getJobListByAdmin = async () => {
+    try {
+        const data = await axiosCustom.get(`/api/v1/jobs/`);
+        return data;
+    } catch (error) {
+        console.error("Error while getting job list by admin", error?.message || error);
+        throw error;
+    }
+}
+
+export const postAdminApproveJob = async (id) => {
+    try {
+        const response = await axiosCustom.post(`/api/v1/jobs/approve`, {
+            id: id
+        });
+        return response;
+    } catch (error) {
+        console.error("Error while approving job", error?.message || error);
+        throw error;
+    }
+}
+
+export const postAdminRejectJob = async (id) => {
+    try {
+        const response = await axiosCustom.post(`/api/v1/jobs/reject`, {
+            id: id
+        });
+        return response;
+    } catch (error) {
+        console.error("Error while rejecting job", error?.message || error);
+        throw error;
+    }
+}

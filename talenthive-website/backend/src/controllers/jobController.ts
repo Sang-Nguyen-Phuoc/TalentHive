@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import catchAsync from "../utils/catchAsync";
-import Job from "../models/job";
+import Job, { JOB_STATUSES } from "../models/job";
 import AppError from "../utils/appError";
 import mongoose, { Types } from "mongoose";
 import Application from "../models/application";
@@ -837,4 +837,49 @@ export const getJobLocationList = catchAsync(async (req: Request, res: Response,
             job_locations: jobLocations,
         },
     });
-})
+});
+
+export const approveJob = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = req.body;
+    isObjectIdOfMongoDB(id, "id", `Invalid id: ${id} in body`);
+
+    const job = await Job.findById(id);
+
+    console.log("status, ", id, job, job?.status, JOB_STATUSES.PENDING);
+    
+
+    if (job?.status !== JOB_STATUSES.PENDING) {
+        return next(new AppError("Job is not in pending state", StatusCodes.BAD_REQUEST));
+    }
+
+    await job?.updateOne({ status: JOB_STATUSES.APPROVED });
+    isNotFound(job, "", "Job not found with the provided jobId");
+
+    return res.status(StatusCodes.OK).json({
+        status: "success",
+        data: {
+            job: null,
+        },
+    });
+});
+
+export const rejectJob = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = req.body;
+    isObjectIdOfMongoDB(id, "id", `Invalid id: ${id} in body`);
+
+    const job = await Job.findById(id);
+
+    if (job?.status !== JOB_STATUSES.PENDING) {
+        return next(new AppError("Job is not in pending state", StatusCodes.BAD_REQUEST));
+    }
+
+    await job?.updateOne({ status: JOB_STATUSES.REJECTED });
+    isNotFound(job, "", "Job not found with the provided jobId");
+
+    return res.status(StatusCodes.OK).json({
+        status: "success",
+        data: {
+            job: null,
+        },
+    });
+});

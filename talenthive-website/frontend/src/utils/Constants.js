@@ -18,3 +18,9 @@ export const USER_STATUSES = {
     SUSPENDED: 'suspended',
     LOCKED: 'locked'
 }
+
+export const JOB_STATUSES = {
+    APPROVED: 'approved',
+    REJECTED: 'rejected',
+    PENDING: 'pending'
+}

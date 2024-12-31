@@ -11,6 +11,7 @@ import ProfileDashboard, { profileDashboardLoader } from "./pages/ProfileDashboa
 import JobDetail, { jobDetailLoader } from "./pages/JobDetail";
 import ManageWorkers, { candidateListLoader } from "./pages/ManageWorkers/ManageWorkers";
 import ManageEmployers, { employerListLoader } from "./pages/ManageEmployers/ManageEmployers";
+import ManageJobs, { jobListLoader } from "./pages/ManageJobs/ManageJobs";
 import Signin from "./pages/Signin";
 import SignUp from "./pages/SignUp";
 import ForgotPassword from "./pages/ForgotPassword";
@@ -154,6 +155,18 @@ const router = createBrowserRouter([
                         path: ":id",
                         element: <EmployerDashboard />,
                         loader: employerDashboardLoader,
+                    }
+                ]
+            },
+            {
+                path: "manage-jobs",
+                element: <ManageJobs />,
+                loader: jobListLoader,
+                children: [
+                    {
+                        path: ":id",
+                        element: <JobDetail />,
+                        loader: jobDetailLoader,
                     }
                 ]
             },

@@ -1,23 +1,19 @@
 import { useNavigate } from "react-router";
 import { Button, Modal } from "react-bootstrap";
 import { useState } from "react";
-import { postAdminBlockUser } from "../../../services/userServices";
+import { postAdminApproveJob } from "../../../services/jobsServices";
 
-const ModalAdminBlockUser = ({ show, setShow, _id, role }) => {
+const ModalAdminApproveJob = ({ show, setShow, _id, role }) => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
-    const handleBlockUser = async () => {
+    const handleApproveJob = async () => {
         setLoading(true);
         try {
-            await postAdminBlockUser(_id);
-            if (role === "employer") {
-                navigate(`/admin/manage-employers/${_id}`);
-            } else if (role === "candidate") {
-                navigate(`/admin/manage-candidates/${_id}`);
-            }
+            await postAdminApproveJob(_id);
+            navigate(`/admin/manage-jobs/${_id}`);
             setShow(false)
         } catch (error) {
-            console.error("Error while lock user", error?.message || error);
+            console.error("Error while approving this job", error?.message || error);
         }
         setLoading(false);
     };
@@ -25,20 +21,20 @@ const ModalAdminBlockUser = ({ show, setShow, _id, role }) => {
     return (
         <Modal show={show} onHide={() => setShow(false)}>
             <Modal.Header closeButton>
-                <Modal.Title>Lock User</Modal.Title>
+                <Modal.Title>Approve</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <p>Are you sure you want to lock this user?</p>
+                <p>Are you sure that you want to approve this job posting?</p>
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="secondary" onClick={() => setShow(false)}>
                     Close
                 </Button>
-                <Button variant="danger" onClick={handleBlockUser}>
+                <Button variant="danger" onClick={handleApproveJob}>
                     {loading ? (
                         <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                     ) : (
-                        "Lock"
+                        "Approve"
                     )}
                 </Button>
             </Modal.Footer>
@@ -46,4 +42,4 @@ const ModalAdminBlockUser = ({ show, setShow, _id, role }) => {
     );
 };
 
-export default ModalAdminBlockUser;
+export default ModalAdminApproveJob;
