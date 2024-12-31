@@ -20,25 +20,21 @@ export const HireTalentLoader = async () => {
         companyData = await getCompanyAsEmployer();
     } catch (error) {
         console.error("Error while getting company", error?.message || error);
-        toast.error("Error while getting company" + error?.message || error);
     }
     try {
         jobListData = await getJobListAsEmployer();
     } catch (error) {
         console.error("Error while getting job list", error?.message || error);
-        toast.error("Error while getting job list");
     }
     try {
         jobTypeListData = await getJobTypeList();
     } catch (error) {
         console.error("Error while getting job type list", error?.message || error);
-        toast.error("Error while getting job type list");
     }
     try {
         jobCategoryListData = await getJobCategoryList();
     } catch (error) {
         console.error("Error while getting job category list", error?.message || error);
-        toast.error("Error while getting job category list");
     }
     return { companyData, jobListData, jobTypeListData, jobCategoryListData };
 };

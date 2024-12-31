@@ -25,6 +25,7 @@ import EmployerDashboard, { employerDashboardLoader } from "./pages/ProfileDashb
 import CandidateDashboard, { candidateDashboardLoader } from "./pages/ProfileDashboard/CandidateDashboard";
 import ApplicationDetail, { applicationDetailLoader, appliedJobDetailLoader } from "./pages/JobsApplied/ApplicationDetail";
 import AdminLayout from "./layouts/AdminLayout/AdminLayout";
+import EnterCompanyAccessingCode from "./pages/CompanyAccess/EnterCompanyAccessingCode";
 
 const RedirectToProfile = () => {
     const { user } = useUser(); // Lấy id từ context
@@ -175,6 +176,10 @@ const router = createBrowserRouter([
                 path: "/create-company-access",
                 element: <CompanyAccess />,
             },
+            {
+                path: "/join-an-existing-company",
+                element: <EnterCompanyAccessingCode />,
+            }
         ],
     },
 ]);

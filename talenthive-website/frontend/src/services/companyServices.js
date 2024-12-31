@@ -48,3 +48,35 @@ export const postUpdateCompany = async (bodyData) => {
         throw error;
     }
 }
+
+export const getHumanResourceList = async (id) => {
+    try {
+        const data = await axiosCustom.get(`/api/v1/companies/${id}/human-resources`);
+        return data;
+    } catch (error) {
+        console.error("Error while getting human resource list", error?.message || error);
+        throw error;
+    }
+}
+
+export const getAccessionCode = async (id) => {
+    try {
+        const data = await axiosCustom.post(`/api/v1/companies/${id}/accession-code`);
+        return data;
+    } catch (error) {
+        console.error("Error while getting accession code", error?.message || error);
+        throw error;
+    }
+}
+
+export const postVerifyAccessionCode = async (accessionCode) => {
+    try {
+        const data = await axiosCustom.post("/api/v1/companies/verify-accession-code", { 
+            accession_code: accessionCode
+         });
+        return data;
+    } catch (error) {
+        console.error("Error while verifying accession code", error?.message || error);
+        throw error;
+    }
+}
