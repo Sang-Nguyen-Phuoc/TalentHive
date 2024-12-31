@@ -306,6 +306,15 @@ export const createApplication = catchAsync(async (req: Request, res: Response, 
             },
         });
     } else {
+        const job = await Job.findById(jobId);
+        if (job) {
+            if (job.applications_count) {
+                job.applications_count += 1;
+            } else {
+                job.applications_count = 1;
+            }
+            await job.save();
+        }
         const application = await Application.create({
             job_id: jobId,
             candidate_id: candidateId,

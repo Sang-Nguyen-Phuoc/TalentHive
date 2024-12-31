@@ -50,10 +50,19 @@ function HireTalent() {
     const jobTypes = jobTypeListData?.job_types;
     const jobCategories = jobCategoryListData?.job_categories;
 
-    const renderTotalJobs = (total_jobs) => {
-        if (total_jobs > 1) {
-            return `${total_jobs} posts`;
-        } else if (total_jobs === 1) {
+    const renderTotalJobs = (jobList) => {
+        let total = 0
+        if (jobList && Array.isArray(jobList)) {
+            if (state === 'all') {
+                total = jobList.length;
+            }
+            else {
+                total = jobList.filter(job => job.status === state).length;
+            }
+        }
+        if (total > 1) {
+            return `${total} posts`;
+        } else if (total === 1) {
             return "1 post";
         } else {
             return "No post";
@@ -129,7 +138,7 @@ function HireTalent() {
                             >
                                 <option value="all">All</option>
                                 <option value="pending">Pending</option>
-                                <option value="accepted">Accepted</option>
+                                <option value="approved">Approved</option>
                                 <option value="rejected">Rejected</option>
                             </select>
                         </div>
@@ -151,13 +160,13 @@ function HireTalent() {
                     </div>
                     <div className="d-flex my-3 ">
                         <motion.span whileHover={{ scale: 1.3 }} className="fw-bold flex-grow-0">
-                            {renderTotalJobs(total_jobs)}
+                            {renderTotalJobs(jobList)}
                         </motion.span>
                     </div>
                     <ul className="row my-3 g-3 list-unstyled">
                         {jobList ? (
                             Array.isArray(jobList) &&
-                            jobList?.map((job, index) => {
+                            jobList?.filter(job => state === 'all' || job.status === state).map((job, index) => {
                                 return (
                                     <motion.li
                                         initial={{ opacity: 0 }}
@@ -171,9 +180,10 @@ function HireTalent() {
                                                 whileTap={{ scale: 0.95 }}
                                                 transition={{ type: "spring", stiffness: 200, damping: 10 }}
                                             >
-                                                <Job job={job} isEmployer={false} />
+                                                <Job job={job}/>
                                             </motion.div>
                                         </Link>
+                                        <Link to={`/jobs/${job._id}/applications`} className="ms-3">View Candidates List</Link>
                                     </motion.li>
                                 );
                             })
