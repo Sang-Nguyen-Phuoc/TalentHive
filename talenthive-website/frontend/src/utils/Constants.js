@@ -1,8 +1,7 @@
-export const EMAILJS_SERVICE_ID = 'service_x4bx9sv';
-export const EMAILJS_TEMPLATE_ID = 'template_d6169qw';
-export const EMAILJS_USER_ID = '5Ia-SOg2wqdAZG5gl';
-export const BASE_URL = 'http://localhost:3002/api/v1';
-
+export const EMAILJS_SERVICE_ID = process.env.REACT_APP_EMAILJS_SERVICE_ID 
+export const EMAILJS_TEMPLATE_ID = process.env.REACT_APP_EMAILJS_TEMPLATE_ID
+export const EMAILJS_USER_ID = process.env.REACT_APP_EMAILJS_USER_ID
+export const BASE_URL = process.env.REACT_APP_API_URL
 
 export const ROLES = {
     EMPLOYER: "employer",
