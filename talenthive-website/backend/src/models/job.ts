@@ -20,7 +20,7 @@ export interface IJob {
     posted_at: Date;
     status: string;
     applications_count: number;
-    views: number;
+    views: number; 
     created_at: Date;
     updated_at: Date;
     location: string;

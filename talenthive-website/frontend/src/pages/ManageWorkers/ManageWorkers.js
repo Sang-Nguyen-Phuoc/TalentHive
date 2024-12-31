@@ -138,7 +138,11 @@ function ManageWorkers() {
                                     <div className="d-flex gap-1 justify-content-center flex-wrap">
                                         <button
                                             className="btn btn-sm btn-outline-primary"
-                                            onClick={() => navigate(`/profile/${user?._id}`)}
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                navigate(`/candidate/${user._id}/dashboard`);
+                                            }}
                                         >
                                             View
                                         </button>
