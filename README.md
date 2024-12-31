@@ -43,7 +43,7 @@ Talent Hive is a collaborative recruitment platform that streamlines the hiring 
 
 ---
 
-## 📸 Screenshots
+## 📸 Screenshots of main pages
 
 1. **Home Page**
    ![Homepage](screenshots/homepage.png)
