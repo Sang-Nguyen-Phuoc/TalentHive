@@ -11,6 +11,7 @@ import EmployerProfile from "../models/employerProfile";
 import Company from "../models/company";
 import JobType from "../models/jobType";
 import JobCategory from "../models/jobCategory";
+import path from "path";
 
 export const searchJobs = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const { keyword, job_type, job_category, location } = req.query;
@@ -729,7 +730,12 @@ export const getAJobById = catchAsync(async (req: Request, res: Response, next: 
 
     const job = (await Job.findOne({ _id: jobId })
         .populate("company_id")
-        .populate("employer_id")
+        .populate({
+            path: "employer_id",
+            populate: {
+                path: "profile_id",
+            }
+        })
         .populate("job_type")
         .populate("job_category")) as any;
 
@@ -753,14 +759,24 @@ export const getAJobById = catchAsync(async (req: Request, res: Response, next: 
         applications_count: job?.applications_count || null,
         posted_at: job?.posted_at || null,
         expires_at: job?.expires_at || null,
-        employer_id: job?.employer_id || null,
+        employer_id: {
+            _id: job?.employer_id?._id,
+            full_name: job?.employer_id?.profile_id?.full_name || null,
+            contact_email: job?.employer_id?.profile_id?.contact_email || null,
+            email: job?.employer_id?.profile_id?.email || null,
+            phone: job?.employer_id?.profile_id?.phone || null,
+            address: job?.employer_id?.profile_id?.address || null,
+            avatar: job?.employer_id?.profile_id?.avatar || null,
+            introduction: job?.employer_id?.profile_id?.introduction || null,
+            company_role: job?.employer_id?.profile_id?.company_role || null,
+        },
         company: {
             name: job?.company_id?.name || null,
             logo: job?.company_id?.avatar || null,
             website: job?.company_id?.website || null,
             size: job?.company_id?.size || null,
             industry: job?.company_id?.industry || null,
-            description: job?.company_id?.description || null,
+            introduction: job?.company_id?.introduction || null,
         },
     };
 

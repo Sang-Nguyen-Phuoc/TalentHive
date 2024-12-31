@@ -67,6 +67,15 @@ class Email {
         Your account has been unlocked. You can now login to your account.`,
     );
   }
+
+  async sendAccessionCode( code: string) {
+    await this.send(
+      "Your TalentHive company's accession code",
+      `Hi ${this.name},
+        Your company's accession code is: ${code}`
+    );
+  }
+
 }
 
 export default Email;

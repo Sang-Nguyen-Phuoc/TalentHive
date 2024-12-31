@@ -41,7 +41,7 @@ const EmployerProfileSchema = new Schema<IEmployerProfile>({
     company_role: {
         type: String,
         trim: true,
-        enum: ["company_manager", "employee"],
+        enum: ["company_manager", "employer"],
     },
     email: {
         type: String,

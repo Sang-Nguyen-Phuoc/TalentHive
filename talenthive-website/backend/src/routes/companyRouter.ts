@@ -11,6 +11,10 @@ const companyRouter = Router();
 
 companyRouter.get("/employer", authorizeRole(["employer"]), companyController.getMyCompanyAsEmployer); // used
 companyRouter.post("/update", authorizeRole(["employer"]), preserveBodyMiddleware, upload.any(), handleUploadAvatar, companyController.updateCompanyByEmployer); // used
+companyRouter.post("/verify-accession-code", authorizeRole(), companyController.verifyAccessionCode); // used
+
+companyRouter.get("/:id/human-resources", authorizeRole(), companyController.getHumanResources); // used
+companyRouter.post("/:id/accession-code", authorizeRole(["employer"]), companyController.generateAccessionCode); // used
 
 companyRouter.route("/")
     .get(companyController.getAllCompanies)

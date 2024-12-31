@@ -11,6 +11,7 @@ import EmployerProfile, { IEmployerProfile } from "../models/employerProfile";
 import { isNotFound, isObjectIdOfMongoDB, isRequired, isString } from "../utils/validateServices";
 import User from "../models/user";
 import { isURL } from "../utils/validateServices";
+import Email from "../utils/email";
 
 export const getAllCompanies = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const companies = await Company.find().populate("company_manager").populate("avatar");
@@ -24,8 +25,7 @@ export const getAllCompanies = catchAsync(async (req: Request, res: Response, ne
 
 export const createCompany = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     console.log(req.body);
-    
-    
+
     const { user } = req.body;
 
     const employerProfile = await EmployerProfile.findById(user.profile_id);
@@ -35,7 +35,7 @@ export const createCompany = catchAsync(async (req: Request, res: Response, next
     if (employerProfile.company_id) {
         return next(new AppError("Employer already has a company", StatusCodes.BAD_REQUEST));
     }
-    
+
     const { name, industry, addresses, website, introduction, phone, avatar } = req.body;
     isRequired(name, "name");
     isRequired(industry, "industry");
@@ -90,12 +90,12 @@ export const updateCompanyByEmployer = catchAsync(async (req: Request, res: Resp
         industry: industry || company!.industry || null,
         addresses: addresses || company!.addresses || null,
         website: website || company!.website || null,
-        introduction: introduction || company!.introduction || null, 
+        introduction: introduction || company!.introduction || null,
         avatar: avatar || company!.avatar || null,
-    })
+    });
 
     const updatedCompany = await Company.findById(employerProfile!.company_id);
-    
+
     res.status(StatusCodes.OK).json({
         status: "success",
         data: {
@@ -128,7 +128,6 @@ export const deleteCompany = catchAsync(async (req: Request, res: Response, next
         },
     });
 });
-
 
 export const getACompany = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const companyId = req.params.companyId;
@@ -228,16 +227,23 @@ export const getMyCompanyAsEmployer = catchAsync(async (req: Request, res: Respo
         return next(new AppError(`Employer profile with id: ${user.profile_id} not found`, StatusCodes.NOT_FOUND));
     }
     if (!employerProfile.company_id) {
-        return next(new AppError(`Employer with id: ${user._id} is not associated with any company`, StatusCodes.NOT_FOUND));
+        return next(
+            new AppError(`Employer with id: ${user._id} is not associated with any company`, StatusCodes.NOT_FOUND)
+        );
     }
     const company = await Company.findById(employerProfile.company_id);
     if (!company) {
-        return next(new AppError(`Company with id: ${employerProfile.company_id} in employer profile not found`, StatusCodes.NOT_FOUND));
-    }    
+        return next(
+            new AppError(
+                `Company with id: ${employerProfile.company_id} in employer profile not found`,
+                StatusCodes.NOT_FOUND
+            )
+        );
+    }
     if (company.company_manager?.toString() !== user._id.toString()) {
         return next(new AppError(`Employer with id: ${user._id} is not the company manager`, StatusCodes.UNAUTHORIZED));
     }
-    
+
     const companyFields = {
         name: company?.name || null,
         avatar: company?.avatar || null,
@@ -247,7 +253,7 @@ export const getMyCompanyAsEmployer = catchAsync(async (req: Request, res: Respo
         introduction: company?.introduction || null,
         company_manager: employerProfile?.full_name || null,
         company_manager_email: employerProfile?.contact_email || null,
-    }
+    };
 
     res.status(StatusCodes.OK).json({
         status: "success",
@@ -256,3 +262,91 @@ export const getMyCompanyAsEmployer = catchAsync(async (req: Request, res: Respo
         },
     });
 });
+
+export const getHumanResources = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const companyId = req.params.id;
+    isObjectIdOfMongoDB(companyId, "id", `Invalid company ID: ${companyId}`);
+
+    const company = await Company.findById(companyId);
+    isNotFound(company, "", `Company with id: ${companyId} not found`);
+
+    const employers = await User.find({
+        _id: { $in: company!.employers || [] },
+    }).populate("profile_id");
+    const employers_filtered = employers.map((employer: any) => ({
+        _id: employer._id,
+        full_name: employer.profile_id?.full_name,
+        contact_email: employer.contact_email || employer.email || null,
+        avatar: employer.profile_id?.avatar || null,
+    }));
+
+    const company_manager = await User.findById(company!.company_manager).populate("profile_id") as any;
+    const company_manager_filtered = {
+        _id: company_manager?._id,
+        full_name: company_manager?.profile_id?.full_name,
+        contact_email: company_manager?.contact_email || company_manager?.email || null,
+        avatar: company_manager?.profile_id?.avatar || null,
+    }
+
+    res.status(StatusCodes.OK).json({
+        status: "success",
+        data: {
+            company_manager: company_manager_filtered,
+            total_employers: employers.length,
+            employers: employers_filtered,
+        },
+    });
+});
+
+export const generateAccessionCode = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const { user } = req.body;
+    const companyId = req.params.id;
+    isObjectIdOfMongoDB(companyId, "id", `Invalid company ID: ${companyId}`);
+
+    const company = await Company.findById(companyId);
+    isNotFound(company, "", `Company with id: ${companyId} not found`);
+
+    const accession_code = Math.random().toString(36).substring(2, 8).toUpperCase();
+    company!.accession_code = accession_code;
+    await company!.save();
+
+    new Email(user).sendAccessionCode(accession_code);
+
+    res.status(StatusCodes.OK).json({
+        status: "success",
+        data: {
+            accession_code: accession_code,
+            email: user.email,
+        },
+    });
+});
+
+export const verifyAccessionCode = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const { user } = req.body;
+    const { accession_code } = req.body;
+
+    console.log(accession_code);
+    
+    
+
+    const company = await Company.findOne({ accession_code: accession_code });
+    isNotFound(company, "", `Company with accession code: ${accession_code} not found`);
+
+    const employerProfile = await EmployerProfile.findById(user?.profile_id);
+    isNotFound(employerProfile, "", `Employer profile with id: ${user?.profile_id} not found`);
+
+    employerProfile!.company_id = company!._id;
+    employerProfile!.company_role = "employer";
+    await employerProfile!.save();
+
+    company!.employers?.push(user._id);
+    await company!.save();
+
+    res.status(StatusCodes.OK).json({
+        status: "success",
+        data: {
+            company: company,
+        },
+    });
+});
+

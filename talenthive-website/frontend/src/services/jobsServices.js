@@ -168,3 +168,4 @@ export const getJobListSearching = async (keyword, job_type, job_category, locat
         throw error;
     }
 }
+
