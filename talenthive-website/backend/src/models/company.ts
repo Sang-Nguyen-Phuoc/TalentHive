@@ -1,5 +1,4 @@
 import { model, Schema, Types } from "mongoose";
-import validator from "validator";
 import bcryptjs from "bcryptjs";
 
 export interface ICompany {

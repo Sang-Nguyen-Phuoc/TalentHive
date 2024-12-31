@@ -1,5 +1,4 @@
 import { motion } from "framer-motion";
-import { toast } from "react-toastify";
 import { useUser } from "../../context/UserContext";
 import { useLoaderData } from "react-router";
 import { getEmployerById, getUserById } from "../../services/userServices";

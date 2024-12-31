@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-// import styles from "../../styles/components/NavBar.module.css";
 import ModalLogout from "../Modal/ModalLogout";
 import { useUser } from "../../context/UserContext";
 import { Dropdown } from "react-bootstrap";
@@ -70,11 +69,12 @@ const NavBar = () => {
                     </nav>
                 ) : (
                     <div className="text-end ms-3 d-flex align-items-center gap-3 flex-wrap-reverse justify-content-center">
-                        <p className="m-0 text-light fs-5 fw-bold">{user?.full_name || "No Name"}</p>
+                        <p className="m-0 text-light fs-5 fw-bold">{user?.full_name || (role === "admin" ? "Admin" : "No Name")}</p>
                         <Dropdown>
                             <Dropdown.Toggle
                                 as="div"
                                 className="d-block link-dark text-decoration-none"
+                                style={{ cursor: "pointer" }}
                                 id="dropdownUser1"
                             >
                                 <img
@@ -90,7 +90,7 @@ const NavBar = () => {
                                 <Dropdown.Item>
                                     <Link
                                         className="text-decoration-none text-dark"
-                                        to={`${role}/${user?._id}/dashboard`}
+                                        to={`/${role}/${user?._id}/dashboard`}
                                     >
                                         Dashboard
                                     </Link>

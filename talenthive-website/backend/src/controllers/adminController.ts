@@ -1,10 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import catchAsync from "../utils/catchAsync";
-import AppError from "../utils/appError";
 import Log from "../models/log";
 
 export const monthlyLogins = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    // const timestamp = new Date();
     const monthlyLogins = await Log.aggregate([
         { $match: { action: "login" } }, // Chỉ lấy log đăng nhập
         {

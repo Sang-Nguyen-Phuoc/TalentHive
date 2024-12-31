@@ -45,6 +45,16 @@ function ManageEmployers() {
         setEmployerList(filteredList);
     }, [state, employerListData]);
 
+    const displayUserNumber = () => {
+        if (employerList.length === 0) {
+            return "No user found";
+        } else if (employerList.length === 1) {
+            return "1 user";
+        } else {
+            return `${employerList.length} users`;
+        }
+    }
+
     return (
         <main className="container">
             {showBlockModal && (
@@ -61,7 +71,7 @@ function ManageEmployers() {
             <div className={`row my-4 my-md-5 ${tmpId ? "" : "justify-content-center"}`}>
                 <div className={`${tmpId ? "col-md-4" : "col-12 col-md-8"}`}>
                     <div className="d-flex justify-content-between mb-3">
-                        <span className="fw-bold d-flex align-items-end">99 users</span>
+                        <span className="fw-bold d-flex align-items-end">{displayUserNumber()}</span>
                         <div>
                             <select className="form-select" value={state} onChange={(e) => setState(e.target.value)}>
                                 <option value="all">All</option>
@@ -134,7 +144,11 @@ function ManageEmployers() {
                                         <div className="d-flex gap-1 justify-content-center flex-wrap">
                                             <button
                                                 className="btn btn-sm btn-outline-primary"
-                                                onClick={() => navigate(`/profile/${user?._id}`)}
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    e.stopPropagation();
+                                                    navigate(`/employer/${user._id}/dashboard`);
+                                                }}
                                             >
                                                 View
                                             </button>

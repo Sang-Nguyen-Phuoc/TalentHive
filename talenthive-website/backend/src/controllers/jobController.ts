@@ -145,14 +145,16 @@ export const getPublicJobList = catchAsync(async (req: Request, res: Response, n
 });
 
 export const getJobList = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const totalJobs = await Job.countDocuments();
-    
-    res.status(StatusCodes.OK).json({
+    const jobs = await Job.find()
+        .populate("company_id")
+        .populate("employer_id")
+        .populate("job_type")
+        .populate("job_category");
+        res.status(StatusCodes.OK).json({
         status: "success",
         data: {
-            total_jobs: totalJobs,
-            // max_page: maxPage,
-            // jobs: jobs,
+            total_jobs: jobs.length,
+            jobs: jobs,
         },
     });
 });

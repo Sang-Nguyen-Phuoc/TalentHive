@@ -151,7 +151,27 @@ function JobDetail({ isSearch }) {
                             <h2 className="text-wrap fw-bold fs-3 p-2 m-0">{job?.company?.name}</h2>
                         </div>
                         <hr className="m-0" />
-                        <div className="p-3">
+                        {[
+                            { label: "introduction", value: job?.company?.introduction },
+                            { label: "industry", value: job?.company?.industry },
+                            { label: "website", value: job?.company?.website },
+                        ].map((item, index) => (
+                            <div key={index} className="p-3">
+                                <span className="fw-bold">{item.label}: </span>
+                                {item.value ? (
+                                    item.label === "website" ? (
+                                        <a className="text-break" href={item.value}>
+                                            {item.value}
+                                        </a>
+                                    ) : (
+                                        <span className="text-break">{item.value}</span>
+                                    )
+                                ) : (
+                                    <span className="text-muted">not available</span>
+                                )}
+                            </div>
+                        ))}
+                        {/* <div className="p-3">
                             <span className="fw-bold">Description: </span>
                             {job?.company?.introduction || "Nothing more"}
                         </div>
@@ -164,7 +184,7 @@ function JobDetail({ isSearch }) {
                             <a className="cursor-pointer text-break" href={job?.company?.website}>
                                 {job?.company?.website || "Nothing more"}
                             </a>
-                        </div>
+                        </div> */}
                         <hr />
                         <h3>Human Resource</h3>
                         {[
@@ -174,7 +194,11 @@ function JobDetail({ isSearch }) {
                         ].map((item, index) => (
                             <div key={index} className="p-3">
                                 <span className="fw-bold">{item.label}: </span>
-                                {item.value ? <span className="text-break">{item.value}</span> : <span className="text-muted">not available</span>}
+                                {item.value ? (
+                                    <span className="text-break">{item.value}</span>
+                                ) : (
+                                    <span className="text-muted">not available</span>
+                                )}
                             </div>
                         ))}
                         <hr className="m-0" />
