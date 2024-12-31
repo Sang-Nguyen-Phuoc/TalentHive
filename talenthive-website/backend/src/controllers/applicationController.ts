@@ -139,3 +139,17 @@ export const getApplicationForJob = catchAsync(async (req: Request, res: Respons
         }
     });
 });
+
+export const deleteApplication = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const { applicationId } = req.params;
+    isObjectIdOfMongoDB(applicationId, "applicationId", `Invalid application id: ${applicationId} in params`);
+
+    const application = await Application.findOneAndDelete({ _id: applicationId });
+
+    return res.status(StatusCodes.OK).json({
+        status: "success",
+        data: {
+            application
+        }
+    });
+});

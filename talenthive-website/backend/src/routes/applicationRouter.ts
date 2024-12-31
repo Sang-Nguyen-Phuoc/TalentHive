@@ -12,7 +12,7 @@ applicationRouter.post(
 
 applicationRouter.get("/applied-jobs", authorizeRole(["candidate"]), applicationController.getMyAppliedJobs);
 applicationRouter.get("/:applicationId", authorizeRole(["candidate"]), applicationController.getApplication);
-
+applicationRouter.delete("/:applicationId", authorizeRole(["candidate"]), applicationController.deleteApplication);
 applicationRouter.get("/jobs/:jobId", authorizeRole(["candidate"]), applicationController.getApplicationForJob);
 
 export default applicationRouter;
