@@ -26,6 +26,12 @@ export interface IJob {
     location: string;
 }
 
+export const JOB_STATUSES = {
+    PENDING: 'pending',
+    APPROVED: 'approved',
+    REJECTED: 'rejected'
+}
+
 const JobSchema = new Schema<IJob>({
     title: {
         type: String,
