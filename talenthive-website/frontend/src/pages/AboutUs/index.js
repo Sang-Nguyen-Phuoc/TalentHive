@@ -6,6 +6,7 @@ import Services from "../../components/Services";
 import Works from "../../components/Works";
 import Experience from "../../components/Experience";
 import HLuong from "../../images/HLuong.png";
+import Sang from "../../images/Sang.jpg";
 
 
 function AboutUs() {
@@ -15,7 +16,7 @@ function AboutUs() {
             name: "Nguyen Phuoc Sang",
             mainRole: "Project Manager",
             description: "Responsible for overseeing the entire project, ensuring that all team members work together effectively, and the project stays on track to meet deadlines and objectives. Manages planning, risk assessment, and team coordination to deliver successful outcomes.",
-            img: "../../images/An.png",
+            img: Sang,
             fb: "https://www.facebook.com/sang.nguuyen.56",
             github: "https://github.com/Sang-Nguyen-Phuoc",
             text1: "Project Manager",
