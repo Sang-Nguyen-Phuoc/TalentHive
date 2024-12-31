@@ -19,6 +19,12 @@ export const USER_STATUSES = {
     LOCKED: 'locked'
 }
 
+export const JOB_STATUSES = {
+    APPROVED: 'approved',
+    REJECTED: 'rejected',
+    PENDING: 'pending'
+}
+
 export const LOG_ACTIONS = {
     LOGIN: "LOGIN",
     // LOGOUT: "LOGOUT",

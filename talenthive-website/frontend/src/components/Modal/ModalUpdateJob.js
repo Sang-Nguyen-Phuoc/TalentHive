@@ -35,7 +35,7 @@ const ModalUpdateJob = ({ show, setShow, company, jobTypes, jobCategories, job }
         };
     });
 
-    console.log("formData =>> ", formData);
+    // console.log("formData =>> ", formData);
 
     const [loading, setLoading] = useState(false);
 

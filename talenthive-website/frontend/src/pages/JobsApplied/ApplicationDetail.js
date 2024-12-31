@@ -1,6 +1,9 @@
 import { useLoaderData } from "react-router";
 import { getApplicationDetail } from "../../services/jobsServices";
 import { toast } from "react-toastify";
+import ModalApplyJob from "../../components/Modal/ModalApplyJob";
+import { useState } from "react";
+import ModalDeleteApplication from "../../components/Modal/ModalDeleteApplication";
 
 export const appliedJobDetailLoader = async ({params}) => {
     const id = params.id;
@@ -17,7 +20,8 @@ export const appliedJobDetailLoader = async ({params}) => {
 const ApplicationDetail = () => {  
     const { applicationData } = useLoaderData();
     const application = applicationData?.application;
-
+    const [showUpdateModal, setShowUpdateModal] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
     return (
         <div className="col-md-4 mb-md-0 mb-4">
             <div className="card shadow rounded">
@@ -62,10 +66,15 @@ const ApplicationDetail = () => {
                         </p>
                     ))}
                     {/* add button update and delete */}
-                    <div className="d-flex justify-content-between align-items-center">
-                        <button className="btn btn-primary">Update</button>
-                        <button className="btn btn-danger">Delete</button>
-                    </div>
+                    {application?.status === "pending" && (
+                        <div className="d-flex justify-content-between align-items-center">
+                            <button className="btn btn-primary" onClick={() => setShowUpdateModal(true)}>Update</button>
+                            <ModalApplyJob show={showUpdateModal} setShow={setShowUpdateModal} application={application} job={application.job}/>
+
+                            <button className="btn btn-danger" onClick={() => setShowDeleteModal(true)}>Delete</button>
+                            <ModalDeleteApplication show={showDeleteModal} setShow={setShowDeleteModal} id={application._id}/>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

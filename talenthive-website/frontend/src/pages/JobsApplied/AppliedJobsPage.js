@@ -29,7 +29,6 @@ const AppliedJobsPage = () => {
     const [sortType, setSortType] = useState("asc");
 
     const jobs = appliedJobsData?.jobs.filter(job => (state === 'all' || job.status === state)) || [];
-
     const [selectedJob, setSelectedJob] = useState(null);
 
     return (

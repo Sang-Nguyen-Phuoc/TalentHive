@@ -11,6 +11,7 @@ import ProfileDashboard, { profileDashboardLoader } from "./pages/ProfileDashboa
 import JobDetail, { jobDetailLoader } from "./pages/JobDetail";
 import ManageWorkers, { candidateListLoader } from "./pages/ManageWorkers/ManageWorkers";
 import ManageEmployers, { employerListLoader } from "./pages/ManageEmployers/ManageEmployers";
+import ManageJobs, { jobListLoader } from "./pages/ManageJobs/ManageJobs";
 import Signin from "./pages/Signin";
 import SignUp from "./pages/SignUp";
 import ForgotPassword from "./pages/ForgotPassword";
@@ -23,6 +24,7 @@ import { useUser } from "./context/UserContext";
 import JobsApplied, { appliedJobsLoader } from "./pages/JobsApplied/AppliedJobsPage";
 import EmployerDashboard, { employerDashboardLoader } from "./pages/ProfileDashboard/EmployerDashboard";
 import CandidateDashboard, { candidateDashboardLoader } from "./pages/ProfileDashboard/CandidateDashboard";
+import JobApplications, { applicationLoader } from "./pages/JobApplications";
 import ApplicationDetail, { applicationDetailLoader, appliedJobDetailLoader } from "./pages/JobsApplied/ApplicationDetail";
 import AdminLayout from "./layouts/AdminLayout/AdminLayout";
 import EnterCompanyAccessingCode from "./pages/CompanyAccess/EnterCompanyAccessingCode";
@@ -112,6 +114,11 @@ const router = createBrowserRouter([
                 path: "/jobs",
                 children: [
                     {
+                        path: ":id/applications",
+                        element: <JobApplications />,
+                        loader: applicationLoader,
+                    },
+                    {
                         path: ":id",
                         element: <JobDetail />,
                         loader: jobDetailLoader,
@@ -149,6 +156,18 @@ const router = createBrowserRouter([
                         path: ":id",
                         element: <EmployerDashboard />,
                         loader: employerDashboardLoader,
+                    }
+                ]
+            },
+            {
+                path: "manage-jobs",
+                element: <ManageJobs />,
+                loader: jobListLoader,
+                children: [
+                    {
+                        path: ":id",
+                        element: <JobDetail />,
+                        loader: jobDetailLoader,
                     }
                 ]
             },

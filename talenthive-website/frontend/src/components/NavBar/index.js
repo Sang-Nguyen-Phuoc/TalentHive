@@ -121,6 +121,14 @@ const NavBar = () => {
                                                 Employers Management
                                             </Link>
                                         </Dropdown.Item>
+                                        <Dropdown.Item>
+                                            <Link
+                                                className="text-decoration-none text-dark"
+                                                to="/admin/manage-jobs"
+                                            >
+                                                Jobs Management
+                                            </Link>
+                                        </Dropdown.Item>
                                     </>
                                 )}
                                 <Dropdown.Divider />
