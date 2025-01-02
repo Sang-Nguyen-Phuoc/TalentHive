@@ -12,6 +12,7 @@ import { isNotFound, isObjectIdOfMongoDB, isRequired, isString } from "../utils/
 import User from "../models/user";
 import { isURL } from "../utils/validateServices";
 import Email from "../utils/email";
+import Log, { LOG_ACTIONS } from "../models/log";
 
 export const getAllCompanies = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const companies = await Company.find().populate("company_manager").populate("avatar");
@@ -24,8 +25,6 @@ export const getAllCompanies = catchAsync(async (req: Request, res: Response, ne
 });
 
 export const createCompany = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    console.log(req.body);
-
     const { user } = req.body;
 
     const employerProfile = await EmployerProfile.findById(user.profile_id);
@@ -66,6 +65,18 @@ export const createCompany = catchAsync(async (req: Request, res: Response, next
     employerProfile.company_role = "company_manager";
     await employerProfile.save();
 
+    await Log.create({
+        user_id: user._id,
+        action: LOG_ACTIONS.CREATE_COMPANY,
+        details: {
+            company_id: company._id,
+            company_name: company.name,
+        },
+        ip: req.ip,
+        user_agent: req.get("User-Agent"),
+        timestamp: new Date(),
+    });
+
     res.status(StatusCodes.CREATED).json({
         status: "success",
         data: {
@@ -95,6 +106,18 @@ export const updateCompanyByEmployer = catchAsync(async (req: Request, res: Resp
     });
 
     const updatedCompany = await Company.findById(employerProfile!.company_id);
+
+    await Log.create({
+        user_id: user._id,
+        action: LOG_ACTIONS.UPDATE_COMPANY,
+        details: {
+            company_id: updatedCompany!._id,
+            company_name: updatedCompany!.name,
+        },
+        ip: req.ip,
+        user_agent: req.get("User-Agent"),
+        timestamp: new Date(),
+    });
 
     res.status(StatusCodes.OK).json({
         status: "success",
@@ -341,6 +364,18 @@ export const verifyAccessionCode = catchAsync(async (req: Request, res: Response
 
     company!.employers?.push(user._id);
     await company!.save();
+
+    await Log.create({
+        user_id: user._id,
+        action: LOG_ACTIONS.JOIN_COMPANY,
+        details: {
+            company_id: company!._id,
+            company_name: company!.name,
+        },
+        ip: req.ip,
+        user_agent: req.get("User-Agent"),
+        timestamp: new Date(),
+    })
 
     res.status(StatusCodes.OK).json({
         status: "success",
