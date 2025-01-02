@@ -7,6 +7,7 @@ import Application from "../models/application";
 import Job from "../models/job";
 import Company from "../models/company";
 import app from "../app";
+import Log, { LOG_ACTIONS } from "../models/log";
 
 export const rejectOrAcceptApplication = catchAsync(
     async (req: Request, res: Response, next: NextFunction) => {
@@ -24,6 +25,19 @@ export const rejectOrAcceptApplication = catchAsync(
         const application = await Application.findOneAndUpdate({ _id: applicationId, job_id: jobId }, { status }, { new: true });
         
         isNotFound(application, "application");
+
+        await Log.create({
+            user_id: req.body.user._id,
+            action: status === "accepted" ? LOG_ACTIONS.ACCEPT_APPLICATION : LOG_ACTIONS.REJECT_APPLICATION,
+            details: {
+                job_id: jobId,
+                application_id: applicationId,
+                status,
+            },
+            ip: req.ip,
+            user_agent: req.get("User-Agent"),
+            timestamp: new Date(),
+    })
 
         return res.status(StatusCodes.OK).json({
             status: "success",
@@ -145,6 +159,18 @@ export const deleteApplication = catchAsync(async (req: Request, res: Response, 
     isObjectIdOfMongoDB(applicationId, "applicationId", `Invalid application id: ${applicationId} in params`);
 
     const application = await Application.findOneAndDelete({ _id: applicationId });
+
+    await Log.create({
+        user_id: req.body.user._id,
+        action: LOG_ACTIONS.DELETE_APPLICATION,
+        details: {
+            job_id: application!.job_id,
+            application_id: applicationId,
+        },
+        ip: req.ip,
+        user_agent: req.get("User-Agent"),
+        timestamp: new Date(),
+    })
 
     return res.status(StatusCodes.OK).json({
         status: "success",

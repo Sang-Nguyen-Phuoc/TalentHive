@@ -14,6 +14,9 @@ jobRouter.get("/types", jobController.getJobTypeList); // used
 jobRouter.get("/categories", jobController.getJobCategoryList); // used
 jobRouter.get("/locations", jobController.getJobLocationList); // used
 
+jobRouter.post("/approve", authorizeRole(["admin"]), jobController.approveJob);
+jobRouter.post("/reject", authorizeRole(["admin"]), jobController.rejectJob);
+
 
 jobRouter.get("/companies/:companyId", jobController.getJobsByCompany); // used
 
@@ -45,7 +48,5 @@ jobRouter
     .put(authorizeRole(["employer"]), jobController.updateJob) // used
     .delete(authorizeRole(["employer", "admin"]), jobController.deleteJob); // used
 
-jobRouter.post("/approve", authorizeRole(["admin"]), jobController.approveJob);
-jobRouter.post("/reject", authorizeRole(["admin"]), jobController.rejectJob);
 
 export default jobRouter;

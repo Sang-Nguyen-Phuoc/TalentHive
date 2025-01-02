@@ -304,6 +304,20 @@ export const createApplication = catchAsync(async (req: Request, res: Response, 
             applied_at: new Date(),
         });
 
+        await Log.create({
+            user_id: req.body.user._id,
+            action: LOG_ACTIONS.UPDATE_APPLICATION,
+            details: {
+                job_id: jobId,
+                application_id: existingApplication._id,
+                full_name: full_name,
+                email: email,
+            },
+            ip: req.ip,
+            user_agent: req.get("User-Agent"),
+            timestamp: new Date(),
+        })
+
         res.status(StatusCodes.OK).json({
             status: "success",
             data: {
@@ -916,6 +930,21 @@ export const approveJob = catchAsync(async (req: Request, res: Response, next: N
     await job?.updateOne({ status: JOB_STATUSES.APPROVED });
     isNotFound(job, "", "Job not found with the provided jobId");
 
+
+    await Log.create({
+        user_id: req.body.user._id,
+        action: LOG_ACTIONS.APPROVE_JOB,
+        details: {
+            job_id: id,
+            title: job?.title,
+            job_type: job?.job_type,
+            job_category: job?.job_category,
+        },
+        ip: req.ip,
+        user_agent: req.get("User-Agent"),
+        timestamp: new Date(),
+    })
+
     return res.status(StatusCodes.OK).json({
         status: "success",
         data: {
@@ -936,6 +965,20 @@ export const rejectJob = catchAsync(async (req: Request, res: Response, next: Ne
 
     await job?.updateOne({ status: JOB_STATUSES.REJECTED });
     isNotFound(job, "", "Job not found with the provided jobId");
+
+    await Log.create({
+        user_id: req.body.user._id,
+        action: LOG_ACTIONS.REJECT_JOB,
+        details: {
+            job_id: id,
+            title: job?.title,
+            job_type: job?.job_type,
+            job_category: job?.job_category,
+        },
+        ip: req.ip,
+        user_agent: req.get("User-Agent"),
+        timestamp: new Date(),
+    })
 
     return res.status(StatusCodes.OK).json({
         status: "success",
